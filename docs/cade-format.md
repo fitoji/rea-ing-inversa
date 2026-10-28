@@ -8,10 +8,16 @@ Estado: **parcial**. Todo lo marcado ✅ está verificado sobre `data/CADe_SIMU 
 
 ## Cabecera
 
-✅ `CADe_SIMU*3*10501`
-- campo 0: magic `CADe_SIMU`
-- campo 1: versión de formato (`3`)
-- campo 2: build (`10501`)
+✅ `CADe_SIMU` seguido **inmediatamente del primer registro**, sin campo de versión.
+
+⚠️ Corrección de una hipótesis previa: interpreté `CADe_SIMU*3*10501` como "versión 3, build 10501". **Es falso.** Comparando dos archivos:
+
+| Archivo | Cabecera | Primer registro |
+|---|---|---|
+| `CADe_S1` | `CADe_SIMU` | `*3*10501` → id 3, código 10501 (configuración de hoja) |
+| `arranque-paro-motor-3f.cad` | `CADe_SIMU` | `*0*2001` → id 0, código 2001 (`-KM1`) |
+
+El campo que parecía "versión" es el **id del primer registro**. Los ids son secuenciales por archivo. No hay versión de formato declarada.
 
 ## Delimitadores
 
@@ -41,7 +47,7 @@ Ejemplo (contactor `-KM1`, tipo `2001`):
 
 ✅ Frecuencia real en `CADe_S1`:
 
-| Código | Veces | ⚠️ Interpretación |
+| Código | Veces (`CADe_S1`) | Interpretación |
 |---|---|---|
 | 4000 | 98 | segmento de cable |
 | 4001 | 27 | unión / punto de conexión |
@@ -49,14 +55,24 @@ Ejemplo (contactor `-KM1`, tipo `2001`):
 | 4010 | 1 | cable especial |
 | 7000 / 7001 | 4 / 3 | bobina / contacto auxiliar |
 | 8013 / 8012 / 8000 / 8001 | 3 / 2 / 2 / 1 | llaves y selectores |
-| 2001 | 2 | contacto de potencia |
+| 2001 | 2 | contacto de potencia (bornes 1-3-5 / 2-4-6) |
 | 9000 / 9003 | 2 / 2 | bornes de motor |
 | 6009 / 6002 | 1 / 1 | fusible |
 | 3005 / 3003 | 1 / 1 | desconocido |
 | 8016 | 1 | desconocido |
 | 20000 | 2 | cabecera de hoja |
+| 10501 | 1 | configuración de hoja (nombre, dimensiones) |
 
-⚠️ La columna de interpretación es inferencia por coherencia geométrica y designadores. **No confirmada** contra el binario.
+## Códigos nuevos (segundo archivo)
+
+✅ De `arranque-paro-motor-3f.cad`, con designador asociado — evidencia empírica fuerte:
+
+| Código | Designador | Interpretación |
+|---|---|---|
+| 1000 | `-M1` con bornes `U1 V1 W1 PE` | **motor trifásico** |
+| 6003 | `ITM` | interruptor termomagnético |
+| 6007 | `RELE` | relé térmico |
+| 3005 | `-X` | bornera / borne de paso |
 
 ## Bloque de hoja
 
@@ -64,7 +80,16 @@ Ejemplo (contactor `-KM1`, tipo `2001`):
 
 ## Designadores vistos
 
-✅ `-KM1`, `-KM2`, `-F1`, `-S0`…`-S4`, `-X`, `EV1`, `EV2`, `-M1`, `-S33`, `-S44`.
+✅ `-KM1`, `-KM2`, `-F1`, `-S0`…`-S4`, `-X`, `EV1`, `EV2`, `-M1`, `-S33`, `-S44`, `RELE`, `ITM`.
+
+⚠️ Los designadores no siempre siguen el esquema `-XX`: `RELE` e `ITM` son texto libre escrito por el usuario, no etiquetas normalizadas.
+
+## Archivos analizados
+
+| Archivo | Tamaño | Segmentos `#` | Origen |
+|---|---|---|---|
+| `CADe_S1` | 12,6 KB | 1829 | instalación local (inversión de giro con PLC) |
+| `arranque-paro-motor-3f.cad` | 3,5 KB | 474 | repositorio CURSO-CADE-SIMU (arranque-paro 3F) |
 
 ## Nombres de componente en el binario
 
