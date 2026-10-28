@@ -43,6 +43,22 @@ Ejemplo (contactor `-KM1`, tipo `2001`):
 
 ⚠️ Dentro de la geometría, los campos 8-9 son `x,y` y 13-16 son `offset_x, offset_y, ancho, alto`. Consistente en todas las muestras; falta confirmar semántica exacta de los flags.
 
+## Discriminación de registros
+
+✅ Un registro empieza en `*<id>*<código>#`, pero el mismo patrón aparece en la cola de la geometría (`...*4*5#`). Discriminante verificado: **los ids son estrictamente crecientes**, así que la subsecuencia creciente más larga sobre los candidatos identifica los registros reales. El parser del repo lo implementa así (`app/src/format/cade.ts`).
+
+⚠️ Limitación conocida: en `inversion-giro-cej.cade` quedan 2 registros de 161 mal delimitados (códigos `0` y `5`). El inventario los expone vía `layouts` en vez de esconderlos.
+
+## Código 8: etiquetas de texto
+
+✅ **Hallazgo nuevo.** El código `8` no es un componente: es una **etiqueta de texto libre**. Su contenido termina pegado al inicio del registro siguiente:
+
+```
+*48*8############ 0*0*0*...*700*-29*0#ARRANQUE Y PARO DE UN MOTOR 3F*49*8#...
+```
+
+Es la razón por la que un parser que divide por `#` falla: la frontera del registro cae **dentro** de un segmento. Obligó a cambiar el modelo de segmentos a offsets sobre el texto.
+
 ## Códigos de tipo observados
 
 ✅ Frecuencia real en `CADe_S1`:
