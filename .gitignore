@@ -1,0 +1,15 @@
+# Local toolchain (Ghidra + JDK links). Never commit ~875MB of binaries.
+tools/
+
+# Reverse-engineering targets: proprietary third-party software, never commit.
+data/
+
+# Virtual machines (if we ever create one)
+vm/
+
+# REA analysis output
+*.rea.backup
+evidence/
+
+# macOS
+.DS_Store
