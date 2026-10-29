@@ -99,13 +99,13 @@ v1 usable: **6-8 semanas** de trabajo part-time. La fase 3 es la que define el p
 - [ ] T0.4 Spike de interacción de cables
 - [ ] T0.5 Alcance de simulación v1 cerrado
 
-### Fase 1 — Fundaciones (4/5)
+### Fase 1 — Fundaciones (5/5)
 
 - [x] T1.1 Repo, TypeScript, `node:test` — falta lint y CI
-- [ ] T1.2 Modelo de dominio
+- [x] T1.2 Modelo de dominio `Project → Sheet → Component → Pin → Wire` (`app/src/model/project.ts`)
 - [x] T1.3 Parser con golden files reales
 - [x] T1.4 Writer con round-trip byte a byte
-- [ ] T1.5 Registro de componentes (los registros opacos ya se preservan; falta la tabla)
+- [x] T1.5 Registro de componentes con fallback opaco
 
 ### Limitación abierta
 
