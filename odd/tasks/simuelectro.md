@@ -82,7 +82,31 @@ Temporizadores (a la conexión/desconexión), PLC S7 y Modbus, Arduino, neumáti
 
 v1 usable: **6-8 semanas** de trabajo part-time. La fase 3 es la que define el producto; la 4 es la que más incógnitas tiene.
 
-## Decisiones abiertas
+## Decisiones tomadas
 
-1. Stack: TypeScript + Vite + React + SVG/Canvas, empaquetado con Tauri (recomendado).
-2. Alcance exacto de simulación v1.
+1. ✅ Stack: TypeScript (Node 24 nativo) + Vite + React + SVG, empaquetado con Tauri.
+2. ✅ Núcleo sin dependencias; tests con `node:test`.
+3. ✅ Round-trip lossless como garantía central del parser.
+4. ⬜ Alcance exacto de simulación v1.
+
+## Estado al 2026-10-29
+
+### Fase 0 — Reconocimiento (3/5)
+
+- [x] T0.1 Inventario de `.cade` reales — 2 archivos, insuficiente para cerrar la tabla
+- [ ] T0.2 Tabla de componentes desde el binario — región de strings localizada, vínculo código→nombre pendiente
+- [x] T0.3 Gramática `.cade` documentada en `docs/cade-format.md`
+- [ ] T0.4 Spike de interacción de cables
+- [ ] T0.5 Alcance de simulación v1 cerrado
+
+### Fase 1 — Fundaciones (4/5)
+
+- [x] T1.1 Repo, TypeScript, `node:test` — falta lint y CI
+- [ ] T1.2 Modelo de dominio
+- [x] T1.3 Parser con golden files reales
+- [x] T1.4 Writer con round-trip byte a byte
+- [ ] T1.5 Registro de componentes (los registros opacos ya se preservan; falta la tabla)
+
+### Limitación abierta
+
+2 de 161 registros mal delimitados en `inversion-giro-cej.cade` (códigos `0` y `5`). Se reportan vía `layouts`, no se ocultan.

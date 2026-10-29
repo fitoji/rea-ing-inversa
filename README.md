@@ -8,18 +8,57 @@ CADe_SIMU es freeware cerrado, escrito en MFC 4.2 sobre Visual C++ 6 a partir de
 
 Este proyecto **no** intenta decompilar ni reconstruir CADe_SIMU. Lo reimplementa: lee sus archivos, los simula y ofrece una experiencia de edición moderna. Al ser código propio, se puede modificar sin límites.
 
-## Estado
+## Roadmap
 
-| Fase | Estado |
-|---|---|
-| 0 — Reconocimiento del formato | 🟡 parcial |
-| 1 — Parser y round-trip | 🟢 parser listo, 12 tests |
-| 2 — Render e interacción | ⚪ no iniciado |
-| 3 — Manejo de cables | ⚪ no iniciado |
-| 4 — Simulación | ⚪ no iniciado |
-| 5 — Producto | ⚪ no iniciado |
+**v1 = app funcional** al cerrar la Fase 5: abre, edita y simula `.cade`, y se instala en macOS y Windows.
 
-Plan completo y tareas: [`odd/tasks/simuelectro.md`](odd/tasks/simuelectro.md).
+```
+M1 ──────────● M2 ──────── M3 ──────── M4 ──────── M5
+abrir/guardar   ver/dibujar  editar      simular      producto
+   ▲
+   estamos acá (M1 cerrado, entrando a Fase 1)
+```
+
+| Fase | Objetivo | Entregable que lo prueba | Estado |
+|---|---|---|---|
+| **0 — Reconocimiento** | entender el formato y el binario | tabla de códigos + gramática | 🟡 3/5 |
+| **1 — Parser** | abrir y guardar sin pérdida | round-trip byte a byte | 🟢 4/5 |
+| **2 — Render** | ver y dibujar el esquema | esquema en pantalla con zoom y símbolos | ⚪ 0/5 |
+| **3 — Cables** | editar cables como en 2026 | arrastrar extremo con auto-ruteo | ⚪ 0/6 |
+| **4 — Simulación** | que el circuito funcione | arranque directo e inversión de giro | ⚪ 0/4 |
+| **5 — Producto** | que se pueda usar a diario | instalador macOS + Windows | ⚪ 0/4 |
+
+### Hitos
+
+| Hito | Significa | Estado |
+|---|---|---|
+| **M1** | Abrir un `.cade` y guardarlo idéntico | ✅ |
+| **M2** | Verlo dibujado y poder mover componentes | ⬜ |
+| **M3** | Editar cables con ruteo moderno | ⬜ |
+| **M4** | Simular el circuito | ⬜ |
+| **M5** | Instalarlo en la máquina y usarlo | ⬜ |
+
+### Dónde estamos
+
+Fecha: 2026-10-29 · rama `feat/simuelectro`
+
+**Hecho**
+- ✅ Parser `.cade`/`.cad` con round-trip byte a byte (12 tests, 2 archivos reales).
+- ✅ Inventario de códigos con designadores y detección de layouts inesperados.
+- ✅ Gramática documentada, incluidas las correcciones de hipótesis falsas.
+- ✅ 8 códigos de componente verificados contra archivos reales.
+
+**En curso (Fase 0 y 1)**
+- 🟡 Tabla de códigos completa: faltan muestras o análisis del binario (T0.2).
+- 🟡 Modelo de dominio `Project → Sheet → Component → Pin → Wire` (T1.2).
+- 🟡 Registro de componentes con fallback opaco (T1.5).
+
+**Siguiente**
+1. Conseguir 3-5 archivos `.cade` más y cerrar la tabla de códigos.
+2. Modelo de dominio + tests.
+3. Spike de interacción de cables (T0.4) antes de comprometerse con la UI.
+
+Plan detallado con todas las tareas: [`odd/tasks/simuelectro.md`](odd/tasks/simuelectro.md).
 
 ## Stack
 
