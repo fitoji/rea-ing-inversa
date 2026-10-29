@@ -96,7 +96,7 @@ v1 usable: **6-8 semanas** de trabajo part-time. La fase 3 es la que define el p
 - [x] T0.1 Inventario de `.cade` reales — 2 archivos, insuficiente para cerrar la tabla
 - [ ] T0.2 Tabla de componentes desde el binario — región de strings localizada, vínculo código→nombre pendiente
 - [x] T0.3 Gramática `.cade` documentada en `docs/cade-format.md`
-- [ ] T0.4 Spike de interacción de cables
+- [~] T0.4 Spike de interacción de cables — entregado en `app/spike/wires.html`, pendiente de evaluación visual
 - [ ] T0.5 Alcance de simulación v1 cerrado
 
 ### Fase 1 — Fundaciones (5/5)
