@@ -81,7 +81,12 @@ export function parse(text: string): CadeDocument {
     candidates.push({ at: m.index!, id: Number(m[1]), code: Number(m[2]) });
   }
 
-  const starts = longestIncreasing(candidates);
+  // Invariante verificada en las tres muestras: el primer registro empieza
+  // exactamente donde termina el magic. Anclarlo evita que un `...*0*0#` de la
+  // geometría empate en longitud con la cadena real y se lleve el primer lugar.
+  const anchored = candidates.find((c) => c.at === 0);
+  const pool = anchored ? candidates.filter((c) => c.at > 0 && c.id > anchored.id) : candidates;
+  const starts = anchored ? [anchored, ...longestIncreasing(pool)] : longestIncreasing(pool);
   const prefix = body.slice(0, starts[0]?.at ?? body.length);
 
   const records: CadeRecord[] = starts.map((s, i) => {

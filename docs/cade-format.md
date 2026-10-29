@@ -45,9 +45,14 @@ Ejemplo (contactor `-KM1`, tipo `2001`):
 
 ## Discriminación de registros
 
-✅ Un registro empieza en `*<id>*<código>#`, pero el mismo patrón aparece en la cola de la geometría (`...*4*5#`). Discriminante verificado: **los ids son estrictamente crecientes**, así que la subsecuencia creciente más larga sobre los candidatos identifica los registros reales. El parser del repo lo implementa así (`app/src/format/cade.ts`).
+✅ Un registro empieza en `*<id>*<código>#`, pero el mismo patrón aparece en la cola de la geometría (`...*4*5#`). Dos invariantes verificadas en las tres muestras:
 
-⚠️ Limitación conocida: en `inversion-giro-cej.cade` quedan 2 registros de 161 mal delimitados (códigos `0` y `5`). El inventario los expone vía `layouts` en vez de esconderlos.
+1. **El primer registro empieza exactamente donde termina el magic** (prefijo de 0 bytes). Anclarlo evita que un `...*0*0#` de la geometría empate en longitud con la cadena real y se lleve el primer lugar — bug real que apareció con `ej0def.cad`, donde el primer id es 25 y la geometría termina en `*0*0#`.
+2. **Los ids son estrictamente crecientes**, así que la subsecuencia creciente más larga sobre los candidatos restantes identifica los registros reales.
+
+Implementado en `app/src/format/cade.ts`.
+
+⚠️ Limitación conocida: en `inversion-giro-cej.cade` queda 1 registro de 161 mal delimitado (código `5`, layout de 2 campos). El inventario lo expone vía `layouts` en vez de esconderlo.
 
 ## Código 8: etiquetas de texto
 
@@ -90,6 +95,17 @@ Es la razón por la que un parser que divide por `#` falla: la frontera del regi
 | 6007 | `RELE` | relé térmico |
 | 3005 | `-X` | bornera / borne de paso |
 
+## Códigos nuevos (tercer archivo, `ej0def.cad`)
+
+| Código | Designador | Interpretación |
+|---|---|---|
+| 4019 | (sin designador) ×8 | **variante de cable**: misma geometría `x1,y1,x2,y2` que 4000, con un flag distinto en el campo 21 |
+| 6001 | `-F`, bornes `1 3 2 4` | dispositivo de 4 bornes (contacto o seccionador) |
+| 8018 | `-F`, bornes `95 97 96 98` | dispositivo de 4 bornes con numeración de auxiliar |
+| 8000 / 8001 | `-S`, bornes `13/14` y `11/12` | pulsadores NA / NC |
+
+✅ Confirmado en este archivo: los designadores son **texto libre**. Aparece `KM1` sin guion y `-M` sin número, lo que rompe cualquier supuesto de etiqueta normalizada.
+
 ## Bloque de hoja
 
 ✅ `20000#XXX` + campos de texto libre con fecha (`04-Feb-2024`) y nombre de hoja (`CADe_S1`), delimitados por marcadores `$$$` y `&&&`.
@@ -102,10 +118,11 @@ Es la razón por la que un parser que divide por `#` falla: la frontera del regi
 
 ## Archivos analizados
 
-| Archivo | Tamaño | Segmentos `#` | Origen |
-|---|---|---|---|
-| `CADe_S1` | 12,6 KB | 1829 | instalación local (inversión de giro con PLC) |
-| `arranque-paro-motor-3f.cad` | 3,5 KB | 474 | repositorio CURSO-CADE-SIMU (arranque-paro 3F) |
+| Archivo | Tamaño | Segmentos `#` | Registros | Origen |
+|---|---|---|---|---|
+| `CADe_S1` | 12,6 KB | 1829 | 161 | instalación local (inversión de giro con PLC) |
+| `arranque-paro-motor-3f.cad` | 3,5 KB | 474 | 43 | repositorio CURSO-CADE-SIMU (arranque-paro 3F) |
+| `ej0def.cad` | 2,5 KB | — | 31 | muestra aportada (primer id = 25) |
 
 ## Nombres de componente en el binario
 

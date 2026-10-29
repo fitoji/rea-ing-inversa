@@ -18,10 +18,11 @@ for (const name of fixtures()) {
     assert.equal(serialize(parse(text)), text);
   });
 
-  test(`${name}: magic detectado y primer registro en el offset del prefijo`, () => {
+  test(`${name}: magic detectado y primer registro anclado al magic`, () => {
     const doc = parse(text);
     assert.equal(doc.hasMagic, true);
-    assert.equal(doc.records[0].at, doc.prefix.length);
+    assert.equal(doc.prefix, '', 'el primer registro debe empezar donde termina el magic');
+    assert.equal(doc.records[0].at, 0);
   });
 
   test(`${name}: registros contiguos y cubren todo el archivo`, () => {
@@ -60,6 +61,27 @@ test('arranque-paro: designadores por código (evidencia verificada)', () => {
   assert.deepEqual(byCode.get(7000)?.designators, ['-KM1']);
   assert.deepEqual(byCode.get(8000)?.designators, ['STAR']);
   assert.deepEqual(byCode.get(8001)?.designators, ['PARO']);
+});
+
+test('ej0def: designadores por código (evidencia verificada)', () => {
+  const doc = parse(readFileSync(join(FIXTURES, 'ej0def.cad'), 'latin1'));
+  const byCode = new Map(codeInventory(doc).map((s) => [s.code, s]));
+
+  assert.deepEqual(byCode.get(1000)?.designators, ['-M']);
+  assert.deepEqual(byCode.get(2001)?.designators, ['KM1']); // sin guion: designador libre
+  assert.deepEqual(byCode.get(3005)?.designators, ['-X']);
+  assert.deepEqual(byCode.get(6001)?.designators, ['-F']);
+  assert.deepEqual(byCode.get(6009)?.designators, ['Q1']);
+  assert.deepEqual(byCode.get(8018)?.designators, ['-F']);
+  assert.deepEqual(byCode.get(8000)?.designators, ['-S']);
+});
+
+test('ej0def: primer registro es el id 25, no un 0 de la geometría', () => {
+  const doc = parse(readFileSync(join(FIXTURES, 'ej0def.cad'), 'latin1'));
+  assert.equal(doc.records[0].id, 25);
+  assert.equal(doc.records[0].code, 3005);
+  const codes = codeInventory(doc).map((s) => s.code);
+  assert.equal(codes.includes(0), false, 'código 0 espurio');
 });
 
 test('arranque-paro: no hay códigos basura de cola de geometría', () => {
