@@ -52,6 +52,8 @@ export interface Netlist {
   devices: Device[];
   /** net -> ids de registro que la tocan */
   members: Map<number, Set<number>>;
+  /** id de registro -> nets que toca (tramos y uniones incluidos) */
+  recordNets: Map<number, number[]>;
 }
 
 /** Normaliza el designador para agrupar partes del mismo aparato. */
@@ -163,6 +165,14 @@ export function buildNetlist(records: CadeRecordModel[]): Netlist {
 
   const devices: Device[] = [];
   const members = new Map<number, Set<number>>();
+  const recordNets = new Map<number, number[]>();
+
+  for (const rec of records) {
+    if (rec.kind !== 'connection') continue;
+    const pts = wirePointsOf(rec);
+    if (!pts) continue;
+    recordNets.set(rec.id, [netOf(pts.x1, pts.y1), netOf(pts.x2, pts.y2)]);
+  }
 
   for (const rec of records) {
     if (rec.kind !== 'component') continue;
@@ -188,5 +198,13 @@ export function buildNetlist(records: CadeRecordModel[]): Netlist {
     });
   }
 
-  return { sizes, devices, members };
+  return { sizes, devices, members, recordNets };
+}
+
+function wirePointsOf(rec: CadeRecordModel): { x1: number; y1: number; x2: number; y2: number } | null {
+  const g = rec.geometry;
+  if (g.length < 12) return null;
+  const pts = { x1: g[8]!, y1: g[9]!, x2: g[10]!, y2: g[11]! };
+  if (pts.x1 === pts.x2 && pts.y1 === pts.y2) return null;
+  return pts;
 }

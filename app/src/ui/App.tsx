@@ -11,6 +11,7 @@ import {
   rotateSelection,
   setDesignator,
   setCableNumber,
+  setSupply,
   insertVertex,
   deleteVertex,
   selectVertex,
@@ -292,6 +293,8 @@ export function App(): JSX.Element {
         onRotate={() => setState(rotateSelection(state))}
         onDelete={() => setState(deleteSelection(state))}
         onCableNumber={(ids, n) => setState(setCableNumber(state, ids, n))}
+        supply={state.supply}
+        onSetSupply={(which, id) => setState((s) => (s ? setSupply(s, which, id) : s))}
         onAddJunction={(x, y) => setState(addJunction(state, x, y, JUNCTION_TEMPLATE ?? undefined))}
       />
 
@@ -303,6 +306,11 @@ export function App(): JSX.Element {
         <span>{wireCount} cables</span>
         <span>{project.sheets.length} hoja{project.sheets.length === 1 ? '' : 's'}</span>
         <span className="spacer" style={{ flex: 1 }} />
+        {state.supply.phase !== null && state.supply.neutral !== null ? (
+          <span>alimentación indicada</span>
+        ) : (
+          <span>marcá un cable como fase y otro como neutro para simular</span>
+        )}
         {findings.length > 0 && <span className="err">{findings.length} aviso{findings.length === 1 ? '' : 's'}</span>}
         {state.selection.length > 0 && <span>{state.selection.length} seleccionados</span>}
         <span>{Math.round(zoom * 100)}%</span>

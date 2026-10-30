@@ -18,6 +18,8 @@ interface Props {
   onAddJunction: (x: number, y: number) => void;
   vertex: Point | null;
   onDeleteVertex: () => void;
+  supply: { phase: number | null; neutral: number | null };
+  onSetSupply: (which: 'phase' | 'neutral', recordId: number) => void;
 }
 
 export function Inspector(props: Props): JSX.Element {
@@ -137,6 +139,8 @@ function Single({
   onDelete,
   onCableNumber,
   onAddJunction,
+  supply,
+  onSetSupply,
   vertexBlock,
 }: Props & { rec: CadeRecordModel; vertexBlock: JSX.Element | null }): JSX.Element {
   const [draft, setDraft] = useState(rec.designator);
@@ -216,7 +220,16 @@ function Single({
           )}
         </>
       ) : (
-        <CablePanel rec={rec} network={network} onDelete={onDelete} onCableNumber={onCableNumber} cableDraft={cableDraft} setCableDraft={setCableDraft} />
+        <CablePanel
+          rec={rec}
+          network={network}
+          onDelete={onDelete}
+          onCableNumber={onCableNumber}
+          cableDraft={cableDraft}
+          setCableDraft={setCableDraft}
+          supply={supply}
+          onSetSupply={onSetSupply}
+        />
       )}
 
       <Findings findings={findings} onAddJunction={onAddJunction} />
@@ -231,6 +244,8 @@ function CablePanel({
   onCableNumber,
   cableDraft,
   setCableDraft,
+  supply,
+  onSetSupply,
 }: {
   rec: CadeRecordModel;
   network: Network;
@@ -238,6 +253,8 @@ function CablePanel({
   onCableNumber: (ids: number[], value: number) => void;
   cableDraft: string;
   setCableDraft: (v: string) => void;
+  supply: { phase: number | null; neutral: number | null };
+  onSetSupply: (which: 'phase' | 'neutral', recordId: number) => void;
 }): JSX.Element {
   const pts = wirePoints(rec);
   const segments = cableSegments(network, rec.id);
@@ -303,6 +320,28 @@ function CablePanel({
       <div className="note" style={{ background: '#101820', borderColor: '#243240', color: '#8fa6c0' }}>
         Arrastrá un cuadrado azul para mover ese vértice. Un clic lo enfoca y <b>⌫</b> lo elimina sin borrar el cable.
       </div>
+
+      {!isJunction && (
+        <>
+          <div className="section-label">Alimentación</div>
+          <div style={{ display: 'flex', gap: 6, padding: '0 12px 10px' }}>
+            <button
+              className={supply.phase === rec.id ? 'btn on' : 'btn'}
+              onClick={() => onSetSupply('phase', rec.id)}
+              title="La red de este cable es la fase"
+            >
+              Fase
+            </button>
+            <button
+              className={supply.neutral === rec.id ? 'btn on' : 'btn'}
+              onClick={() => onSetSupply('neutral', rec.id)}
+              title="La red de este cable es el neutro"
+            >
+              Neutro
+            </button>
+          </div>
+        </>
+      )}
 
       <div style={{ display: 'flex', gap: 6, padding: '0 12px' }}>
         <button className="btn" onClick={onDelete}>
