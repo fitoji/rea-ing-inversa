@@ -13,17 +13,17 @@ Este proyecto **no** intenta decompilar ni reconstruir CADe_SIMU. Lo reimplement
 **v1 = app funcional** al cerrar la Fase 5: abre, edita y simula `.cade`, y se instala en macOS y Windows.
 
 ```
-M1 ──────────● M2 ──────── M3 ──────── M4 ──────── M5
+M1 ──────────● M2 ────────● M3 ──────── M4 ──────── M5
 abrir/guardar   ver/dibujar  editar      simular      producto
-   ▲
-   estamos acá (M1 cerrado, entrando a Fase 1)
+                            ▲
+                            estamos acá (M1 y M2 cerrados, entrando a Fase 3)
 ```
 
 | Fase | Objetivo | Entregable que lo prueba | Estado |
 |---|---|---|---|
-| **0 — Reconocimiento** | entender el formato y el binario | tabla de códigos + gramática | 🟡 3/5 |
-| **1 — Parser** | abrir y guardar sin pérdida | round-trip byte a byte | 🟢 4/5 |
-| **2 — Render** | ver y dibujar el esquema | esquema en pantalla con zoom y símbolos | ⚪ 0/5 |
+| **0 — Reconocimiento** | entender el formato y el binario | tabla de códigos + gramática | 🟡 4/5 |
+| **1 — Parser** | abrir y guardar sin pérdida | round-trip byte a byte | 🟢 5/5 |
+| **2 — Render** | ver y dibujar el esquema | esquema en pantalla con zoom y símbolos | 🟢 5/5 |
 | **3 — Cables** | editar cables como en 2026 | arrastrar extremo con auto-ruteo | ⚪ 0/6 |
 | **4 — Simulación** | que el circuito funcione | arranque directo e inversión de giro | ⚪ 0/4 |
 | **5 — Producto** | que se pueda usar a diario | instalador macOS + Windows | ⚪ 0/4 |
@@ -33,30 +33,35 @@ abrir/guardar   ver/dibujar  editar      simular      producto
 | Hito | Significa | Estado |
 |---|---|---|
 | **M1** | Abrir un `.cade` y guardarlo idéntico | ✅ |
-| **M2** | Verlo dibujado y poder mover componentes | ⬜ |
+| **M2** | Verlo dibujado y poder mover componentes | ✅ |
 | **M3** | Editar cables con ruteo moderno | ⬜ |
 | **M4** | Simular el circuito | ⬜ |
 | **M5** | Instalarlo en la máquina y usarlo | ⬜ |
 
 ### Dónde estamos
 
-Fecha: 2026-10-29 · rama `feat/simuelectro`
+Fecha: 2026-10-30 · rama `feat/simuelectro`
 
 **Hecho**
-- ✅ Parser `.cade`/`.cad` con round-trip byte a byte (12 tests, 2 archivos reales).
-- ✅ Inventario de códigos con designadores y detección de layouts inesperados.
-- ✅ Gramática documentada, incluidas las correcciones de hipótesis falsas.
-- ✅ 8 códigos de componente verificados contra archivos reales.
+- ✅ Parser `.cade`/`.cad` con round-trip byte a byte (61 tests, 3 archivos reales).
+- ✅ Modelo de dominio `Project → Sheet → Component → Pin → Wire`.
+- ✅ Editor con undo/redo, multi-selección, copiar/pegar y borrar sobre el texto.
+- ✅ Librería de símbolos IEC 60617: 22 códigos con símbolo dedicado y fallback rotulado.
+- ✅ App Vite + React + SVG corriendo: paleta, lienzo con zoom/pan/grilla/snap, inspector.
+- ✅ Pines derivados del archivo: cada borne dibujado es un extremo de cable real.
 
-**En curso (Fase 0 y 1)**
+**En curso (Fase 3)**
+- 🟡 Unión pin↔cable real (hoy es por proximidad geométrica).
 - 🟡 Tabla de códigos completa: faltan muestras o análisis del binario (T0.2).
-- 🟡 Modelo de dominio `Project → Sheet → Component → Pin → Wire` (T1.2).
-- 🟡 Registro de componentes con fallback opaco (T1.5).
+
+**Limitaciones declaradas**
+- La rotación es visual: el formato no expuso el campo de orientación.
+- Los registros nuevos se agregan al final porque los ids deben ser estrictamente crecientes.
+- 1 de 161 registros sigue mal delimitado en `inversion-giro-cej.cade`.
 
 **Siguiente**
-1. Conseguir 3-5 archivos `.cade` más y cerrar la tabla de códigos.
-2. Modelo de dominio + tests.
-3. Spike de interacción de cables (T0.4) antes de comprometerse con la UI.
+1. Fase 3: modelo de cable por segmentos con puntos de control y arrastre de extremos.
+2. Cerrar la tabla de códigos con más muestras.
 
 Plan detallado con todas las tareas: [`odd/tasks/simuelectro.md`](odd/tasks/simuelectro.md).
 
@@ -70,9 +75,11 @@ Plan detallado con todas las tareas: [`odd/tasks/simuelectro.md`](odd/tasks/simu
 
 ```bash
 cd app
+npm install
 
-# tests
-node --test
+npm run dev     # abre la app en http://localhost:5187
+npm test        # 61 tests sobre tres archivos reales
+npm run build   # typecheck + bundle de producción
 
 # inventario de códigos de un archivo
 node src/report.ts test/fixtures/arranque-paro-motor-3f.cad
@@ -84,11 +91,17 @@ Salida del inventario: cada código con su frecuencia, los designadores observad
 
 ```
 app/
-  src/format/cade.ts   parser + serializador + inventario
-  src/report.ts        CLI de inventario
-  test/                tests y fixtures reales
-docs/cade-format.md    gramática del formato, verificado vs. hipótesis
-odd/tasks/             plan de construcción por fases
+  src/format/cade.ts       parser + serializador + inventario (sin dependencias)
+  src/model/project.ts     modelo de dominio y edición de registros
+  src/editor/state.ts      estado del editor: undo/redo, selección, clipboard
+  src/editor/pins.ts       bornes derivados de los extremos de cable
+  src/symbols/library.ts   símbolos IEC 60617 en SVG
+  src/symbols/templates.ts plantillas crudas por código (generadas)
+  src/ui/                  app React: canvas, paleta, inspector
+  src/report.ts            CLI de inventario
+  test/                    tests y fixtures reales
+docs/cade-format.md        gramática del formato, verificado vs. hipótesis
+odd/tasks/                 plan de construcción por fases
 ```
 
 ## El formato, en cuatro ideas

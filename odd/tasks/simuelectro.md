@@ -9,6 +9,8 @@ Objetivo: simulador eléctrico con manejo de cables moderno, que abra y ejecute 
 - **S3** — Simular lógica de contactores: bobinas, contactos NA/NC, pulsadores, selectores, lámparas, fusibles, relé térmico y motor como carga.
 - **S4** — Guardar en `.cade` (compatible) y exportar PDF/PNG.
 - **S5** — App nativa de escritorio para macOS y Windows.
+- **S6** — Los bornes que se dibujan son los que el archivo declara: se derivan de los extremos de cable que caen sobre el borde de la caja, nunca de una geometría inventada. Un componente sin cables no muestra pines.
+- **S7** — Toda edición es un texto nuevo derivado del anterior, y el estado del editor (undo/redo, selección) se sostiene sobre ese texto. Ninguna operación puede inventar campos que el archivo no tenía.
 - **Out of scope v1**: PLC Siemens/Modbus, Arduino, neumática, imágenes 3D, temporizadores.
 
 ## Fases y tareas
@@ -110,3 +112,26 @@ v1 usable: **6-8 semanas** de trabajo part-time. La fase 3 es la que define el p
 ### Limitación abierta
 
 2 de 161 registros mal delimitados en `inversion-giro-cej.cade` (códigos `0` y `5`). Se reportan vía `layouts`, no se ocultan.
+
+## Estado al 2026-10-30
+
+### Fase 2 — Render e interacción base (5/5)
+
+- [x] T2.1 Canvas con zoom, pan, grilla y snap (`app/src/ui/Canvas.tsx`)
+- [x] T2.2 Librería de símbolos IEC 60617 en SVG (`app/src/symbols/library.ts`) — 22 códigos con símbolo dedicado y fallback rotulado
+- [x] T2.3 Colocar, seleccionar, mover, rotar, borrar — rotación visual, no persistida
+- [x] T2.4 Undo/redo transaccional sobre el texto (`app/src/editor/state.ts`)
+- [x] T2.5 Copiar/pegar y multi-selección (shift-clic y lazo)
+- [x] Extra: pines derivados del archivo (`app/src/editor/pins.ts`) — cierra el hueco del spike
+
+**Deuda declarada de la fase:**
+
+- La rotación es visual: el formato no expuso aún el campo de orientación. Se avisa en el inspector.
+- Los registros nuevos (colocar/pegar) se agregan al final del archivo porque los ids deben ser estrictamente crecientes; quedan en la última hoja.
+- La unión cable↔componente es por proximidad geométrica; el vínculo pin-a-pin real es T3.2.
+
+## Log
+
+- **L1** — «falta bastante la ui se ve muy rustica, pasemos a face 2». Autoriza Fase 2 completa.
+- **L2** — Hallazgo: los extremos de cable caen exactamente sobre el borde de la caja del componente, en múltiplos de 6 unidades. El motor del arranque tiene 4 bornes sobre el borde superior en `x+0, +6, +12, +18`; los dispositivos de dos bornes los tienen sobre el borde izquierdo a `y` y `y+12`. Los pines que se dibujan salen de ahí, no de la librería.
+- **L3** — Hallazgo: la cola de la geometría puede imitar una cabecera de registro (`*15*16#` al final del registro del motor). Parsear un registro suelto sólo es fiable modelando el raw completo; `withId`/`withPosition` deben partir del fragmento entero.

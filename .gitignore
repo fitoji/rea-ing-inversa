@@ -13,3 +13,8 @@ evidence/
 
 # macOS
 .DS_Store
+
+# Dependencias y artefactos de build
+node_modules/
+dist/
+*.tsbuildinfo
