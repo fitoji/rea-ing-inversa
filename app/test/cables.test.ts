@@ -22,6 +22,8 @@ import {
   mergeVertex,
   setCableNumber,
   addJunction,
+  moveVertex,
+  bendCable,
   undo,
   deleteSelection,
 } from '../src/editor/state.ts';
@@ -263,4 +265,153 @@ test('un codo en diagonal produce un tramo vertical y otro horizontal', () => {
     return p.x1 === p.x2 ? 'vertical' : 'horizontal';
   });
   assert.deepEqual(shapes.sort(), ['horizontal', 'vertical']);
+});
+
+// --- mover vértices ----------------------------------------------------------
+
+function orphanCount(records: Parameters<typeof buildNetwork>[0]): number {
+  const net = buildNetwork(records);
+  return [...net.nodes.values()].filter(
+    (n) => n.ends.length === 1 && n.through.length === 0 && !n.pin && !n.junction,
+  ).length;
+}
+
+/** El cable vertical largo (48,66)-(48,150): el caso real de un vértice interior. */
+function longWire() {
+  return project()
+    .records.filter((r) => r.kind === 'connection')
+    .map((r) => ({ r, p: wirePoints(r)! }))
+    .filter(({ p }) => p && Math.abs(p.x1 - p.x2) < 0.01 && Math.abs(p.y2 - p.y1) > 40)
+    .sort((a, b) => Math.abs(b.p.y2 - b.p.y1) - Math.abs(a.p.y2 - a.p.y1))[0]!.r;
+}
+
+test('mover un vértice interior mantiene los dos tramos enganchados', () => {
+  const wire = longWire();
+  const pts = wirePoints(wire)!;
+  const mid = (pts.y1 + pts.y2) / 2;
+
+  let s = createEditor(ARRANQUE);
+  s = insertVertex(s, wire.id, pts.x1, mid);
+  const orphansBefore = orphanCount(projectOf(s).records);
+
+  const to = { x: pts.x1 + 9, y: mid + 6 };
+  s = moveVertex(s, { x: pts.x1, y: mid }, to);
+
+  const net = buildNetwork(projectOf(s).records);
+  const node = net.nodes.get(`${to.x},${to.y}`);
+  assert.ok(node, 'el vértice debe existir en el destino');
+  assert.ok(node.ends.length + node.through.length >= 2, 'el vértice debe seguir uniendo los tramos');
+  assert.equal(orphanCount(projectOf(s).records), orphansBefore, 'no deben aparecer extremos sueltos');
+});
+
+test('mover el codo del cable 17 conserva el número y la continuidad', () => {
+  const cornersBefore = buildNetwork(project().records).cables.get(17)!.length;
+
+  let s = createEditor(ARRANQUE);
+  s = moveVertex(s, { x: 144, y: 162 }, { x: 150, y: 168 });
+
+  const net = buildNetwork(projectOf(s).records);
+  const node = net.nodes.get('150,168');
+  assert.ok(node && node.ends.length + node.through.length >= 2, 'el codo movido sigue uniendo');
+
+  const cable = net.cables.get(17)!;
+  assert.ok(cable.length >= cornersBefore, 'los tramos nuevos heredan el número de cable');
+  for (const id of cable) {
+    const seg = net.segments.get(id)!;
+    assert.ok(
+      Math.abs(seg.points.x1 - seg.points.x2) < 0.01 || Math.abs(seg.points.y1 - seg.points.y2) < 0.01,
+      `el tramo ${id} quedó diagonal`,
+    );
+  }
+});
+
+test('mover un vértice es una sola operación de deshacer', () => {
+  let s = createEditor(ARRANQUE);
+  s = moveVertex(s, { x: 144, y: 162 }, { x: 150, y: 168 });
+  assert.notEqual(s.text, ARRANQUE);
+  s = undo(s);
+  assert.equal(s.text, ARRANQUE);
+});
+
+test('mover un vértice lejos de todo no toca los componentes', () => {
+  let s = createEditor(ARRANQUE);
+  s = moveVertex(s, { x: 144, y: 162 }, { x: 150, y: 168 });
+  const before = project().records.filter((r) => r.kind === 'component');
+  const after = projectOf(s).records.filter((r) => r.kind === 'component');
+  before.forEach((r, i) => assert.equal(after[i]!.raw, r.raw));
+});
+
+test('mover un vértice colineal produce una Z, sin tramos duplicados', () => {
+  const wire = longWire();
+  const pts = wirePoints(wire)!;
+  const mid = (pts.y1 + pts.y2) / 2;
+  const to = { x: pts.x1 + 9, y: mid + 6 };
+
+  let s = createEditor(ARRANQUE);
+  s = insertVertex(s, wire.id, pts.x1, mid);
+  s = moveVertex(s, { x: pts.x1, y: mid }, to);
+
+  const net = buildNetwork(projectOf(s).records);
+  const cable = net.cables.get(cableNumberOf(wire))!;
+  assert.equal(cable.length, 4, 'una Z son cuatro tramos: dos originales y dos del codo');
+
+  const signatures = new Set<string>();
+  for (const id of cable) {
+    const seg = net.segments.get(id)!;
+    assert.ok(
+      Math.abs(seg.points.x1 - seg.points.x2) < 0.01 || Math.abs(seg.points.y1 - seg.points.y2) < 0.01,
+      `el tramo ${id} quedó diagonal`,
+    );
+    const a = [seg.points.x1, seg.points.y1];
+    const b = [seg.points.x2, seg.points.y2];
+    const key = JSON.stringify([a, b].sort());
+    assert.equal(signatures.has(key), false, `tramo duplicado en el cable: ${key}`);
+    signatures.add(key);
+  }
+
+  const node = net.nodes.get(`${to.x},${to.y}`);
+  assert.ok(node, 'el vértice movido debe existir');
+  assert.equal(node.ends.length + node.through.length, 2, 'el vértice une exactamente dos tramos');
+});
+
+test('si el vértice cae alineado con un extremo, degenera en L sin duplicar', () => {
+  const wire = project().records.find((r) => r.code === 4000 && r.geometry[21] === 1)!;
+  const pts = wirePoints(wire)!;
+  const mid = (pts.y1 + pts.y2) / 2;
+
+  let s = createEditor(ARRANQUE);
+  s = insertVertex(s, wire.id, pts.x1, mid);
+  s = moveVertex(s, { x: pts.x1, y: mid }, { x: pts.x1 + 9, y: pts.y2 });
+
+  const net = buildNetwork(projectOf(s).records);
+  const cable = net.cables.get(cableNumberOf(wire))!;
+  const signatures = new Set<string>();
+  for (const id of cable) {
+    const seg = net.segments.get(id)!;
+    const a = [seg.points.x1, seg.points.y1];
+    const b = [seg.points.x2, seg.points.y2];
+    const key = JSON.stringify([a, b].sort());
+    assert.equal(signatures.has(key), false, `tramo duplicado: ${key}`);
+    signatures.add(key);
+  }
+  assert.equal(orphanCount(projectOf(s).records), 0, 'no deben quedar extremos sueltos');
+});
+
+test('arrastrar el cuerpo de un cable inserta un doblez y lo mueve en un solo paso', () => {
+  const wire = longWire();
+  const pts = wirePoints(wire)!;
+  const at = { x: pts.x1, y: (pts.y1 + pts.y2) / 2 };
+  const to = { x: pts.x1 + 12, y: at.y };
+
+  let s = createEditor(ARRANQUE);
+  s = bendCable(s, wire.id, at, to);
+
+  const net = buildNetwork(projectOf(s).records);
+  const node = net.nodes.get(`${to.x},${to.y}`);
+  assert.ok(node, 'el doblez debe quedar en el destino');
+  assert.ok(node.ends.length + node.through.length >= 2, 'el doblez debe unir los tramos');
+  assert.equal(orphanCount(projectOf(s).records), 0, 'no deben quedar extremos sueltos');
+
+  s = undo(s);
+  assert.equal(s.text, ARRANQUE, 'deshacer tiene que volver todo de una');
 });

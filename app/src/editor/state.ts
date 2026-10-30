@@ -26,12 +26,14 @@ import {
   withPosition,
   withWirePoints,
   wirePoints,
+  type WirePoints,
   boundsOf,
   GEOMETRY,
   type CadeRecordModel,
   type Project,
 } from '../model/project.ts';
 import { CABLE_NUMBER_INDEX, buildNetwork, cableNumberOf, cableSegments } from './network.ts';
+import type { Point } from './pins.ts';
 
 export type Rotation = 0 | 90 | 180 | 270;
 
@@ -397,6 +399,118 @@ export function moveEndpoint(state: EditorState, id: number, end: 0 | 1, x: numb
   return commit(state, text, [id, newId]);
 }
 
+/**
+ * Mueve un VÉRTICE de la red, no el extremo de un registro.
+ *
+ * Un vértice interior lo comparten dos tramos. Mover sólo uno los desconecta:
+ * el otro queda clavado en el punto viejo y aparece un tramo suelto, que es
+ * exactamente lo que se ve como "se agregó otro vértice en vez de moverse".
+ *
+ * Acá se mueven todos los extremos que caen en el punto, cada uno conservando
+ * su orientación: si el destino rompe la ortogonalidad, ese tramo se parte en
+ * un codo. Todo entra en una sola operación de deshacer.
+ */
+export function moveVertex(state: EditorState, from: Point, to: Point): EditorState {
+  if (Math.abs(from.x - to.x) < AXIS_TOL && Math.abs(from.y - to.y) < AXIS_TOL) return state;
+  const project = projectOf(state);
+  let id = nextId(project);
+
+  const signature = (a: Point, b: Point): string => {
+    const [p, q] = a.x < b.x || (a.x === b.x && a.y <= b.y) ? [a, b] : [b, a];
+    return `${p.x},${p.y},${q.x},${q.y}`;
+  };
+  const point = (x: number, y: number): Point => ({ x, y });
+
+  interface Built {
+    index: number | null;
+    raw: string;
+    sig: string;
+  }
+  const built: Built[] = [];
+  const used = new Set<string>();
+
+  project.records.forEach((rec, index) => {
+    const pts = wirePoints(rec);
+    if (!pts) return;
+
+    const atA = Math.abs(pts.x1 - from.x) < AXIS_TOL && Math.abs(pts.y1 - from.y) < AXIS_TOL;
+    const atB = Math.abs(pts.x2 - from.x) < AXIS_TOL && Math.abs(pts.y2 - from.y) < AXIS_TOL;
+    if (!atA && !atB) return;
+
+    const fixed = atA ? point(pts.x2, pts.y2) : point(pts.x1, pts.y1);
+    if (Math.abs(fixed.x - to.x) < AXIS_TOL && Math.abs(fixed.y - to.y) < AXIS_TOL) return;
+
+    const wasVertical = Math.abs(pts.x1 - pts.x2) < AXIS_TOL;
+      const pushLeg = (leg: WirePoints, isExtra: boolean): void => {
+      const sig = signature(point(leg.x1, leg.y1), point(leg.x2, leg.y2));
+      if (isExtra && used.has(sig)) return;
+      used.add(sig);
+      if (!isExtra) {
+        built.push({ index, raw: withWirePoints(rec, leg), sig });
+        return;
+      }
+      const clone: CadeRecordModel = { ...rec, id, raw: withId(rec, id), geometry: [...rec.geometry] };
+      built.push({
+        index: null,
+        raw: withWirePoints({ ...clone, raw: withCableNumber(clone, cableNumberOf(rec)) }, leg),
+        sig,
+      });
+      id += 1;
+    };
+
+    if (isOrthogonal(fixed, to)) {
+      pushLeg({ x1: fixed.x, y1: fixed.y, x2: to.x, y2: to.y }, false);
+      return;
+    }
+
+    // Dos codos posibles: el que conserva la orientación del tramo y el otro.
+    // Se prefiere el que no repita un tramo ya generado; sin esto, un vértice
+    // entre dos tramos colineales producía dos tramos idénticos superpuestos.
+    const preferred = wasVertical ? point(fixed.x, to.y) : point(to.x, fixed.y);
+    const alternate = wasVertical ? point(to.x, fixed.y) : point(fixed.x, to.y);
+    let corner: Point | null = null;
+    for (const candidate of [preferred, alternate]) {
+      if (!isOrthogonal(fixed, candidate) || !isOrthogonal(candidate, to)) continue;
+      if (Math.abs(candidate.x - to.x) < AXIS_TOL && Math.abs(candidate.y - to.y) < AXIS_TOL) continue;
+      if (!used.has(signature(candidate, to))) {
+        corner = candidate;
+        break;
+      }
+    }
+    corner ??= preferred;
+    pushLeg({ x1: fixed.x, y1: fixed.y, x2: corner.x, y2: corner.y }, false);
+    pushLeg({ x1: corner.x, y1: corner.y, x2: to.x, y2: to.y }, true);
+  });
+
+  if (built.length === 0) return state;
+
+  // Descarte final: si un tramo quedó idéntico a otro, se elimina el registro
+  // en vez de dejar dos cables superpuestos que CADe_SIMU dibujaría encima.
+  const seen = new Set<string>();
+  const edits = new Map<number, string>();
+  const removed = new Set<number>();
+  const appended: string[] = [];
+  for (const item of built) {
+    if (seen.has(item.sig)) {
+      if (item.index !== null) removed.add(item.index);
+      continue;
+    }
+    seen.add(item.sig);
+    if (item.index === null) appended.push(item.raw);
+    else edits.set(item.index, item.raw);
+  }
+
+  const text =
+    (project.hasMagic ? 'CADe_SIMU' : '') +
+    project.prefix +
+    project.records
+      .filter((_, i) => !removed.has(i))
+      .map((r, i) => edits.get(i) ?? r.raw)
+      .join('') +
+    appended.join('');
+  return commit(state, text);
+}
+
 /** Inserta un vértice partiendo el tramo en dos. */
 export function insertVertex(state: EditorState, id: number, x: number, y: number): EditorState {
   const project = projectOf(state);
@@ -485,10 +599,29 @@ export function addJunction(state: EditorState, x: number, y: number, templateRa
 }
 
 /** Operación de arrastre, para previsualizar y confirmar con el mismo código. */
+/**
+ * Arrastrar el cuerpo de un cable: inserta un vértice en el punto agarrado y lo
+ * mueve con el cursor, en UNA sola operación de deshacer.
+ *
+ * Es la interacción que hace que un cable se sienta un cable: agarrás en
+ * cualquier punto y el cable se dobla ahí. Sin esto, arrastrar el cable no hacía
+ * nada y parecía que la app estaba rota.
+ */
+export function bendCable(state: EditorState, id: number, at: Point, to: Point): EditorState {
+  const inserted = insertVertex({ ...state, past: [], future: [] }, id, at.x, at.y);
+  if (inserted.text === state.text) return state;
+  const moved = moveVertex({ ...inserted, past: [], future: [] }, at, to);
+  if (moved.text === state.text) return state;
+  return commit(state, moved.text);
+}
+
 export type DragOp =
   | { kind: 'move'; dx: number; dy: number }
-  | { kind: 'endpoint'; id: number; end: 0 | 1; x: number; y: number };
+  | { kind: 'vertex'; from: Point; to: Point }
+  | { kind: 'bend'; id: number; at: Point; to: Point };
 
 export function applyDrag(state: EditorState, op: DragOp): EditorState {
-  return op.kind === 'move' ? moveSelection(state, op.dx, op.dy) : moveEndpoint(state, op.id, op.end, op.x, op.y);
+  if (op.kind === 'move') return moveSelection(state, op.dx, op.dy);
+  if (op.kind === 'vertex') return moveVertex(state, op.from, op.to);
+  return bendCable(state, op.id, op.at, op.to);
 }

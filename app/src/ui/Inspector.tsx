@@ -28,7 +28,7 @@ export function Inspector(props: Props): JSX.Element {
           Nada seleccionado.
           <br />
           Clic en un componente o en un cable. <b>Shift</b>+clic suma a la selección; arrastrar sobre el lienzo vacío
-          selecciona varios. <b>Doble clic</b> en un cable agrega un vértice.
+          selecciona varios. <b>Arrastrá un cable</b> para doblarlo; los cuadrados azules son sus vértices.
         </div>
         <Findings findings={findings} onAddJunction={onAddJunction} />
       </aside>
@@ -274,6 +274,11 @@ function CablePanel({
           Este cable son {segments.length} tramos que comparten el número. Cambiar el número los mueve a todos.
         </div>
       )}
+
+      <div className="note" style={{ background: '#101820', borderColor: '#243240', color: '#8fa6c0' }}>
+        Arrastrá cualquiera de los cuadrados azules para mover ese vértice. Un clic sin arrastrar en un vértice
+        interior lo elimina.
+      </div>
 
       <div style={{ display: 'flex', gap: 6, padding: '0 12px' }}>
         <button className="btn" onClick={onDelete}>

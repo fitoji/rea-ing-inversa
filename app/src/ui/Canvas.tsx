@@ -35,7 +35,8 @@ const PIN_SNAP = 6;
 
 type DragState =
   | { kind: 'move'; sx: number; sy: number; moved: boolean }
-  | { kind: 'endpoint'; id: number; end: 0 | 1; sx: number; sy: number; moved: boolean; ox: number; oy: number };
+  | { kind: 'vertex'; from: Point; sx: number; sy: number; moved: boolean }
+  | { kind: 'bend'; id: number; at: Point; sx: number; sy: number; moved: boolean };
 
 export function Canvas(props: Props): JSX.Element {
   const {
@@ -136,6 +137,23 @@ export function Canvas(props: Props): JSX.Element {
   const step = snap ? 3 : 1;
   const snapValue = (n: number): number => Math.round(n / step) * step;
 
+  /** Punto del tramo más cercano al cursor, snapeado y entre los dos extremos. */
+  const bendPoint = useCallback(
+    (rec: CadeRecordModel, world: Point): Point | null => {
+      const pts = wirePoints(rec);
+      if (!pts) return null;
+      const vertical = Math.abs(pts.x1 - pts.x2) < 0.01;
+      const lo = vertical ? Math.min(pts.y1, pts.y2) : Math.min(pts.x1, pts.x2);
+      const hi = vertical ? Math.max(pts.y1, pts.y2) : Math.max(pts.x1, pts.x2);
+      const raw = vertical ? snapValue(world.y) : snapValue(world.x);
+      const value = Math.max(lo + 1, Math.min(hi - 1, raw));
+      if (value <= lo || value >= hi) return null;
+      return vertical ? { x: pts.x1, y: value } : { x: value, y: pts.y1 };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [snap],
+  );
+
   const pins = useMemo(() => attachPoints(records), [records]);
   const network = useMemo(() => buildNetwork(records), [records]);
   const pinList = useMemo(() => [...pins.values()].flat(), [pins]);
@@ -215,7 +233,7 @@ export function Canvas(props: Props): JSX.Element {
       const pts = rec ? wirePoints(rec) : null;
       if (!pts) return;
       const at = end === 0 ? { x: pts.x1, y: pts.y1 } : { x: pts.x2, y: pts.y2 };
-      setDrag({ kind: 'endpoint', id, end, sx: world.x, sy: world.y, moved: false, ox: at.x, oy: at.y });
+      setDrag({ kind: 'vertex', from: at, sx: world.x, sy: world.y, moved: false });
       svgRef.current!.setPointerCapture(e.pointerId);
       return;
     }
@@ -227,12 +245,18 @@ export function Canvas(props: Props): JSX.Element {
     if (hitId !== null) {
       const id = hitId;
       const rec = records.find((r) => r.id === id);
-      const group = rec && rec.kind === 'connection' ? cableSegments(network, id) : [id];
+      const isWire = rec !== undefined && rec.kind === 'connection';
+      const group = isWire ? cableSegments(network, id) : [id];
       const already = group.some((g) => selection.has(g));
       if (e.shiftKey) onSelect(group, true);
       else if (!already) onSelect(group, false);
       if (!e.shiftKey) {
-        setDrag({ kind: 'move', sx: world.x, sy: world.y, moved: false });
+        const at = isWire && rec ? bendPoint(rec, world) : null;
+        setDrag(
+          at
+            ? { kind: 'bend', id, at, sx: world.x, sy: world.y, moved: false }
+            : { kind: 'move', sx: world.x, sy: world.y, moved: false },
+        );
         svgRef.current!.setPointerCapture(e.pointerId);
       }
       return;
@@ -257,10 +281,17 @@ export function Canvas(props: Props): JSX.Element {
       onDragPreview({ kind: 'move', dx, dy });
       return;
     }
-    if (drag?.kind === 'endpoint') {
+    if (drag?.kind === 'vertex') {
       if (Math.hypot(world.x - drag.sx, world.y - drag.sy) > 0.5) setDrag({ ...drag, moved: true });
       const p = snapPoint(world);
-      onDragPreview({ kind: 'endpoint', id: drag.id, end: drag.end, x: p.x, y: p.y });
+      onDragPreview({ kind: 'vertex', from: drag.from, to: p });
+      return;
+    }
+    if (drag?.kind === 'bend') {
+      if (!drag.moved && Math.hypot(world.x - drag.sx, world.y - drag.sy) < 0.8) return;
+      if (!drag.moved) setDrag({ ...drag, moved: true });
+      const p = snapPoint(world);
+      onDragPreview({ kind: 'bend', id: drag.id, at: drag.at, to: p });
       return;
     }
     if (marquee) {
@@ -282,16 +313,26 @@ export function Canvas(props: Props): JSX.Element {
       else onDragPreview(null);
       return;
     }
-    if (drag?.kind === 'endpoint') {
+    if (drag?.kind === 'vertex') {
       const world = toWorld(e.clientX, e.clientY);
       const moved = Math.hypot(world.x - drag.sx, world.y - drag.sy) > 0.5;
       const p = snapPoint(world);
       setDrag(null);
-      if (moved) onDragCommit({ kind: 'endpoint', id: drag.id, end: drag.end, x: p.x, y: p.y });
+      if (moved) onDragCommit({ kind: 'vertex', from: drag.from, to: p });
       else {
         onDragPreview(null);
-        onMergeVertex(drag.ox, drag.oy);
+        onMergeVertex(drag.from.x, drag.from.y);
       }
+      return;
+    }
+    if (drag?.kind === 'bend') {
+      const world = toWorld(e.clientX, e.clientY);
+      setDrag(null);
+      if (Math.hypot(world.x - drag.sx, world.y - drag.sy) < 0.8) {
+        onDragPreview(null);
+        return;
+      }
+      onDragCommit({ kind: 'bend', id: drag.id, at: drag.at, to: snapPoint(world) });
       return;
     }
     if (marquee) {
@@ -316,19 +357,8 @@ export function Canvas(props: Props): JSX.Element {
     const id = hitWire(world, 5 / view.k);
     if (id === null) return;
     const rec = records.find((r) => r.id === id);
-    const pts = rec ? wirePoints(rec) : null;
-    if (!pts) return;
-
-    // El vértice tiene que caer SOBRE el tramo: se snapea sólo la coordenada
-    // libre, se conserva la fija y se exige que quede entre los dos extremos.
-    const vertical = Math.abs(pts.x1 - pts.x2) < 0.01;
-    const lo = vertical ? Math.min(pts.y1, pts.y2) : Math.min(pts.x1, pts.x2);
-    const hi = vertical ? Math.max(pts.y1, pts.y2) : Math.max(pts.x1, pts.x2);
-    const raw = vertical ? snapValue(world.y) : snapValue(world.x);
-    const value = Math.max(lo + 1, Math.min(hi - 1, raw));
-    if (value <= lo || value >= hi) return;
-
-    onInsertVertex(id, vertical ? pts.x1 : value, vertical ? value : pts.y1);
+    const at = rec ? bendPoint(rec, world) : null;
+    if (at) onInsertVertex(id, at.x, at.y);
   };
 
   const cursorClass = placing !== null ? 'canvas placing' : pan ? 'canvas panning' : 'canvas';
@@ -424,7 +454,7 @@ export function Canvas(props: Props): JSX.Element {
       </svg>
 
       <div className="canvas-hint">
-        arrastrá componentes · <b>doble clic</b> en un cable agrega un vértice · <b>clic</b> en un vértice lo une ·{' '}
+        arrastrá componentes · <b>arrastrá un cable</b> para doblarlo · <b>clic</b> en un vértice lo une ·{' '}
         <b>alt</b>+arrastrar para desplazar
       </div>
       <div className="zoom-tag">{Math.round(view.k * 100)}%</div>
