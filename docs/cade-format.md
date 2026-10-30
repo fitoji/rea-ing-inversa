@@ -133,3 +133,24 @@ Recursos gráficos: `CONTACTOR_ON/OFF/SIM_*`, `DISYUNTOR_*`, variantes `_3D_`.
 ## Decisión de diseño
 
 ✅ El parser trata cualquier registro no reconocido como **opaco pero preservado**: se guarda su texto original y se reescribe idéntico. Esto permite abrir, editar cables y guardar sin conocer los 200 códigos.
+
+## Geometría de bornes (derivada de los cables)
+
+✅ El formato **no guarda** las coordenadas de los bornes, sólo sus nombres. Pero los cables sí guardan sus extremos, y esos extremos caen exactamente sobre el borde de la caja del componente:
+
+| Componente | Caja `(x, y, w, h)` | Puntos de conexión (relativos a la caja) |
+|---|---|---|
+| motor `-M1` (1000) | `(30, 150, 24, 24)` | `(0,0) (6,0) (12,0) (18,0)` — borde superior |
+| contactor `-KM1` (2001) | `(30, 99, 18, 15)` | `(0,0) (6,0) (12,0) (0,12)` |
+| térmico `RELE` (6007) | `(30, 129, 21, 15)` | `(0,0) (6,0) (12,0) (0,12)` |
+| bornera `-X` (3005) | `(30, 66, 24, 3)` | `(0,0) (6,0) (12,0) (18,0)` — borde superior |
+| pulsador `STAR` (8000) | `(162, 108, 6, 15)` | `(0,0) (0,12)` — borde izquierdo |
+| bobina `-KM1` (7000) | `(183, 108, 6, 15)` | `(0,0) (0,12)` — borde izquierdo |
+
+Conclusión: los bornes viven en una grilla de **6 unidades** sobre el borde de la caja. Dispositivos de varios bornes los alinean sobre el borde superior; los de dos bornes, sobre el borde izquierdo separados 12.
+
+⚠️ Esto se observa en un solo esquema (ascendente, en escalera). Falta confirmarlo con archivos de otra disposición antes de tratarlo como regla universal. Mientras tanto, la app dibuja **los pines que el archivo evidencia**, no una geometría supuesta: sin cables, no hay pines.
+
+## Cola de geometría que imita una cabecera
+
+⚠️ El registro del motor termina en `...*0*1*0*15*16#`. Esa cola calza con el patrón `*<id>*<código>#` (id 15, código 16). Sólo el orden global de ids desambigua. Consecuencia para el editor: al reconstruir un registro suelto hay que modelar el **raw completo**, no el primer candidato que devuelve el parser.
