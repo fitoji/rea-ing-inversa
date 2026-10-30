@@ -425,6 +425,7 @@ export function moveVertex(state: EditorState, from: Point, to: Point): EditorSt
 
   interface Built {
     index: number | null;
+    newId: number | null;
     raw: string;
     sig: string;
   }
@@ -448,12 +449,13 @@ export function moveVertex(state: EditorState, from: Point, to: Point): EditorSt
       if (isExtra && used.has(sig)) return;
       used.add(sig);
       if (!isExtra) {
-        built.push({ index, raw: withWirePoints(rec, leg), sig });
+        built.push({ index, newId: null, raw: withWirePoints(rec, leg), sig });
         return;
       }
       const clone: CadeRecordModel = { ...rec, id, raw: withId(rec, id), geometry: [...rec.geometry] };
       built.push({
         index: null,
+        newId: id,
         raw: withWirePoints({ ...clone, raw: withCableNumber(clone, cableNumberOf(rec)) }, leg),
         sig,
       });
@@ -490,31 +492,91 @@ export function moveVertex(state: EditorState, from: Point, to: Point): EditorSt
 
   if (built.length === 0) return state;
 
-  // Descarte final: si un tramo quedó idéntico a otro, se elimina el registro
-  // en vez de dejar dos cables superpuestos que CADe_SIMU dibujaría encima.
+  // Descarte final. Se compara contra TODOS los tramos del archivo, no sólo los
+  // generados acá: al volver un extremo a su lugar se genera un tramo idéntico
+  // al que ya existía, y dejarlo produce dos cables superpuestos.
   const seen = new Set<string>();
+  for (const [index, rec] of project.records.entries()) {
+    if (built.some((b) => b.index === index)) continue;
+    const pts = wirePoints(rec);
+    if (!pts) continue;
+    seen.add(signature(point(pts.x1, pts.y1), point(pts.x2, pts.y2)));
+  }
+
   const edits = new Map<number, string>();
   const removed = new Set<number>();
-  const appended: string[] = [];
+  const appended: { id: number; raw: string }[] = [];
   for (const item of built) {
     if (seen.has(item.sig)) {
       if (item.index !== null) removed.add(item.index);
       continue;
     }
     seen.add(item.sig);
-    if (item.index === null) appended.push(item.raw);
-    else edits.set(item.index, item.raw);
+    if (item.index === null && item.newId !== null) appended.push({ id: item.newId, raw: item.raw });
+    else edits.set(item.index!, item.raw);
   }
 
-  const text =
+  const compose = (dead: Set<number>): string =>
     (project.hasMagic ? 'CADe_SIMU' : '') +
     project.prefix +
     project.records
-      .filter((_, i) => !removed.has(i))
+      .filter((r, i) => !removed.has(i) && !dead.has(r.id))
       .map((r, i) => edits.get(i) ?? r.raw)
       .join('') +
-    appended.join('');
-  return commit(state, text);
+    appended
+      .filter((a) => !dead.has(a.id))
+      .map((a) => a.raw)
+      .join('');
+
+  const firstPass = compose(new Set());
+
+  // Limpieza de ramales muertos: si un punto que estaba conectado quedó con un
+  // solo tramo por culpa de este movimiento, ese tramo es el resto del codo
+  // anterior y se elimina. Sin esto, volver un extremo a su lugar dejaba el
+  // vértice viejo plantado en el aire.
+  const afterNet = buildNetwork(buildProject(parse(firstPass)).records);
+  const beforeNet = buildNetwork(project.records);
+  const protect = new Set([`${from.x},${from.y}`, `${to.x},${to.y}`]);
+  const deadIds = new Set<number>();
+  const degreeAt = (net: typeof afterNet, key: string): number => {
+    const n = net.nodes.get(key);
+    return n ? n.ends.length + n.through.length : 0;
+  };
+  for (const node of afterNet.nodes.values()) {
+    if (node.pin || node.junction) continue;
+    if (degreeAt(afterNet, node.key) !== 1) continue;
+    if (protect.has(node.key)) continue;
+    if (degreeAt(beforeNet, node.key) < 2) continue;
+    const segId = node.ends[0];
+    if (segId === undefined || deadIds.has(segId)) continue;
+    const seg = afterNet.segments.get(segId);
+    if (!seg) continue;
+    const otherKey = seg.a === node.key ? seg.b : seg.a;
+    const other = afterNet.nodes.get(otherKey);
+    const otherDegree = other ? other.ends.length + other.through.length : 0;
+    if (otherDegree < 2 && !other?.pin && !other?.junction) continue;
+    deadIds.add(segId);
+  }
+
+  const finalText = deadIds.size === 0 ? firstPass : compose(deadIds);
+  const next = commit(state, finalText);
+
+  // La selección tiene que seguir al cable: si no, después de mover un extremo
+  // los handles quedan en los lugares viejos y el siguiente arrastre agarra
+  // otra cosa. Se seleccionan todos los tramos del cable que toca el destino.
+  const net = buildNetwork(buildProject(parse(finalText)).records);
+  const target = `${to.x},${to.y}`;
+  const cables = new Set<number>();
+  const loose = new Set<number>();
+  for (const seg of net.segments.values()) {
+    if (seg.a !== target && seg.b !== target) continue;
+    if (seg.cable === 0) loose.add(seg.id);
+    else cables.add(seg.cable);
+  }
+  const selected = [...net.segments.values()]
+    .filter((seg) => (seg.cable === 0 ? loose.has(seg.id) : cables.has(seg.cable)))
+    .map((seg) => seg.id);
+  return selected.length > 0 ? { ...next, selection: selected } : next;
 }
 
 /** Inserta un vértice partiendo el tramo en dos. */

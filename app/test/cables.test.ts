@@ -437,3 +437,24 @@ test('arrastrar el extremo de un cable vertical a la derecha desplaza el tramo',
   const node = net2.nodes.get('60,150');
   assert.ok(node, 'el extremo arrastrado queda en el destino');
 });
+
+test('mover un extremo y volverlo deja el cable como estaba, sin vértice colgando', () => {
+  let s = createEditor(ARRANQUE);
+  s = moveVertex(s, { x: 48, y: 150 }, { x: 60, y: 150 });
+
+  const ida = buildNetwork(projectOf(s).records);
+  assert.ok(ida.nodes.get('60,66'), 'la ida deja un codo arriba');
+
+  s = moveVertex(s, { x: 60, y: 150 }, { x: 48, y: 150 });
+
+  const net = buildNetwork(projectOf(s).records);
+  assert.equal(projectOf(s).records.length, project().records.length, 'vuelve al mismo número de registros');
+  assert.equal(net.nodes.get('60,66'), undefined, 'el vértice del codo viejo no puede quedar colgando');
+  const cablesOriginales = buildNetwork(project().records).segments.size;
+  assert.equal(net.segments.size, cablesOriginales, 'no deben quedar tramos de más');
+
+  const vertical = [...net.segments.values()].find(
+    (seg) => Math.abs(seg.points.x1 - 48) < 0.01 && Math.abs(seg.points.x2 - 48) < 0.01 && Math.abs(seg.points.y2 - 150) < 0.01,
+  );
+  assert.ok(vertical, 'la vertical tiene que volver a su lugar');
+});

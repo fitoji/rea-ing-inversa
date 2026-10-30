@@ -31,7 +31,15 @@ interface Props {
 
 const MIN_K = 0.25;
 const MAX_K = 24;
-const PIN_SNAP = 6;
+/**
+ * Radio de imán a un borne, en píxeles de pantalla.
+ *
+ * En unidades de plano era 6, pero en este esquema los bornes están cada 6: el
+ * punto siempre quedaba cerca de alguno y saltaba entre ellos, sin poder
+ * soltarlo donde uno quería. En píxeles el imán sólo actúa cuando el cursor está
+ * realmente encima dell borne.
+ */
+const PIN_SNAP_PX = 11;
 
 type DragState =
   | { kind: 'move'; sx: number; sy: number; moved: boolean }
@@ -162,7 +170,7 @@ export function Canvas(props: Props): JSX.Element {
   const snapPoint = useCallback(
     (world: Point): Point => {
       let best: Point | null = null;
-      let bestDist = PIN_SNAP;
+      let bestDist = PIN_SNAP_PX / view.k;
       for (const p of pinList) {
         const d = Math.hypot(p.x - world.x, p.y - world.y);
         if (d < bestDist) {
@@ -174,7 +182,7 @@ export function Canvas(props: Props): JSX.Element {
       return { x: snapValue(world.x), y: snapValue(world.y) };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [pinList, snap],
+    [pinList, snap, view.k],
   );
 
   /**
