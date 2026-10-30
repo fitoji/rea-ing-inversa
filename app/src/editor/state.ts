@@ -46,13 +46,15 @@ export interface EditorState {
   /** rotación visual por id (no persistida) */
   rotation: Record<number, Rotation>;
   clipboard: string[];
+  /** vértice enfocado para borrar, independiente de la selección de cables */
+  vertex: Point | null;
   dirty: boolean;
 }
 
 const HISTORY_LIMIT = 100;
 
 export function createEditor(text: string): EditorState {
-  return { text, past: [], future: [], selection: [], rotation: {}, clipboard: [], dirty: false };
+  return { text, past: [], future: [], selection: [], rotation: {}, clipboard: [], vertex: null, dirty: false };
 }
 
 export function projectOf(state: EditorState): Project {
@@ -111,6 +113,11 @@ export function select(state: EditorState, ids: number[], additive = false): Edi
     else set.add(id);
   }
   return { ...state, selection: [...set] };
+}
+
+/** Enfoca un vértice (o lo suelta con `null`) sin tocar la selección de cables. */
+export function selectVertex(state: EditorState, vertex: Point | null): EditorState {
+  return { ...state, vertex };
 }
 
 export function clearSelection(state: EditorState): EditorState {
@@ -558,7 +565,7 @@ export function moveVertex(state: EditorState, from: Point, to: Point): EditorSt
     deadIds.add(segId);
   }
 
-  const finalText = deadIds.size === 0 ? firstPass : compose(deadIds);
+  const finalText = simplifyCollinear(deadIds.size === 0 ? firstPass : compose(deadIds));
   const next = commit(state, finalText);
 
   // La selección tiene que seguir al cable: si no, después de mover un extremo
@@ -577,6 +584,68 @@ export function moveVertex(state: EditorState, from: Point, to: Point): EditorSt
     .filter((seg) => (seg.cable === 0 ? loose.has(seg.id) : cables.has(seg.cable)))
     .map((seg) => seg.id);
   return selected.length > 0 ? { ...next, selection: selected } : next;
+}
+
+/**
+ * Disuelve vértices que quedaron sobre una recta: dos tramos colineales que se
+ * tocan en un punto sin borne ni unión son, en realidad, un solo tramo.
+ *
+ * Sin esto, al devolver un doblez a la recta el vértice quedaba plantado aunque
+ * ya no doblara nada, y seguía mostrando un handle en el medio del cable.
+ */
+function simplifyCollinear(text: string): string {
+  let current = text;
+  for (let guard = 0; guard < 64; guard++) {
+    const project = buildProject(parse(current));
+    const net = buildNetwork(project.records);
+    let merged = false;
+
+    for (const node of net.nodes.values()) {
+      if (node.pin || node.junction) continue;
+      if (node.ends.length !== 2 || node.through.length > 0) continue;
+      const a = net.segments.get(node.ends[0]!);
+      const b = net.segments.get(node.ends[1]!);
+      if (!a || !b || a.cable !== b.cable) continue;
+
+      const aV = Math.abs(a.points.x1 - a.points.x2) < AXIS_TOL;
+      const bV = Math.abs(b.points.x1 - b.points.x2) < AXIS_TOL;
+      const aH = Math.abs(a.points.y1 - a.points.y2) < AXIS_TOL;
+      const bH = Math.abs(b.points.y1 - b.points.y2) < AXIS_TOL;
+      const collinear =
+        (aV && bV && Math.abs(a.points.x1 - b.points.x1) < AXIS_TOL) ||
+        (aH && bH && Math.abs(a.points.y1 - b.points.y1) < AXIS_TOL);
+      if (!collinear) continue;
+
+      const far = (seg: typeof a, key: string): Point =>
+        seg.a === key ? { x: seg.points.x2, y: seg.points.y2 } : { x: seg.points.x1, y: seg.points.y1 };
+      const pa = far(a, node.key);
+      const pb = far(b, node.key);
+
+      const indexA = project.records.findIndex((r) => r.id === a.id);
+      const indexB = project.records.findIndex((r) => r.id === b.id);
+      if (indexA === -1 || indexB === -1) continue;
+
+      const raw = withWirePoints(project.records[indexA]!, { x1: pa.x, y1: pa.y, x2: pb.x, y2: pb.y });
+      current =
+        (project.hasMagic ? 'CADe_SIMU' : '') +
+        project.prefix +
+        project.records
+          .map((r, i) => (i === indexA ? raw : r.raw))
+          .filter((_, i) => i !== indexB)
+          .join('');
+      merged = true;
+      break;
+    }
+
+    if (!merged) break;
+  }
+  return current;
+}
+
+/** Borra el vértice indicado, uniendo los tramos que lo tocaban. */
+export function deleteVertex(state: EditorState, point: Point): EditorState {
+  const merged = mergeVertex(state, point.x, point.y);
+  return { ...merged, vertex: null };
 }
 
 /** Inserta un vértice partiendo el tramo en dos. */
@@ -638,12 +707,14 @@ export function mergeVertex(state: EditorState, x: number, y: number): EditorSta
   if (!isOrthogonal(a, b)) return state;
 
   const merged = withWirePoints(first.rec, { x1: a.x, y1: a.y, x2: b.x, y2: b.y });
+  // Se reemplaza ANTES de filtrar: al revés, sacar un registro corre los índices
+  // y el tramo unido se escribía sobre otro registro, borrando la línea.
   const text =
     (project.hasMagic ? 'CADe_SIMU' : '') +
     project.prefix +
     project.records
-      .filter((_, i) => i !== second.index)
       .map((r, i) => (i === first.index ? merged : r.raw))
+      .filter((_, i) => i !== second.index)
       .join('');
   return commit(state, text, [first.rec.id]);
 }

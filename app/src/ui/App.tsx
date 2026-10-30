@@ -12,7 +12,8 @@ import {
   setDesignator,
   setCableNumber,
   insertVertex,
-  mergeVertex,
+  deleteVertex,
+  selectVertex,
   addJunction,
   applyDrag,
   undo,
@@ -100,8 +101,8 @@ export function App(): JSX.Element {
     setState((s) => (s ? insertVertex(s, id, x, y) : s));
   }, []);
 
-  const onMergeVertex = useCallback((x: number, y: number) => {
-    setState((s) => (s ? mergeVertex(s, x, y) : s));
+  const onVertexSelect = useCallback((vertex: { x: number; y: number } | null) => {
+    setState((s) => (s ? selectVertex(s, vertex) : s));
   }, []);
 
   const onPlace = useCallback(
@@ -127,7 +128,7 @@ export function App(): JSX.Element {
 
       if (e.key === 'Escape') {
         setPlacing(null);
-        setState((s) => (s ? select(s, [], false) : s));
+        setState((s) => (s ? selectVertex(select(s, [], false), null) : s));
         return;
       }
       if (typing) return;
@@ -155,7 +156,11 @@ export function App(): JSX.Element {
       }
       if (e.key === 'Delete' || e.key === 'Backspace') {
         e.preventDefault();
-        setState((s) => (s ? deleteSelection(s) : s));
+        setState((s) => {
+          if (!s) return s;
+          // Con un vértice enfocado se borra el vértice; si no, la selección.
+          return s.vertex ? deleteVertex(s, s.vertex) : deleteSelection(s);
+        });
         return;
       }
       if (e.key.toLowerCase() === 'r') {
@@ -273,7 +278,7 @@ export function App(): JSX.Element {
         onPlace={onPlace}
         onZoom={setZoom}
         onInsertVertex={onInsertVertex}
-        onMergeVertex={onMergeVertex}
+        onVertexSelect={onVertexSelect}
       />
 
       <Inspector
@@ -281,6 +286,8 @@ export function App(): JSX.Element {
         rotation={state.rotation}
         network={network}
         findings={findings}
+        vertex={state.vertex}
+        onDeleteVertex={() => setState((s) => (s && s.vertex ? deleteVertex(s, s.vertex) : s))}
         onDesignator={(id, value) => setState(setDesignator(state, id, value))}
         onRotate={() => setState(rotateSelection(state))}
         onDelete={() => setState(deleteSelection(state))}

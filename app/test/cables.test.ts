@@ -298,10 +298,25 @@ test('mover un vértice interior mantiene los dos tramos enganchados', () => {
   s = moveVertex(s, { x: pts.x1, y: mid }, to);
 
   const net = buildNetwork(projectOf(s).records);
-  const node = net.nodes.get(`${to.x},${to.y}`);
-  assert.ok(node, 'el vértice debe existir en el destino');
-  assert.ok(node.ends.length + node.through.length >= 2, 'el vértice debe seguir uniendo los tramos');
   assert.equal(orphanCount(projectOf(s).records), orphansBefore, 'no deben aparecer extremos sueltos');
+
+  // El destino queda DENTRO del tramo vertical: si dos tramos verticales se
+  // tocan en ese punto, no hay doblez real y se disuelven en uno solo.
+  const node = net.nodes.get(`${to.x},${to.y}`);
+  assert.equal(node, undefined, 'un vértice que no dobla nada no debe quedar');
+  const contains = [...net.segments.values()].some((seg) => {
+    const minY = Math.min(seg.points.y1, seg.points.y2);
+    const maxY = Math.max(seg.points.y1, seg.points.y2);
+    return Math.abs(seg.points.x1 - to.x) < 0.01 && to.y > minY && to.y < maxY;
+  });
+  assert.ok(contains, 'el cable pasa por el punto arrastrado');
+
+  for (const seg of net.segments.values()) {
+    assert.ok(
+      Math.abs(seg.points.x1 - seg.points.x2) < 0.01 || Math.abs(seg.points.y1 - seg.points.y2) < 0.01,
+      `el tramo ${seg.id} quedó diagonal`,
+    );
+  }
 });
 
 test('mover el codo del cable 17 conserva el número y la continuidad', () => {
@@ -341,7 +356,7 @@ test('mover un vértice lejos de todo no toca los componentes', () => {
   before.forEach((r, i) => assert.equal(after[i]!.raw, r.raw));
 });
 
-test('mover un vértice colineal produce una Z, sin tramos duplicados', () => {
+test('mover un vértice colineal produce un escalón, sin tramos duplicados', () => {
   const wire = longWire();
   const pts = wirePoints(wire)!;
   const mid = (pts.y1 + pts.y2) / 2;
@@ -353,7 +368,7 @@ test('mover un vértice colineal produce una Z, sin tramos duplicados', () => {
 
   const net = buildNetwork(projectOf(s).records);
   const cable = net.cables.get(cableNumberOf(wire))!;
-  assert.equal(cable.length, 4, 'una Z son cuatro tramos: dos originales y dos del codo');
+  assert.equal(cable.length, 3, 'un escalón son tres tramos: arriba, la vertical desplazada y abajo');
 
   const signatures = new Set<string>();
   for (const id of cable) {
@@ -369,9 +384,7 @@ test('mover un vértice colineal produce una Z, sin tramos duplicados', () => {
     signatures.add(key);
   }
 
-  const node = net.nodes.get(`${to.x},${to.y}`);
-  assert.ok(node, 'el vértice movido debe existir');
-  assert.equal(node.ends.length + node.through.length, 2, 'el vértice une exactamente dos tramos');
+  assert.equal(net.nodes.get(`${to.x},${to.y}`), undefined, 'no debe quedar un vértice inútil');
 });
 
 test('si el vértice cae alineado con un extremo, degenera en L sin duplicar', () => {
@@ -407,9 +420,8 @@ test('arrastrar el cuerpo de un cable inserta un doblez y lo mueve en un solo pa
   s = bendCable(s, wire.id, at, to);
 
   const net = buildNetwork(projectOf(s).records);
-  const node = net.nodes.get(`${to.x},${to.y}`);
-  assert.ok(node, 'el doblez debe quedar en el destino');
-  assert.ok(node.ends.length + node.through.length >= 2, 'el doblez debe unir los tramos');
+  const cable = net.cables.get(cableNumberOf(wire))!;
+  assert.equal(cable.length, 3, 'al doblar hacia un costado el cable queda en escalón');
   assert.equal(orphanCount(projectOf(s).records), 0, 'no deben quedar extremos sueltos');
 
   s = undo(s);

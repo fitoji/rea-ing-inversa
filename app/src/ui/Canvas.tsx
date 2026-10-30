@@ -26,7 +26,7 @@ interface Props {
   onPlace: (x: number, y: number) => void;
   onZoom: (k: number) => void;
   onInsertVertex: (id: number, x: number, y: number) => void;
-  onMergeVertex: (x: number, y: number) => void;
+  onVertexSelect: (vertex: Point | null) => void;
 }
 
 const MIN_K = 0.25;
@@ -61,7 +61,7 @@ export function Canvas(props: Props): JSX.Element {
     onPlace,
     onZoom,
     onInsertVertex,
-    onMergeVertex,
+    onVertexSelect,
   } = props;
 
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -232,6 +232,8 @@ export function Canvas(props: Props): JSX.Element {
       return;
     }
 
+    if (!target.closest('[data-endpoint]')) onVertexSelect(null);
+
     const handle = target.closest('[data-endpoint]') as HTMLElement | null;
     if (handle) {
       e.stopPropagation();
@@ -241,6 +243,8 @@ export function Canvas(props: Props): JSX.Element {
       const pts = rec ? wirePoints(rec) : null;
       if (!pts) return;
       const at = end === 0 ? { x: pts.x1, y: pts.y1 } : { x: pts.x2, y: pts.y2 };
+      // Enfocar el vértice permite borrarlo con Suprimir sin borrar el cable.
+      onVertexSelect(at);
       setDrag({ kind: 'vertex', from: at, sx: world.x, sy: world.y, moved: false });
       svgRef.current!.setPointerCapture(e.pointerId);
       return;
@@ -327,10 +331,7 @@ export function Canvas(props: Props): JSX.Element {
       const p = snapPoint(world);
       setDrag(null);
       if (moved) onDragCommit({ kind: 'vertex', from: drag.from, to: p });
-      else {
-        onDragPreview(null);
-        onMergeVertex(drag.from.x, drag.from.y);
-      }
+      else onDragPreview(null);
       return;
     }
     if (drag?.kind === 'bend') {
@@ -462,7 +463,7 @@ export function Canvas(props: Props): JSX.Element {
       </svg>
 
       <div className="canvas-hint">
-        arrastrá componentes · <b>arrastrá un cable</b> para doblarlo · <b>clic</b> en un vértice lo une ·{' '}
+        arrastrá componentes · <b>arrastrá un cable</b> para doblarlo · <b>⌫</b> borra el vértice enfocado ·{' '}
         <b>alt</b>+arrastrar para desplazar
       </div>
       <div className="zoom-tag">{Math.round(view.k * 100)}%</div>

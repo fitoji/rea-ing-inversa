@@ -4,6 +4,7 @@ import { GEOMETRY, boxOf, wirePoints, type CadeRecordModel } from '../model/proj
 import { resolveSymbol } from '../symbols/library.ts';
 import type { Rotation } from '../editor/state.ts';
 import { cableLength, cableNumberOf, cableSegments, type Finding, type Network } from '../editor/network.ts';
+import type { Point } from '../editor/pins.ts';
 
 interface Props {
   selected: CadeRecordModel[];
@@ -15,20 +16,41 @@ interface Props {
   onDelete: () => void;
   onCableNumber: (ids: number[], value: number) => void;
   onAddJunction: (x: number, y: number) => void;
+  vertex: Point | null;
+  onDeleteVertex: () => void;
 }
 
 export function Inspector(props: Props): JSX.Element {
-  const { selected, findings, onAddJunction } = props;
+  const { selected, findings, onAddJunction, vertex, onDeleteVertex } = props;
+
+  const vertexBlock = vertex ? (
+    <>
+      <div className="section-label">Vértice seleccionado</div>
+      <dl className="kv">
+        <dt>Posición</dt>
+        <dd>
+          {vertex.x}, {vertex.y}
+        </dd>
+      </dl>
+      <div style={{ display: 'flex', gap: 6, padding: '0 12px 12px' }}>
+        <button className="btn" onClick={onDeleteVertex}>
+          Eliminar vértice (⌫)
+        </button>
+      </div>
+    </>
+  ) : null;
 
   if (selected.length === 0) {
     return (
       <aside className="inspector">
         <div className="panel-head">Propiedades</div>
+        {vertexBlock}
         <div className="empty-state">
           Nada seleccionado.
           <br />
           Clic en un componente o en un cable. <b>Shift</b>+clic suma a la selección; arrastrar sobre el lienzo vacío
-          selecciona varios. <b>Arrastrá un cable</b> para doblarlo; los cuadrados azules son sus vértices.
+          selecciona varios. <b>Arrastrá un cable</b> para doblarlo; los cuadrados azules son sus vértices y se borran
+          con <b>⌫</b>.
         </div>
         <Findings findings={findings} onAddJunction={onAddJunction} />
       </aside>
@@ -52,6 +74,7 @@ export function Inspector(props: Props): JSX.Element {
             </>
           )}
         </div>
+        {vertexBlock}
         <div className="pins">
           {selected.slice(0, 24).map((r) => (
             <span className="chip" key={r.id}>
@@ -73,7 +96,7 @@ export function Inspector(props: Props): JSX.Element {
   }
 
   const rec = selected[0]!;
-  return <Single key={rec.id} rec={rec} {...props} />;
+  return <Single key={rec.id} rec={rec} vertexBlock={vertexBlock} {...props} />;
 }
 
 function Findings({
@@ -114,7 +137,8 @@ function Single({
   onDelete,
   onCableNumber,
   onAddJunction,
-}: Props & { rec: CadeRecordModel }): JSX.Element {
+  vertexBlock,
+}: Props & { rec: CadeRecordModel; vertexBlock: JSX.Element | null }): JSX.Element {
   const [draft, setDraft] = useState(rec.designator);
   const [cableDraft, setCableDraft] = useState(String(cableNumberOf(rec)));
   useEffect(() => setDraft(rec.designator), [rec.designator]);
@@ -127,6 +151,7 @@ function Single({
   return (
     <aside className="inspector">
       <div className="panel-head">Propiedades</div>
+      {vertexBlock}
 
       {rec.kind === 'component' ? (
         <>
@@ -276,8 +301,7 @@ function CablePanel({
       )}
 
       <div className="note" style={{ background: '#101820', borderColor: '#243240', color: '#8fa6c0' }}>
-        Arrastrá cualquiera de los cuadrados azules para mover ese vértice. Un clic sin arrastrar en un vértice
-        interior lo elimina.
+        Arrastrá un cuadrado azul para mover ese vértice. Un clic lo enfoca y <b>⌫</b> lo elimina sin borrar el cable.
       </div>
 
       <div style={{ display: 'flex', gap: 6, padding: '0 12px' }}>
