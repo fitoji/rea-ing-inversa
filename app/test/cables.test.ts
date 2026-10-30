@@ -415,3 +415,25 @@ test('arrastrar el cuerpo de un cable inserta un doblez y lo mueve en un solo pa
   s = undo(s);
   assert.equal(s.text, ARRANQUE, 'deshacer tiene que volver todo de una');
 });
+
+test('arrastrar el extremo de un cable vertical a la derecha desplaza el tramo', () => {
+  // El codo tiene que quedar junto al extremo QUIETO. Si queda junto al que se
+  // arrastra, la vertical no se mueve y sólo aparece una cola horizontal abajo:
+  // el gesto parece no hacer nada.
+  let s = createEditor(ARRANQUE);
+  s = moveVertex(s, { x: 48, y: 150 }, { x: 60, y: 150 });
+
+  const net = buildNetwork(projectOf(s).records);
+  const cable = net.cables.get(13)!;
+  const segs = cable.map((id) => net.segments.get(id)!);
+  assert.equal(segs.length, 2, 'un codo son dos tramos');
+
+  const vertical = segs.find((p) => Math.abs(p.points.x1 - p.points.x2) < 0.01)!;
+  const horizontal = segs.find((p) => Math.abs(p.points.y1 - p.points.y2) < 0.01)!;
+  assert.equal(vertical.points.x1, 60, 'la vertical se mueve al x nuevo');
+  assert.equal(horizontal.points.y1, 66, 'el codo queda pegado al extremo quieto');
+
+  const net2 = buildNetwork(projectOf(s).records);
+  const node = net2.nodes.get('60,150');
+  assert.ok(node, 'el extremo arrastrado queda en el destino');
+});

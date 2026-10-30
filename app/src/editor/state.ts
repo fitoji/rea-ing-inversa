@@ -373,8 +373,10 @@ export function moveEndpoint(state: EditorState, id: number, end: 0 | 1, x: numb
     return commit(state, serializeWith(project, edits));
   }
 
+  // El codo va junto al extremo que NO se mueve, para que el tramo que se
+  // arrastra conserve su orientación y el cable se vea desplazarse.
   const wasVertical = Math.abs(pts.x1 - pts.x2) < AXIS_TOL;
-  const corner = wasVertical ? { x: fixed.x, y: target.y } : { x: target.x, y: fixed.y };
+  const corner = wasVertical ? { x: target.x, y: fixed.y } : { x: fixed.x, y: target.y };
   if (!isOrthogonal(fixed, corner) || !isOrthogonal(corner, target)) return state;
 
   const leg1 =
@@ -463,11 +465,15 @@ export function moveVertex(state: EditorState, from: Point, to: Point): EditorSt
       return;
     }
 
-    // Dos codos posibles: el que conserva la orientación del tramo y el otro.
-    // Se prefiere el que no repita un tramo ya generado; sin esto, un vértice
-    // entre dos tramos colineales producía dos tramos idénticos superpuestos.
-    const preferred = wasVertical ? point(fixed.x, to.y) : point(to.x, fixed.y);
-    const alternate = wasVertical ? point(to.x, fixed.y) : point(fixed.x, to.y);
+    // Dos codos posibles. Se prefiere el que deja el codo junto al extremo
+    // quieto, así el tramo que se arrastra mantiene su orientación y el cable
+    // se ve moverse en vez de sólo aparecer una línea.
+    //
+    // Con el codo del otro lado, arrastrar hacia la derecha el extremo inferior
+    // de un cable vertical dejaba la vertical intacta y agregaba un tramo
+    // horizontal abajo: parecía que no había pasado nada.
+    const preferred = wasVertical ? point(to.x, fixed.y) : point(fixed.x, to.y);
+    const alternate = wasVertical ? point(fixed.x, to.y) : point(to.x, fixed.y);
     let corner: Point | null = null;
     for (const candidate of [preferred, alternate]) {
       if (!isOrthogonal(fixed, candidate) || !isOrthogonal(candidate, to)) continue;
