@@ -21,10 +21,12 @@ const FIXTURES = join(HERE, '..', 'test', 'fixtures');
 const OUT = join(HERE, '..', 'src', 'symbols', 'templates.ts');
 
 const templates = new Map<number, { raw: string; source: string }>();
+let junction: { raw: string; source: string } | null = null;
 
 for (const name of readdirSync(FIXTURES).filter((f) => /\.(cade|cad)$/i.test(f)).sort()) {
   const text = readFileSync(join(FIXTURES, name), 'latin1');
   for (const rec of buildProject(parse(text)).records) {
+    if (rec.code === 4001 && junction === null) junction = { raw: rec.raw, source: name };
     if (rec.kind !== 'component') continue;
     if (templates.has(rec.code)) continue;
     templates.set(rec.code, { raw: rec.raw, source: name });
@@ -55,6 +57,9 @@ ${body}
 export function templateFor(code: number): string | undefined {
   return TEMPLATES[code]?.raw;
 }
+
+/** Plantilla de un punto de unión (código 4001): geometría de longitud cero. */
+export const JUNCTION_TEMPLATE: string | null = ${JSON.stringify(junction?.raw ?? null)};
 
 export const TEMPLATE_CODES: number[] = Object.keys(TEMPLATES).map(Number).sort((a, b) => a - b);
 `,

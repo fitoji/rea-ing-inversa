@@ -21,14 +21,17 @@ import {
   modelOfRecord,
   nextId,
   serializeWith,
+  withGeometry,
   withId,
   withPosition,
   withWirePoints,
   wirePoints,
   boundsOf,
+  GEOMETRY,
   type CadeRecordModel,
   type Project,
 } from '../model/project.ts';
+import { CABLE_NUMBER_INDEX, buildNetwork, cableNumberOf, cableSegments } from './network.ts';
 
 export type Rotation = 0 | 90 | 180 | 270;
 
@@ -56,12 +59,11 @@ export function projectOf(state: EditorState): Project {
 
 function commit(state: EditorState, text: string, selection = state.selection): EditorState {
   if (text === state.text) return state;
-  // Guarda de cordura: un texto que no re-parsea con la misma longitud de
-  // registros es una edición corrupta y no debe entrar al historial.
-  const before = parse(state.text).records.length;
-  const after = parse(text).records.length;
-  if (Math.abs(after - before) > 1) {
-    throw new Error(`edición inválida: registros ${before} -> ${after}`);
+  // Guarda de cordura: un texto que no re-parsea a ningún registro es una
+  // edición corrupta y no debe entrar al historial. El conteo no se compara
+  // porque borrar un cable de varios tramos quita varios registros de una vez.
+  if (text.length === 0 || parse(text).records.length === 0) {
+    throw new Error('edición inválida: el resultado no contiene registros');
   }
   const past = [...state.past, state.text].slice(-HISTORY_LIMIT);
   return { ...state, text, past, future: [], selection, dirty: true };
@@ -302,4 +304,191 @@ export function setDesignator(state: EditorState, id: number, designator: string
   fields[1] = designator;
   const edits = new Map([[entry.index, fields.join('#')]]);
   return commit(state, serializeWith(project, edits));
+}
+
+// --- cables (fase 3) ---------------------------------------------------------
+
+/**
+ * Un cable lógico con quiebres son varios registros que comparten número.
+ * Seleccionar uno selecciona el cable entero: es lo que el usuario ve como
+ * "un cable", no como tres tramos sueltos.
+ */
+export function selectCable(state: EditorState, segmentId: number): EditorState {
+  const network = buildNetwork(projectOf(state).records);
+  const ids = cableSegments(network, segmentId);
+  return select(state, ids.length > 0 ? ids : [segmentId]);
+}
+
+/** Devuelve `raw` con el número de cable reemplazado. */
+export function withCableNumber(rec: CadeRecordModel, cable: number): string {
+  const g = [...rec.geometry];
+  if (g.length <= CABLE_NUMBER_INDEX) return rec.raw;
+  g[CABLE_NUMBER_INDEX] = cable;
+  return withGeometry(rec, g);
+}
+
+export function setCableNumber(state: EditorState, ids: number[], cable: number): EditorState {
+  const project = projectOf(state);
+  const edits = new Map<number, string>();
+  project.records.forEach((rec, index) => {
+    if (ids.includes(rec.id) && rec.kind === 'connection') edits.set(index, withCableNumber(rec, cable));
+  });
+  if (edits.size === 0) return state;
+  return commit(state, serializeWith(project, edits));
+}
+
+const AXIS_TOL = 0.01;
+const isOrthogonal = (a: { x: number; y: number }, b: { x: number; y: number }): boolean =>
+  Math.abs(a.x - b.x) < AXIS_TOL || Math.abs(a.y - b.y) < AXIS_TOL;
+
+/**
+ * Mueve un extremo de cable.
+ *
+ * Si el destino deja el tramo ortogonal, se reescribe el registro. Si no, el
+ * tramo se parte en un codo: el registro original conserva la orientación que
+ * tenía y el segundo tramo se agrega al final del archivo, con el mismo número
+ * de cable. Así el resultado sigue siendo un cable legible por CADe_SIMU.
+ */
+export function moveEndpoint(state: EditorState, id: number, end: 0 | 1, x: number, y: number): EditorState {
+  const project = projectOf(state);
+  const index = project.records.findIndex((r) => r.id === id);
+  if (index === -1) return state;
+  const rec = project.records[index]!;
+  const pts = wirePoints(rec);
+  if (!pts) return state;
+
+  const fixed = end === 0 ? { x: pts.x2, y: pts.y2 } : { x: pts.x1, y: pts.y1 };
+  const target = { x, y };
+  if (Math.abs(fixed.x - target.x) < AXIS_TOL && Math.abs(fixed.y - target.y) < AXIS_TOL) return state;
+
+  const edits = new Map<number, string>();
+  if (isOrthogonal(fixed, target)) {
+    const next =
+      end === 0
+        ? { x1: target.x, y1: target.y, x2: pts.x2, y2: pts.y2 }
+        : { x1: pts.x1, y1: pts.y1, x2: target.x, y2: target.y };
+    edits.set(index, withWirePoints(rec, next));
+    return commit(state, serializeWith(project, edits));
+  }
+
+  const wasVertical = Math.abs(pts.x1 - pts.x2) < AXIS_TOL;
+  const corner = wasVertical ? { x: fixed.x, y: target.y } : { x: target.x, y: fixed.y };
+  if (!isOrthogonal(fixed, corner) || !isOrthogonal(corner, target)) return state;
+
+  const leg1 =
+    end === 0
+      ? { x1: corner.x, y1: corner.y, x2: pts.x2, y2: pts.y2 }
+      : { x1: pts.x1, y1: pts.y1, x2: corner.x, y2: corner.y };
+  edits.set(index, withWirePoints(rec, leg1));
+
+  const newId = nextId(project);
+  const clone: CadeRecordModel = { ...rec, id: newId, raw: withId(rec, newId), geometry: [...rec.geometry] };
+  const leg2 = withWirePoints({ ...clone, raw: withCableNumber(clone, cableNumberOf(rec)) }, {
+    x1: corner.x,
+    y1: corner.y,
+    x2: target.x,
+    y2: target.y,
+  });
+  const text =
+    (project.hasMagic ? 'CADe_SIMU' : '') +
+    project.prefix +
+    project.records.map((r, i) => edits.get(i) ?? r.raw).join('') +
+    leg2;
+  return commit(state, text, [id, newId]);
+}
+
+/** Inserta un vértice partiendo el tramo en dos. */
+export function insertVertex(state: EditorState, id: number, x: number, y: number): EditorState {
+  const project = projectOf(state);
+  const index = project.records.findIndex((r) => r.id === id);
+  if (index === -1) return state;
+  const rec = project.records[index]!;
+  const pts = wirePoints(rec);
+  if (!pts) return state;
+
+  const onLine =
+    (Math.abs(pts.x1 - pts.x2) < AXIS_TOL && Math.abs(x - pts.x1) < AXIS_TOL) ||
+    (Math.abs(pts.y1 - pts.y2) < AXIS_TOL && Math.abs(y - pts.y1) < AXIS_TOL);
+  if (!onLine) return state;
+
+  const edits = new Map<number, string>();
+  edits.set(index, withWirePoints(rec, { x1: pts.x1, y1: pts.y1, x2: x, y2: y }));
+
+  const newId = nextId(project);
+  const clone: CadeRecordModel = { ...rec, id: newId, raw: withId(rec, newId), geometry: [...rec.geometry] };
+  const tail = withWirePoints(clone, { x1: x, y1: y, x2: pts.x2, y2: pts.y2 });
+  const text =
+    (project.hasMagic ? 'CADe_SIMU' : '') +
+    project.prefix +
+    project.records.map((r, i) => edits.get(i) ?? r.raw).join('') +
+    tail;
+  return commit(state, text, [id, newId]);
+}
+
+/**
+ * Elimina un vértice interior uniendo los dos tramos colineales que lo tocan.
+ * Si los tramos no son colineales no hay nada que unir: unirlos crearía una
+ * diagonal que el formato no usa.
+ */
+export function mergeVertex(state: EditorState, x: number, y: number): EditorState {
+  const project = projectOf(state);
+  const touching = project.records
+    .map((rec, index) => ({ rec, index }))
+    .filter(({ rec }) => {
+      const pts = wirePoints(rec);
+      return (
+        pts !== null &&
+        ((Math.abs(pts.x1 - x) < AXIS_TOL && Math.abs(pts.y1 - y) < AXIS_TOL) ||
+          (Math.abs(pts.x2 - x) < AXIS_TOL && Math.abs(pts.y2 - y) < AXIS_TOL))
+      );
+    });
+
+  if (touching.length !== 2) return state;
+  const [first, second] = touching as [typeof touching[0], typeof touching[0]];
+  const p1 = wirePoints(first.rec)!;
+  const p2 = wirePoints(second.rec)!;
+
+  const outer = (pts: typeof p1): { x: number; y: number } =>
+    Math.abs(pts.x1 - x) < AXIS_TOL && Math.abs(pts.y1 - y) < AXIS_TOL ? { x: pts.x2, y: pts.y2 } : { x: pts.x1, y: pts.y1 };
+
+  const a = outer(p1);
+  const b = outer(p2);
+  if (!isOrthogonal(a, b)) return state;
+
+  const merged = withWirePoints(first.rec, { x1: a.x, y1: a.y, x2: b.x, y2: b.y });
+  const text =
+    (project.hasMagic ? 'CADe_SIMU' : '') +
+    project.prefix +
+    project.records
+      .filter((_, i) => i !== second.index)
+      .map((r, i) => (i === first.index ? merged : r.raw))
+      .join('');
+  return commit(state, text, [first.rec.id]);
+}
+
+/** Agrega un registro de unión (4001) en el punto indicado. */
+export function addJunction(state: EditorState, x: number, y: number, templateRaw: string | undefined): EditorState {
+  if (!templateRaw) return state;
+  const project = projectOf(state);
+  const template = parseOne(templateRaw);
+  if (!template) return state;
+  const id = nextId(project);
+  const g = [...template.geometry];
+  g[GEOMETRY.x] = x;
+  g[GEOMETRY.y] = y;
+  if (g.length > GEOMETRY.x2) g[GEOMETRY.x2] = x;
+  if (g.length > GEOMETRY.y2) g[GEOMETRY.y2] = y;
+  const raw = withGeometry({ ...template, raw: withId(template, id) }, g);
+  const text =
+    (project.hasMagic ? 'CADe_SIMU' : '') + project.prefix + project.records.map((r) => r.raw).join('') + raw;
+  return commit(state, text, [id]);
+}
+
+/** Operación de arrastre, para previsualizar y confirmar con el mismo código. */
+export type DragOp =
+  | { kind: 'move'; dx: number; dy: number }
+  | { kind: 'endpoint'; id: number; end: 0 | 1; x: number; y: number };
+
+export function applyDrag(state: EditorState, op: DragOp): EditorState {
+  return op.kind === 'move' ? moveSelection(state, op.dx, op.dy) : moveEndpoint(state, op.id, op.end, op.x, op.y);
 }

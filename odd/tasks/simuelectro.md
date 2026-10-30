@@ -130,8 +130,27 @@ v1 usable: **6-8 semanas** de trabajo part-time. La fase 3 es la que define el p
 - Los registros nuevos (colocar/pegar) se agregan al final del archivo porque los ids deben ser estrictamente crecientes; quedan en la última hoja.
 - La unión cable↔componente es por proximidad geométrica; el vínculo pin-a-pin real es T3.2.
 
+### Fase 3 — Manejo de cables (6/6)
+
+- [x] T3.1 Modelo de cable: tramos agrupados por número (`geometry[21]`) y red con proyección de puntos (`app/src/editor/network.ts`)
+- [x] T3.2 Arrastrar extremo con snap magnético a bornes y ruteo ortogonal con codo automático
+- [x] T3.3 Uniones: los `4001` se dibujan y se pueden crear desde un aviso de unión en T
+- [x] T3.4 Insertar vértice (doble clic) y unir vértice (clic en el handle), preservando el número de cable
+- [x] T3.5 Número de cable editable; el inspector avisa cuántos tramos mueve
+- [x] T3.6 Validaciones: extremo suelto, unión en T sin punto, uniones superpuestas, símbolos solapados
+
+**Deuda declarada de la fase:**
+
+- Arrastrar el cable entero no está implementado: se arrastran los extremos.
+- Al crear una unión nueva se clona la plantilla `4001` del archivo, no se sintetiza.
+- La conexión en T se detecta; no se auto-repara.
+
 ## Log
 
 - **L1** — «falta bastante la ui se ve muy rustica, pasemos a face 2». Autoriza Fase 2 completa.
 - **L2** — Hallazgo: los extremos de cable caen exactamente sobre el borde de la caja del componente, en múltiplos de 6 unidades. El motor del arranque tiene 4 bornes sobre el borde superior en `x+0, +6, +12, +18`; los dispositivos de dos bornes los tienen sobre el borde izquierdo a `y` y `y+12`. Los pines que se dibujan salen de ahí, no de la librería.
 - **L3** — Hallazgo: la cola de la geometría puede imitar una cabecera de registro (`*15*16#` al final del registro del motor). Parsear un registro suelto sólo es fiable modelando el raw completo; `withId`/`withPosition` deben partir del fragmento entero.
+- **L4** — «dale». Autoriza Fase 3.
+- **L5** — Hallazgo: `geometry[21]` es el **número de cable**. Los tramos de un mismo cable lo comparten: en el arranque, los registros 36/37/38 son el cable 17 y forman una L real. El formato no tiene polilíneas; un cable con quiebres son varios registros.
+- **L6** — Hallazgo: el código `4001` con geometría de longitud cero es un **punto de unión**, y también lleva número de cable. Un cable puede terminar en el medio de otro: la conexión existe sólo por ese registro.
+- **L7** — Corrección de L2: los bornes no siempre están sobre el borde. La regla real es una grilla de 6 unidades con filas en `y=0` e `y=alto-3`. El fusible de `ej0def.cad` (alto 24, fila inferior en 21) la confirma con otra altura.

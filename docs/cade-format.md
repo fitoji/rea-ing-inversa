@@ -136,20 +136,56 @@ Recursos gráficos: `CONTACTOR_ON/OFF/SIM_*`, `DISYUNTOR_*`, variantes `_3D_`.
 
 ## Geometría de bornes (derivada de los cables)
 
-✅ El formato **no guarda** las coordenadas de los bornes, sólo sus nombres. Pero los cables sí guardan sus extremos, y esos extremos caen exactamente sobre el borde de la caja del componente:
+✅ El formato **no guarda** coordenadas de borne, sólo sus nombres. Pero los cables sí guardan sus extremos, y esos extremos caen dentro o sobre la caja del componente.
+
+La regla, verificada en tres archivos y en cajas de alturas distintas (15, 24):
+
+- Los bornes viven en una **grilla de 6 unidades**.
+- Las **filas** están en `y = 0` y `y = alto - 3` — la fila inferior queda tres unidades adentro del borde.
+- Las **columnas** están en `x = 0, 6, 12, 18…` desde el borde izquierdo.
+- Los dispositivos de dos bornes los tienen sobre el borde izquierdo, en `y = 0` e `y = 12`.
 
 | Componente | Caja `(x, y, w, h)` | Puntos de conexión (relativos a la caja) |
 |---|---|---|
-| motor `-M1` (1000) | `(30, 150, 24, 24)` | `(0,0) (6,0) (12,0) (18,0)` — borde superior |
-| contactor `-KM1` (2001) | `(30, 99, 18, 15)` | `(0,0) (6,0) (12,0) (0,12)` |
-| térmico `RELE` (6007) | `(30, 129, 21, 15)` | `(0,0) (6,0) (12,0) (0,12)` |
-| bornera `-X` (3005) | `(30, 66, 24, 3)` | `(0,0) (6,0) (12,0) (18,0)` — borde superior |
+| motor `-M1` (1000) | `(30, 150, 24, 24)` | `(0,0) (6,0) (12,0) (18,0)` — una sola fila |
+| contactor `-KM1` (2001) | `(30, 99, 18, 15)` | `(0,0) (6,0) (12,0)` y `(0,12) (6,12) (12,12)` |
+| térmico `RELE` (6007) | `(30, 129, 21, 15)` | ídem contactor |
+| fusible `Q1` (6009) | `(252, 51, 18, 24)` | filas en `y=0` y `y=21` — confirma `alto-3` |
 | pulsador `STAR` (8000) | `(162, 108, 6, 15)` | `(0,0) (0,12)` — borde izquierdo |
-| bobina `-KM1` (7000) | `(183, 108, 6, 15)` | `(0,0) (0,12)` — borde izquierdo |
 
-Conclusión: los bornes viven en una grilla de **6 unidades** sobre el borde de la caja. Dispositivos de varios bornes los alinean sobre el borde superior; los de dos bornes, sobre el borde izquierdo separados 12.
+⚠️ Se observa en tres esquemas ascendentes (en escalera). Falta un archivo de disposición horizontal para confirmar el patrón en otra orientación. Mientras tanto, la app dibuja **los bornes que el archivo evidencia**: sin cables, no hay bornes.
 
-⚠️ Esto se observa en un solo esquema (ascendente, en escalera). Falta confirmarlo con archivos de otra disposición antes de tratarlo como regla universal. Mientras tanto, la app dibuja **los pines que el archivo evidencia**, no una geometría supuesta: sin cables, no hay pines.
+## Modelo de cables: número, tramos y uniones
+
+✅ Tres campos que no estaban identificados y son el corazón de la edición de cables:
+
+| Dónde | Qué es |
+|---|---|
+| `geometry[21]` | **número de cable**. `0` = sin numerar |
+| código `4001` con geometría de longitud cero | **punto de unión**, con su propio número de cable |
+| código `4009` | cable de varios tramos: los tramos comparten número |
+
+✅ **Un cable con quiebres son varios registros.** El formato no tiene polilíneas. En `arranque-paro-motor-3f.cad`, los registros 36, 37 y 38 comparten el número `17` y forman una L real:
+
+```
+(144,156) → (144,162) → (162,162)
+                     ↗
+(162,144) → (162,162)
+```
+
+✅ **Un cable puede terminar en el medio de otro.** En la unión `(162,105)` hay dos registros `4001` y un cable que va de `(162,102)` a `(162,108)` pasa por ahí sin terminar. La conexión existe sólo por la unión: comparar extremos no alcanza, hay que proyectar el punto sobre el tramo.
+
+⚠️ Hay **dos** registros `4001` en el mismo punto `(162,105)`. La app lo reporta como aviso en vez de normalizarlo: no sabemos si CADe_SIMU lo considera un error o si es intencional.
+
+## Variantes de cable observadas
+
+| Código | Número | Comportamiento |
+|---|---|---|
+| 4000 | propio, secuencial | conductor simple numerado |
+| 4001 | propio | unión (geometría degenerada) |
+| 4009 | compartido | cable de varios tramos |
+| 4010 | propio | conductor largo (recorrido de varios componentes) |
+| 4019 | `0` | conductor sin numerar |
 
 ## Cola de geometría que imita una cabecera
 

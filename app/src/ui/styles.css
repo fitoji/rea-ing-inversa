@@ -595,3 +595,71 @@ button {
   box-shadow: 0 12px 32px #00000066;
   z-index: 20;
 }
+
+/* ------------------------------------------------------------- cables (f3) */
+
+.junction {
+  fill: var(--wire);
+  stroke: #0e1116;
+  stroke-width: 0.25;
+}
+
+.junction.sel {
+  fill: var(--accent);
+}
+
+.handle {
+  fill: #0e1116;
+  stroke: var(--accent);
+  stroke-width: 0.32;
+  cursor: crosshair;
+}
+
+.handle:hover {
+  fill: #1b2a3d;
+}
+
+.findings {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 12px 14px;
+}
+
+.finding {
+  display: grid;
+  grid-template-columns: 8px 1fr;
+  gap: 6px;
+  align-items: start;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--text-dim);
+  background: #0b0e13;
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  padding: 7px 8px;
+}
+
+.finding .btn.tiny {
+  grid-column: 2;
+  justify-self: start;
+  height: 22px;
+  padding: 0 8px;
+  font-size: 11px;
+  color: #cfe1ff;
+  background: var(--accent-dim);
+  border: 1px solid #3a5f92;
+  margin-top: 2px;
+}
+
+.finding-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--warn);
+  margin-top: 5px;
+}
+
+.finding-dot.err {
+  background: var(--danger);
+}

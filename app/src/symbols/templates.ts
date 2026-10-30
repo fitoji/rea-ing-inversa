@@ -36,4 +36,7 @@ export function templateFor(code: number): string | undefined {
   return TEMPLATES[code]?.raw;
 }
 
+/** Plantilla de un punto de unión (código 4001): geometría de longitud cero. */
+export const JUNCTION_TEMPLATE: string | null = "*32*4001##########*0*0*0*0*0*0*0*0*162*105*162*105*0*0*0*0*0*0*0*0*0*15*0#";
+
 export const TEMPLATE_CODES: number[] = Object.keys(TEMPLATES).map(Number).sort((a, b) => a - b);

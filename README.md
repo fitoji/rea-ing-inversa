@@ -13,10 +13,10 @@ Este proyecto **no** intenta decompilar ni reconstruir CADe_SIMU. Lo reimplement
 **v1 = app funcional** al cerrar la Fase 5: abre, edita y simula `.cade`, y se instala en macOS y Windows.
 
 ```
-M1 ──────────● M2 ────────● M3 ──────── M4 ──────── M5
+M1 ──────────● M2 ────────● M3 ────────● M4 ──────── M5
 abrir/guardar   ver/dibujar  editar      simular      producto
-                            ▲
-                            estamos acá (M1 y M2 cerrados, entrando a Fase 3)
+                                        ▲
+                                        estamos acá (M1-M3 cerrados, entrando a Fase 4)
 ```
 
 | Fase | Objetivo | Entregable que lo prueba | Estado |
@@ -24,7 +24,7 @@ abrir/guardar   ver/dibujar  editar      simular      producto
 | **0 — Reconocimiento** | entender el formato y el binario | tabla de códigos + gramática | 🟡 4/5 |
 | **1 — Parser** | abrir y guardar sin pérdida | round-trip byte a byte | 🟢 5/5 |
 | **2 — Render** | ver y dibujar el esquema | esquema en pantalla con zoom y símbolos | 🟢 5/5 |
-| **3 — Cables** | editar cables como en 2026 | arrastrar extremo con auto-ruteo | ⚪ 0/6 |
+| **3 — Cables** | editar cables como en 2026 | arrastrar extremo con auto-ruteo | 🟢 6/6 |
 | **4 — Simulación** | que el circuito funcione | arranque directo e inversión de giro | ⚪ 0/4 |
 | **5 — Producto** | que se pueda usar a diario | instalador macOS + Windows | ⚪ 0/4 |
 
@@ -34,7 +34,7 @@ abrir/guardar   ver/dibujar  editar      simular      producto
 |---|---|---|
 | **M1** | Abrir un `.cade` y guardarlo idéntico | ✅ |
 | **M2** | Verlo dibujado y poder mover componentes | ✅ |
-| **M3** | Editar cables con ruteo moderno | ⬜ |
+| **M3** | Editar cables con ruteo moderno | ✅ |
 | **M4** | Simular el circuito | ⬜ |
 | **M5** | Instalarlo en la máquina y usarlo | ⬜ |
 
@@ -43,15 +43,18 @@ abrir/guardar   ver/dibujar  editar      simular      producto
 Fecha: 2026-10-30 · rama `feat/simuelectro`
 
 **Hecho**
-- ✅ Parser `.cade`/`.cad` con round-trip byte a byte (61 tests, 3 archivos reales).
+- ✅ Parser `.cade`/`.cad` con round-trip byte a byte (79 tests, 3 archivos reales).
 - ✅ Modelo de dominio `Project → Sheet → Component → Pin → Wire`.
 - ✅ Editor con undo/redo, multi-selección, copiar/pegar y borrar sobre el texto.
 - ✅ Librería de símbolos IEC 60617: 22 códigos con símbolo dedicado y fallback rotulado.
 - ✅ App Vite + React + SVG corriendo: paleta, lienzo con zoom/pan/grilla/snap, inspector.
 - ✅ Pines derivados del archivo: cada borne dibujado es un extremo de cable real.
+- ✅ Modelo de cable: número (`geometry[21]`), tramos, uniones (`4001`).
+- ✅ Arrastrar extremos con snap a bornes y codo ortogonal automático.
+- ✅ Validaciones de red en vivo con acciones de arreglo.
 
-**En curso (Fase 3)**
-- 🟡 Unión pin↔cable real (hoy es por proximidad geométrica).
+**En curso (Fase 4)**
+- 🟡 Solver de simulación: todavía no hay motor de estados.
 - 🟡 Tabla de códigos completa: faltan muestras o análisis del binario (T0.2).
 
 **Limitaciones declaradas**
@@ -60,7 +63,7 @@ Fecha: 2026-10-30 · rama `feat/simuelectro`
 - 1 de 161 registros sigue mal delimitado en `inversion-giro-cej.cade`.
 
 **Siguiente**
-1. Fase 3: modelo de cable por segmentos con puntos de control y arrastre de extremos.
+1. Fase 4: solver booleano con contactos, bobinas y motor como carga.
 2. Cerrar la tabla de códigos con más muestras.
 
 Plan detallado con todas las tareas: [`odd/tasks/simuelectro.md`](odd/tasks/simuelectro.md).
@@ -95,6 +98,7 @@ app/
   src/model/project.ts     modelo de dominio y edición de registros
   src/editor/state.ts      estado del editor: undo/redo, selección, clipboard
   src/editor/pins.ts       bornes derivados de los extremos de cable
+  src/editor/network.ts    red de cables, uniones y validaciones
   src/symbols/library.ts   símbolos IEC 60617 en SVG
   src/symbols/templates.ts plantillas crudas por código (generadas)
   src/ui/                  app React: canvas, paleta, inspector

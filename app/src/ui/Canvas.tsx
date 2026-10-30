@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { JSX } from 'react';
 import { GEOMETRY, boxOf, boundsOf, wirePoints, type CadeRecordModel } from '../model/project.ts';
-import type { Rotation } from '../editor/state.ts';
+import type { DragOp, Rotation } from '../editor/state.ts';
 import { attachPoints, type Point } from '../editor/pins.ts';
+import { buildNetwork, cableSegments } from '../editor/network.ts';
 import { SymbolGlyph } from './SymbolGlyph.tsx';
 
 export interface View {
@@ -20,14 +21,21 @@ interface Props {
   placing: number | null;
   fitToken: number;
   onSelect: (ids: number[], additive: boolean) => void;
-  onDragPreview: (dx: number, dy: number) => void;
-  onDragCommit: (dx: number, dy: number) => void;
+  onDragPreview: (op: DragOp | null) => void;
+  onDragCommit: (op: DragOp) => void;
   onPlace: (x: number, y: number) => void;
   onZoom: (k: number) => void;
+  onInsertVertex: (id: number, x: number, y: number) => void;
+  onMergeVertex: (x: number, y: number) => void;
 }
 
 const MIN_K = 0.25;
 const MAX_K = 24;
+const PIN_SNAP = 6;
+
+type DragState =
+  | { kind: 'move'; sx: number; sy: number; moved: boolean }
+  | { kind: 'endpoint'; id: number; end: 0 | 1; sx: number; sy: number; moved: boolean; ox: number; oy: number };
 
 export function Canvas(props: Props): JSX.Element {
   const {
@@ -43,11 +51,13 @@ export function Canvas(props: Props): JSX.Element {
     onDragCommit,
     onPlace,
     onZoom,
+    onInsertVertex,
+    onMergeVertex,
   } = props;
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [view, setView] = useState<View>({ x: 0, y: 0, k: 4 });
-  const [drag, setDrag] = useState<{ sx: number; sy: number; active: boolean } | null>(null);
+  const [drag, setDrag] = useState<DragState | null>(null);
   const [pan, setPan] = useState<{ px: number; py: number; vx: number; vy: number } | null>(null);
   const [marquee, setMarquee] = useState<{ x1: number; y1: number; x2: number; y2: number } | null>(null);
 
@@ -127,11 +137,29 @@ export function Canvas(props: Props): JSX.Element {
   const snapValue = (n: number): number => Math.round(n / step) * step;
 
   const pins = useMemo(() => attachPoints(records), [records]);
+  const network = useMemo(() => buildNetwork(records), [records]);
+  const pinList = useMemo(() => [...pins.values()].flat(), [pins]);
+
+  /** Snap magnético: primero al borne más cercano, después a la grilla. */
+  const snapPoint = useCallback(
+    (world: Point): Point => {
+      let best: Point | null = null;
+      let bestDist = PIN_SNAP;
+      for (const p of pinList) {
+        const d = Math.hypot(p.x - world.x, p.y - world.y);
+        if (d < bestDist) {
+          bestDist = d;
+          best = p;
+        }
+      }
+      if (best) return { x: best.x, y: best.y };
+      return { x: snapValue(world.x), y: snapValue(world.y) };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [pinList, snap],
+  );
 
   const onPointerDown = (e: React.PointerEvent): void => {
-    const target = e.target as Element;
-    const hit = target.closest('[data-id]') as HTMLElement | null;
-
     if (e.button === 1 || (e.button === 0 && e.altKey)) {
       setPan({ px: e.clientX, py: e.clientY, vx: view.x, vy: view.y });
       svgRef.current!.setPointerCapture(e.pointerId);
@@ -140,18 +168,39 @@ export function Canvas(props: Props): JSX.Element {
     if (e.button !== 0) return;
 
     const world = toWorld(e.clientX, e.clientY);
+    const target = e.target as Element;
 
     if (placing !== null) {
-      onPlace(snapValue(world.x), snapValue(world.y));
+      onPlace(snapPoint(world).x, snapPoint(world).y);
       return;
     }
 
+    const handle = target.closest('[data-endpoint]') as HTMLElement | null;
+    if (handle) {
+      e.stopPropagation();
+      const id = Number(handle.dataset.wire);
+      const end = Number(handle.dataset.endpoint) as 0 | 1;
+      const rec = records.find((r) => r.id === id);
+      const pts = rec ? wirePoints(rec) : null;
+      if (!pts) return;
+      const at = end === 0 ? { x: pts.x1, y: pts.y1 } : { x: pts.x2, y: pts.y2 };
+      setDrag({ kind: 'endpoint', id, end, sx: world.x, sy: world.y, moved: false, ox: at.x, oy: at.y });
+      svgRef.current!.setPointerCapture(e.pointerId);
+      return;
+    }
+
+    const hit = target.closest('[data-id]') as HTMLElement | null;
     if (hit) {
       const id = Number(hit.dataset.id);
-      if (e.shiftKey) onSelect([id], true);
-      else if (!selection.has(id)) onSelect([id], false);
-      if (!e.shiftKey) setDrag({ sx: world.x, sy: world.y, active: true });
-      svgRef.current!.setPointerCapture(e.pointerId);
+      const rec = records.find((r) => r.id === id);
+      const group = rec && rec.kind === 'connection' ? cableSegments(network, id) : [id];
+      const already = group.some((g) => selection.has(g));
+      if (e.shiftKey) onSelect(group, true);
+      else if (!already) onSelect(group, false);
+      if (!e.shiftKey) {
+        setDrag({ kind: 'move', sx: world.x, sy: world.y, moved: false });
+        svgRef.current!.setPointerCapture(e.pointerId);
+      }
       return;
     }
 
@@ -165,13 +214,22 @@ export function Canvas(props: Props): JSX.Element {
       setView((v) => ({ ...v, x: pan.vx + (e.clientX - pan.px), y: pan.vy + (e.clientY - pan.py) }));
       return;
     }
-    if (drag?.active) {
-      const world = toWorld(e.clientX, e.clientY);
-      onDragPreview(snapValue(world.x - drag.sx), snapValue(world.y - drag.sy));
+    const world = toWorld(e.clientX, e.clientY);
+
+    if (drag?.kind === 'move') {
+      const dx = snapValue(world.x - drag.sx);
+      const dy = snapValue(world.y - drag.sy);
+      if (dx !== 0 || dy !== 0) setDrag({ ...drag, moved: true });
+      onDragPreview({ kind: 'move', dx, dy });
+      return;
+    }
+    if (drag?.kind === 'endpoint') {
+      if (Math.hypot(world.x - drag.sx, world.y - drag.sy) > 0.5) setDrag({ ...drag, moved: true });
+      const p = snapPoint(world);
+      onDragPreview({ kind: 'endpoint', id: drag.id, end: drag.end, x: p.x, y: p.y });
       return;
     }
     if (marquee) {
-      const world = toWorld(e.clientX, e.clientY);
       setMarquee({ ...marquee, x2: world.x, y2: world.y });
     }
   };
@@ -181,13 +239,25 @@ export function Canvas(props: Props): JSX.Element {
       setPan(null);
       return;
     }
-    if (drag?.active) {
+    if (drag?.kind === 'move') {
       const world = toWorld(e.clientX, e.clientY);
       const dx = snapValue(world.x - drag.sx);
       const dy = snapValue(world.y - drag.sy);
       setDrag(null);
-      if (dx !== 0 || dy !== 0) onDragCommit(dx, dy);
-      else onDragPreview(0, 0);
+      if (dx !== 0 || dy !== 0) onDragCommit({ kind: 'move', dx, dy });
+      else onDragPreview(null);
+      return;
+    }
+    if (drag?.kind === 'endpoint') {
+      const world = toWorld(e.clientX, e.clientY);
+      const moved = Math.hypot(world.x - drag.sx, world.y - drag.sy) > 0.5;
+      const p = snapPoint(world);
+      setDrag(null);
+      if (moved) onDragCommit({ kind: 'endpoint', id: drag.id, end: drag.end, x: p.x, y: p.y });
+      else {
+        onDragPreview(null);
+        onMergeVertex(drag.ox, drag.oy);
+      }
       return;
     }
     if (marquee) {
@@ -200,15 +270,34 @@ export function Canvas(props: Props): JSX.Element {
         if (rec.kind !== 'component') continue;
         const b = boundsOf(rec);
         if (!b) continue;
-        const overlaps = b.x < mx2 && b.x + b.w > mx1 && b.y < my2 && b.y + b.h > my1;
-        if (overlaps) ids.push(rec.id);
+        if (b.x < mx2 && b.x + b.w > mx1 && b.y < my2 && b.y + b.h > my1) ids.push(rec.id);
       }
       if (ids.length > 0) onSelect(ids, e.shiftKey);
       setMarquee(null);
     }
   };
 
+  const onDoubleClick = (e: React.MouseEvent): void => {
+    const target = e.target as Element;
+    const wire = target.closest('[data-wire]') as HTMLElement | null;
+    if (!wire) return;
+    const id = Number(wire.dataset.wire);
+    const rec = records.find((r) => r.id === id);
+    const pts = rec ? wirePoints(rec) : null;
+    if (!pts) return;
+    const world = toWorld(e.clientX, e.clientY);
+
+    // El vértice tiene que caer SOBRE el tramo: se snapea sólo la coordenada
+    // libre y se conserva la fija, o el corte no sería ortogonal.
+    const vertical = Math.abs(pts.x1 - pts.x2) < 0.01;
+    const x = vertical ? pts.x1 : snapValue(world.x);
+    const y = vertical ? snapValue(world.y) : pts.y1;
+    onInsertVertex(id, x, y);
+  };
+
   const cursorClass = placing !== null ? 'canvas placing' : pan ? 'canvas panning' : 'canvas';
+
+  const selectedWires = records.filter((r) => r.kind === 'connection' && selection.has(r.id));
 
   return (
     <div className="canvas-wrap">
@@ -220,6 +309,7 @@ export function Canvas(props: Props): JSX.Element {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
+        onDoubleClick={onDoubleClick}
       >
         <defs>
           <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
@@ -252,6 +342,39 @@ export function Canvas(props: Props): JSX.Element {
             );
           })}
 
+          {[...network.nodes.values()]
+            .filter((n) => n.junction)
+            .map((n) => (
+              <circle key={`j-${n.key}`} className="junction" cx={n.x} cy={n.y} r={1.15} />
+            ))}
+
+          {selectedWires.map((rec) => {
+            const pts = wirePoints(rec);
+            if (!pts) return null;
+            return (
+              <g key={`h-${rec.id}`}>
+                <rect
+                  className="handle"
+                  data-endpoint="0"
+                  data-wire={rec.id}
+                  x={pts.x1 - 1.1}
+                  y={pts.y1 - 1.1}
+                  width={2.2}
+                  height={2.2}
+                />
+                <rect
+                  className="handle"
+                  data-endpoint="1"
+                  data-wire={rec.id}
+                  x={pts.x2 - 1.1}
+                  y={pts.y2 - 1.1}
+                  width={2.2}
+                  height={2.2}
+                />
+              </g>
+            );
+          })}
+
           {marquee && (
             <rect
               className="marquee"
@@ -265,8 +388,8 @@ export function Canvas(props: Props): JSX.Element {
       </svg>
 
       <div className="canvas-hint">
-        arrastrá para mover · <b>alt</b>+arrastrar o botón central para desplazar · rueda para zoom ·{' '}
-        <b>⌘Z</b> deshacer
+        arrastrá componentes · <b>doble clic</b> en un cable agrega un vértice · <b>clic</b> en un vértice lo une ·{' '}
+        <b>alt</b>+arrastrar para desplazar
       </div>
       <div className="zoom-tag">{Math.round(view.k * 100)}%</div>
     </div>
@@ -299,33 +422,13 @@ function Component({
   return (
     <g data-id={rec.id} transform={`translate(${x} ${y})`} style={{ cursor: 'move' }}>
       <rect className="hitbox" x={0} y={0} width={box.width} height={box.height} />
-      <rect
-        className={selected ? 'body sel' : 'body'}
-        x={0}
-        y={0}
-        width={box.width}
-        height={box.height}
-        rx={0.6}
-      />
+      <rect className={selected ? 'body sel' : 'body'} x={0} y={0} width={box.width} height={box.height} rx={0.6} />
       <g transform={`translate(${inset} ${inset})`}>
-        <SymbolGlyph
-          code={rec.code}
-          pinNames={rec.pins}
-          w={iw}
-          h={ih}
-          rotation={rotation}
-          selected={selected}
-        />
+        <SymbolGlyph code={rec.code} pinNames={rec.pins} w={iw} h={ih} rotation={rotation} selected={selected} />
       </g>
 
       {pins.map((p, i) => (
-        <circle
-          key={`pin-${i}`}
-          className={selected ? 'pin sel' : 'pin'}
-          cx={p.x - x}
-          cy={p.y - y}
-          r={0.9}
-        />
+        <circle key={`pin-${i}`} className={selected ? 'pin sel' : 'pin'} cx={p.x - x} cy={p.y - y} r={0.9} />
       ))}
 
       {label !== '' && (
@@ -341,14 +444,15 @@ function Wire({ rec, selected }: { rec: CadeRecordModel; selected: boolean }): J
   const pts = wirePoints(rec);
   if (!pts) return null;
   if (pts.x1 === pts.x2 && pts.y1 === pts.y2) {
-    return <circle className={selected ? 'junction sel' : 'junction'} cx={pts.x1} cy={pts.y1} r={1.4} />;
+    // Registro de unión (4001): geometría de longitud cero.
+    return <circle className={selected ? 'junction sel' : 'junction'} cx={pts.x1} cy={pts.y1} r={1.15} />;
   }
   return (
     <path
       data-id={rec.id}
+      data-wire={rec.id}
       className={selected ? 'wire sel' : `wire${rec.code === 4019 ? ' alt' : ''}`}
       d={`M${pts.x1} ${pts.y1}L${pts.x2} ${pts.y2}`}
-      style={{ cursor: 'pointer' }}
     />
   );
 }

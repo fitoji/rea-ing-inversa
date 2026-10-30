@@ -29,8 +29,8 @@ test('el motor del arranque expone 4 puntos de conexión sobre el borde superior
   assert.deepEqual(xs, [0, 6, 12, 18], 'los bornes caen en múltiplos de 6');
 });
 
-test('todo punto de conexión cae sobre el borde de su caja', () => {
-  for (const name of ['arranque-paro-motor-3f.cad', 'ej0def.cad']) {
+test('todo punto de conexión cae dentro o sobre su caja', () => {
+  for (const name of ['arranque-paro-motor-3f.cad', 'ej0def.cad', 'inversion-giro-cej.cade']) {
     const project = load(name);
     const boxes = new Map(
       project.records
@@ -41,12 +41,38 @@ test('todo punto de conexión cae sobre el borde de su caja', () => {
     for (const [id, pins] of attachPoints(project.records)) {
       const b = boxes.get(id)!;
       for (const p of pins) {
-        const onVertical = Math.abs(p.x - b.x) < 0.01 || Math.abs(p.x - (b.x + b.w)) < 0.01;
-        const onHorizontal = Math.abs(p.y - b.y) < 0.01 || Math.abs(p.y - (b.y + b.h)) < 0.01;
-        assert.ok(onVertical || onHorizontal, `${name}: ${id} pin (${p.x},${p.y}) fuera del borde`);
+        assert.ok(p.x >= b.x - 0.01 && p.x <= b.x + b.w + 0.01, `${name}: ${id} pin x=${p.x} fuera de la caja`);
+        assert.ok(p.y >= b.y - 0.01 && p.y <= b.y + b.h + 0.01, `${name}: ${id} pin y=${p.y} fuera de la caja`);
       }
     }
   }
+});
+
+test('los bornes siguen una grilla de 6 con la fila inferior en alto-3', () => {
+  const project = load('arranque-paro-motor-3f.cad');
+  const pins = attachPoints(project.records);
+  const contactor = project.records.find((r) => r.code === 2001)!;
+  const b = boundsOf(contactor)!;
+  const rel = pins.get(contactor.id)!.map((p) => [p.x - b.x, p.y - b.y]);
+
+  assert.deepEqual(rel, [
+    [0, 0],
+    [6, 0],
+    [12, 0],
+    [0, 12],
+    [6, 12],
+    [12, 12],
+  ]);
+  assert.equal(12, b.h - 3, 'la fila inferior está tres unidades adentro del borde');
+});
+
+test('el fusible de ej0def confirma la regla con otra altura', () => {
+  const project = load('ej0def.cad');
+  const fuse = project.records.find((r) => r.code === 6009)!;
+  const b = boundsOf(fuse)!;
+  const pins = attachPoints(project.records).get(fuse.id)!;
+  const rows = [...new Set(pins.map((p) => p.y - b.y))].sort((a, b2) => a - b2);
+  assert.deepEqual(rows, [0, b.h - 3]);
 });
 
 test('componentes sin cables no inventan pines', () => {

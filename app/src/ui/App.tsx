@@ -4,29 +4,35 @@ import {
   createEditor,
   projectOf,
   select,
-  moveSelection,
   deleteSelection,
   copySelection,
   paste,
   addComponent,
   rotateSelection,
   setDesignator,
+  setCableNumber,
+  insertVertex,
+  mergeVertex,
+  addJunction,
+  applyDrag,
   undo,
   redo,
+  type DragOp,
   type EditorState,
 } from '../editor/state.ts';
+import { buildNetwork, validate } from '../editor/network.ts';
 import { Canvas } from './Canvas.tsx';
 import { Palette } from './Palette.tsx';
 import { Inspector } from './Inspector.tsx';
 import { SAMPLES, loadSample, loadFile, downloadCade } from './samples.ts';
-import { templateFor } from '../symbols/templates.ts';
+import { JUNCTION_TEMPLATE, templateFor } from '../symbols/templates.ts';
 
 export function App(): JSX.Element {
   const [state, setState] = useState<EditorState | null>(null);
   const [fileName, setFileName] = useState('');
   const [activeSheet, setActiveSheet] = useState(0);
   const [placing, setPlacing] = useState<number | null>(null);
-  const [preview, setPreview] = useState<{ dx: number; dy: number } | null>(null);
+  const [preview, setPreview] = useState<DragOp | null>(null);
   const [showGrid, setShowGrid] = useState(true);
   const [snap, setSnap] = useState(true);
   const [fitToken, setFitToken] = useState(0);
@@ -56,8 +62,7 @@ export function App(): JSX.Element {
 
   const display = useMemo(() => {
     if (!state || !preview) return project;
-    if (preview.dx === 0 && preview.dy === 0) return project;
-    return projectOf(moveSelection(state, preview.dx, preview.dy));
+    return projectOf(applyDrag(state, preview));
   }, [state, preview, project]);
 
   const sheet = display?.sheets[Math.min(activeSheet, display.sheets.length - 1)];
@@ -67,6 +72,9 @@ export function App(): JSX.Element {
   }, [display, sheet]);
 
   const selection = useMemo(() => new Set(state?.selection ?? []), [state]);
+
+  const network = useMemo(() => buildNetwork(project?.records ?? []), [project]);
+  const findings = useMemo(() => validate(project?.records ?? []), [project]);
 
   const selectedRecords = useMemo(() => {
     if (!project || !state) return [];
@@ -79,17 +87,21 @@ export function App(): JSX.Element {
     setPlacing(null);
   }, []);
 
-  const onDragPreview = useCallback((dx: number, dy: number) => {
-    setPreview({ dx, dy });
+  const onDragPreview = useCallback((op: DragOp | null) => {
+    setPreview(op);
   }, []);
 
-  const onDragCommit = useCallback((dx: number, dy: number) => {
-    setState((s) => {
-      if (!s) return s;
-      const next = moveSelection(s, dx, dy);
-      return next;
-    });
+  const onDragCommit = useCallback((op: DragOp) => {
+    setState((s) => (s ? applyDrag(s, op) : s));
     setPreview(null);
+  }, []);
+
+  const onInsertVertex = useCallback((id: number, x: number, y: number) => {
+    setState((s) => (s ? insertVertex(s, id, x, y) : s));
+  }, []);
+
+  const onMergeVertex = useCallback((x: number, y: number) => {
+    setState((s) => (s ? mergeVertex(s, x, y) : s));
   }, []);
 
   const onPlace = useCallback(
@@ -260,14 +272,20 @@ export function App(): JSX.Element {
         onDragCommit={onDragCommit}
         onPlace={onPlace}
         onZoom={setZoom}
+        onInsertVertex={onInsertVertex}
+        onMergeVertex={onMergeVertex}
       />
 
       <Inspector
         selected={selectedRecords}
         rotation={state.rotation}
+        network={network}
+        findings={findings}
         onDesignator={(id, value) => setState(setDesignator(state, id, value))}
         onRotate={() => setState(rotateSelection(state))}
         onDelete={() => setState(deleteSelection(state))}
+        onCableNumber={(ids, n) => setState(setCableNumber(state, ids, n))}
+        onAddJunction={(x, y) => setState(addJunction(state, x, y, JUNCTION_TEMPLATE ?? undefined))}
       />
 
       <footer className="statusbar">
@@ -278,6 +296,7 @@ export function App(): JSX.Element {
         <span>{wireCount} cables</span>
         <span>{project.sheets.length} hoja{project.sheets.length === 1 ? '' : 's'}</span>
         <span className="spacer" style={{ flex: 1 }} />
+        {findings.length > 0 && <span className="err">{findings.length} aviso{findings.length === 1 ? '' : 's'}</span>}
         {state.selection.length > 0 && <span>{state.selection.length} seleccionados</span>}
         <span>{Math.round(zoom * 100)}%</span>
         {placing !== null && <span>colocando código {placing} · esc para salir</span>}
