@@ -25,7 +25,7 @@ abrir/guardar   ver/dibujar  editar      simular      producto
 | **1 — Parser** | abrir y guardar sin pérdida | round-trip byte a byte | 🟢 5/5 |
 | **2 — Render** | ver y dibujar el esquema | esquema en pantalla con zoom y símbolos | 🟢 5/5 |
 | **3 — Cables** | editar cables como en 2026 | arrastrar extremo con auto-ruteo | 🟢 6/6 |
-| **4 — Simulación** | que el circuito funcione | arranque directo e inversión de giro | ⚪ 0/4 |
+| **4 — Simulación** | que el circuito funcione | arranque directo e inversión de giro | 🟡 2/4 |
 | **5 — Producto** | que se pueda usar a diario | instalador macOS + Windows | ⚪ 0/4 |
 
 ### Hitos
@@ -43,7 +43,7 @@ abrir/guardar   ver/dibujar  editar      simular      producto
 Fecha: 2026-10-30 · rama `feat/simuelectro`
 
 **Hecho**
-- ✅ Parser `.cade`/`.cad` con round-trip byte a byte (79 tests, 3 archivos reales).
+- ✅ Parser `.cade`/`.cad` con round-trip byte a byte (107 tests, 3 archivos reales).
 - ✅ Modelo de dominio `Project → Sheet → Component → Pin → Wire`.
 - ✅ Editor con undo/redo, multi-selección, copiar/pegar y borrar sobre el texto.
 - ✅ Librería de símbolos IEC 60617: 22 códigos con símbolo dedicado y fallback rotulado.
@@ -52,9 +52,12 @@ Fecha: 2026-10-30 · rama `feat/simuelectro`
 - ✅ Modelo de cable: número (`geometry[21]`), tramos, uniones (`4001`).
 - ✅ Arrastrar extremos con snap a bornes y codo ortogonal automático.
 - ✅ Validaciones de red en vivo con acciones de arreglo.
+- ✅ Solver de contactores con enclavamiento y detección de lazos inestables.
+- ✅ Extracción de netlist: aparatos agrupados por designador, redes por proyección.
 
 **En curso (Fase 4)**
-- 🟡 Solver de simulación: todavía no hay motor de estados.
+- 🟡 Conectar la netlist al solver: falta inferir la alimentación (fase/neutro).
+- 🟡 Animación de estados en el lienzo (T4.3).
 - 🟡 Tabla de códigos completa: faltan muestras o análisis del binario (T0.2).
 
 **Limitaciones declaradas**
@@ -99,6 +102,8 @@ app/
   src/editor/state.ts      estado del editor: undo/redo, selección, clipboard
   src/editor/pins.ts       bornes derivados de los extremos de cable
   src/editor/network.ts    red de cables, uniones y validaciones
+  src/sim/netlist.ts       dibujo -> circuito: redes y aparatos
+  src/sim/solver.ts        lógica de contactores con enclavamiento
   src/symbols/library.ts   símbolos IEC 60617 en SVG
   src/symbols/templates.ts plantillas crudas por código (generadas)
   src/ui/                  app React: canvas, paleta, inspector

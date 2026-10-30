@@ -145,6 +145,20 @@ v1 usable: **6-8 semanas** de trabajo part-time. La fase 3 es la que define el p
 - Al crear una unión nueva se clona la plantilla `4001` del archivo, no se sintetiza.
 - La conexión en T se detecta; no se auto-repara.
 
+### Fase 4 — Simulación (2/4)
+
+- [x] T4.1 Solver iterativo con detección de convergencia y de lazo inestable (`app/src/sim/solver.ts`)
+- [x] T4.2 Semántica de componentes: bobina, contacto NA/NC, pulsador, selector, lámpara, fusible, térmico, motor (`app/src/sim/netlist.ts`)
+- [ ] T4.3 Propagación de estados y animación visual en el lienzo
+- [x] T4.4 Tests con circuitos canónicos: arranque directo con enclavamiento e inversión de giro con NC cruzado
+
+**Decisión de diseño**: el solver se prueba contra circuitos escritos como datos, no extraídos de un `.cade`. Así un fallo de lógica no se confunde con un fallo de interpretación del dibujo. La extracción tiene sus propios tests de invariantes sobre los archivos reales.
+
+**Abierto:**
+
+- **Inferir la alimentación.** El solver necesita el par (fase, neutro) y el archivo no lo declara. Candidato: los bornes de la bornera `3005`, pero no está verificado.
+- **Hallazgo a confirmar**: en `arranque-paro-motor-3f.cad` la bobina `-KM1` queda **en paralelo** con STAR según la extracción (comparten las dos redes). O el esquema es así, o falta un campo que indique cómo se conecta la bobina. No se fuerza interpretación.
+
 ## Log
 
 - **L1** — «falta bastante la ui se ve muy rustica, pasemos a face 2». Autoriza Fase 2 completa.
@@ -153,6 +167,7 @@ v1 usable: **6-8 semanas** de trabajo part-time. La fase 3 es la que define el p
 - **L4** — «dale». Autoriza Fase 3.
 - **L5** — Hallazgo: `geometry[21]` es el **número de cable**. Los tramos de un mismo cable lo comparten: en el arranque, los registros 36/37/38 son el cable 17 y forman una L real. El formato no tiene polilíneas; un cable con quiebres son varios registros.
 - **L6** — Hallazgo: el código `4001` con geometría de longitud cero es un **punto de unión**, y también lleva número de cable. Un cable puede terminar en el medio de otro: la conexión existe sólo por ese registro.
+- **L13** — «dale» al arranque de Fase 4. Solver implementado con realimentación real: contactos resuelven desde el estado, la fase y el neutro se propagan sólo por contactos (las cargas no conducen para continuidad), y las cargas se consultan al final. La oscilación se detecta por estado repetido, no por tope de iteraciones. 9 tests de solver + 7 de netlist.
 - **L12** — Reporte del usuario: los vértices agregados se comportaban raro; al volver a la recta a veces quedaban, y al borrar un vértice se borraba la línea. Tres causas: (1) `mergeVertex` reemplazaba el tramo DESPUÉS de filtrar, así que al sacar un registro se corrían los índices y el tramo unido se escribía sobre otro — eso borraba la línea; (2) faltaba disolver los vértices que quedan sobre una recta; (3) no había forma de borrar un vértice: Suprimir borraba el cable entero. Ahora `simplifyCollinear` une tramos colineales sin borne ni unión, el clic en un vértice lo enfoca y Suprimir borra sólo ese vértice. Verificado por CDP: doblar 44 → volver 43; insertar 44 → enfocar vértice → ⌫ → 43 con el cable recto; ⌫ sin vértice enfocado sigue borrando el cable.
 - **L11** — Reporte del usuario: al volver un extremo a su lugar, el vértice del codo viejo quedaba plantado. Tres causas: (1) al volver se generaba un tramo idéntico a uno existente y el duplicado sobrevivía; (2) el tramo que quedaba sin conexión por el movimiento no se limpiaba; (3) la selección no seguía al cable, así que los handles quedaban en los lugares viejos y el arrastre siguiente agarraba otra cosa. Arreglado con descarte de duplicados contra TODO el archivo, limpieza de ramales que quedaron muertos por el movimiento (salvo en el punto que se está arrastrando) y selección que sigue al cable. Además el imán a bornes pasó de 6 unidades a 11 px de pantalla: los bornes de este esquema están cada 6, así que el punto saltaba entre ellos y no se podía soltar donde uno quería. Verificado por CDP: ida 44 registros, vuelta 43, el cable vuelve a ser un único tramo vertical y el codo no queda.
 - **L10** — Reporte del usuario: arrastrar a la derecha el extremo inferior del cable largo sólo agregaba una línea horizontal. El codo se ubicaba junto al extremo que se arrastraba, así que la vertical quedaba intacta. Ahora el codo va junto al extremo QUIETO: el tramo que se arrastra conserva su orientación y se ve desplazarse. Verificado en pantalla: la vertical pasa a x=60 y el codo queda arriba, junto al borne.
