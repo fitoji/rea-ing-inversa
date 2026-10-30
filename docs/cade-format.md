@@ -110,6 +110,12 @@ Es la razón por la que un parser que divide por `#` falla: la frontera del regi
 
 ✅ `20000#XXX` + campos de texto libre con fecha (`04-Feb-2024`) y nombre de hoja (`CADe_S1`), delimitados por marcadores `$$$` y `&&&`.
 
+⚠️ **El bloque de título no siempre es el último registro de la hoja.** En `ej0def.cad` está en el registro 14 y hay dieciséis registros dibujados después, sobre la misma página. El bloque se escribe al guardar; seguir dibujando después es lo normal.
+
+Consecuencia para el editor: lo que está después del último bloque de título pertenece a **esa** hoja, no a una hoja nueva. Tratarlo como hoja aparte hacía que cualquier registro agregado quedara fuera de la vista y la edición pareciera no hacer nada.
+
+Una hoja nueva empieza recién después de un bloque de título **cuando hay otro bloque de título más adelante**. `inversion-giro-cej.cade` es el caso: títulos en los registros 114 y 160, dos hojas reales.
+
 ## Designadores vistos
 
 ✅ `-KM1`, `-KM2`, `-F1`, `-S0`…`-S4`, `-X`, `EV1`, `EV2`, `-M1`, `-S33`, `-S44`, `RELE`, `ITM`.

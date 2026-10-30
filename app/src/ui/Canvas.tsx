@@ -159,6 +159,37 @@ export function Canvas(props: Props): JSX.Element {
     [pinList, snap],
   );
 
+  /**
+   * Golpe sobre cable por distancia, no por orden de pintado.
+   *
+   * Las cajas de los componentes se pintan encima de los cables (un cable pasa
+   * por detrás del símbolo al llegar a un borne), así que confiar en el orden
+   * del DOM hacía que un clic sobre el cable seleccionara el componente.
+   */
+  const hitWire = useCallback(
+    (world: Point, tolerance: number): number | null => {
+      let best: number | null = null;
+      let bestDist = tolerance;
+      for (const rec of records) {
+        const pts = wirePoints(rec);
+        if (!pts || (pts.x1 === pts.x2 && pts.y1 === pts.y2)) continue;
+        const dx = pts.x2 - pts.x1;
+        const dy = pts.y2 - pts.y1;
+        const len2 = dx * dx + dy * dy;
+        const t = len2 === 0 ? 0 : Math.max(0, Math.min(1, ((world.x - pts.x1) * dx + (world.y - pts.y1) * dy) / len2));
+        const px = pts.x1 + t * dx;
+        const py = pts.y1 + t * dy;
+        const d = Math.hypot(world.x - px, world.y - py);
+        if (d < bestDist) {
+          bestDist = d;
+          best = rec.id;
+        }
+      }
+      return best;
+    },
+    [records],
+  );
+
   const onPointerDown = (e: React.PointerEvent): void => {
     if (e.button === 1 || (e.button === 0 && e.altKey)) {
       setPan({ px: e.clientX, py: e.clientY, vx: view.x, vy: view.y });
@@ -189,9 +220,12 @@ export function Canvas(props: Props): JSX.Element {
       return;
     }
 
-    const hit = target.closest('[data-id]') as HTMLElement | null;
-    if (hit) {
-      const id = Number(hit.dataset.id);
+    // Un cable manda sobre la caja del componente que lo tapa.
+    const wireHit = hitWire(world, 4 / view.k);
+    const domHit = target.closest('[data-id]') as HTMLElement | null;
+    const hitId = wireHit ?? (domHit ? Number(domHit.dataset.id) : null);
+    if (hitId !== null) {
+      const id = hitId;
       const rec = records.find((r) => r.id === id);
       const group = rec && rec.kind === 'connection' ? cableSegments(network, id) : [id];
       const already = group.some((g) => selection.has(g));
@@ -278,21 +312,23 @@ export function Canvas(props: Props): JSX.Element {
   };
 
   const onDoubleClick = (e: React.MouseEvent): void => {
-    const target = e.target as Element;
-    const wire = target.closest('[data-wire]') as HTMLElement | null;
-    if (!wire) return;
-    const id = Number(wire.dataset.wire);
+    const world = toWorld(e.clientX, e.clientY);
+    const id = hitWire(world, 5 / view.k);
+    if (id === null) return;
     const rec = records.find((r) => r.id === id);
     const pts = rec ? wirePoints(rec) : null;
     if (!pts) return;
-    const world = toWorld(e.clientX, e.clientY);
 
     // El vértice tiene que caer SOBRE el tramo: se snapea sólo la coordenada
-    // libre y se conserva la fija, o el corte no sería ortogonal.
+    // libre, se conserva la fija y se exige que quede entre los dos extremos.
     const vertical = Math.abs(pts.x1 - pts.x2) < 0.01;
-    const x = vertical ? pts.x1 : snapValue(world.x);
-    const y = vertical ? snapValue(world.y) : pts.y1;
-    onInsertVertex(id, x, y);
+    const lo = vertical ? Math.min(pts.y1, pts.y2) : Math.min(pts.x1, pts.x2);
+    const hi = vertical ? Math.max(pts.y1, pts.y2) : Math.max(pts.x1, pts.x2);
+    const raw = vertical ? snapValue(world.y) : snapValue(world.x);
+    const value = Math.max(lo + 1, Math.min(hi - 1, raw));
+    if (value <= lo || value >= hi) return;
+
+    onInsertVertex(id, vertical ? pts.x1 : value, vertical ? value : pts.y1);
   };
 
   const cursorClass = placing !== null ? 'canvas placing' : pan ? 'canvas panning' : 'canvas';

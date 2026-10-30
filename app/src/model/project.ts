@@ -128,8 +128,18 @@ export function buildProject(doc: CadeDocument): Project {
     sheets.push({ index: sheets.length, startRecord: start, endRecord: i + 1, titleBlock: rec });
     start = i + 1;
   });
+
+  // Lo que queda después del último bloque de título pertenece a ESA hoja, no a
+  // una nueva. Evidencia: `ej0def.cad` tiene su bloque de título en el registro
+  // 14 y dieciséis registros dibujados después, sobre la misma página. El bloque
+  // de título se escribe al guardar; seguir dibujando después es lo normal.
+  //
+  // Sin esto, cualquier registro agregado caía en una hoja sin título que no se
+  // estaba mirando, y la edición parecía no haber hecho nada.
   if (start < records.length) {
-    sheets.push({ index: sheets.length, startRecord: start, endRecord: records.length, titleBlock: null });
+    const last = sheets.at(-1);
+    if (last) last.endRecord = records.length;
+    else sheets.push({ index: 0, startRecord: 0, endRecord: records.length, titleBlock: null });
   }
   return { hasMagic: doc.hasMagic, prefix: doc.prefix, records, sheets };
 }

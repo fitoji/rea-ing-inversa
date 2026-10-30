@@ -221,3 +221,46 @@ test('editar cables no altera los componentes', () => {
   assert.equal(after.length, before.length);
   before.forEach((r, i) => assert.equal(after[i]!.raw, r.raw));
 });
+
+test('regresión: lo dibujado después del bloque de título pertenece a esa hoja', () => {
+  // ej0def.cad tiene el bloque de título en el registro 14 y dieciséis registros
+  // dibujados después, sobre la misma página. Tratarlos como una hoja nueva y
+  // vacía hacía que toda edición nueva quedara invisible.
+  const p = buildProject(parse(readFileSync(join(FIXTURES, 'ej0def.cad'), 'latin1')));
+  assert.equal(p.sheets.length, 1, 'ej0def es una sola hoja');
+  assert.equal(p.sheets[0]!.endRecord, p.records.length);
+  assert.equal(p.sheets[0]!.titleBlock?.code, 20000);
+});
+
+test('regresión: un tramo agregado queda dentro de la hoja visible', () => {
+  const wire = project().records.find((r) => r.code === 4000 && r.geometry[21] === 1)!;
+  const pts = wirePoints(wire)!;
+
+  let s = createEditor(ARRANQUE);
+  s = moveEndpoint(s, wire.id, 0, pts.x1 - 12, pts.y1 + 9);
+
+  const p = projectOf(s);
+  assert.equal(p.sheets.length, 1, 'no debe aparecer una hoja nueva sin título');
+  const sheet = p.sheets[0]!;
+  const visible = p.records.slice(sheet.startRecord, sheet.endRecord);
+  const attached = visible.filter((r) => r.kind === 'connection' && cableNumberOf(r) === cableNumberOf(wire));
+  assert.equal(attached.length, 2, 'los dos tramos del codo deben quedar en la hoja');
+});
+
+test('un codo en diagonal produce un tramo vertical y otro horizontal', () => {
+  const wire = project().records.find((r) => r.code === 4000 && r.geometry[21] === 1)!;
+  const pts = wirePoints(wire)!;
+
+  let s = createEditor(ARRANQUE);
+  s = moveEndpoint(s, wire.id, 0, pts.x1 - 12, pts.y1 + 9);
+
+  const legs = projectOf(s).records.filter(
+    (r) => r.kind === 'connection' && cableNumberOf(r) === cableNumberOf(wire),
+  );
+  assert.equal(legs.length, 2);
+  const shapes = legs.map((l) => {
+    const p = wirePoints(l)!;
+    return p.x1 === p.x2 ? 'vertical' : 'horizontal';
+  });
+  assert.deepEqual(shapes.sort(), ['horizontal', 'vertical']);
+});
