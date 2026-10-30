@@ -90,7 +90,7 @@ function splitNumbers(field: string): number[] {
     .filter((n) => Number.isFinite(n));
 }
 
-function parseRecord(rec: CadeRecord): CadeRecordModel {
+export function modelOfRecord(rec: CadeRecord): CadeRecordModel {
   const kind = classify(rec.code);
   const fields = rec.raw.split('#');
   const base: CadeRecordModel = {
@@ -119,7 +119,7 @@ function parseRecord(rec: CadeRecord): CadeRecordModel {
 }
 
 export function buildProject(doc: CadeDocument): Project {
-  const records = doc.records.map(parseRecord);
+  const records = doc.records.map(modelOfRecord);
 
   const sheets: Sheet[] = [];
   let start = 0;
@@ -186,4 +186,74 @@ export function boxOf(rec: CadeRecordModel): { width: number; height: number } |
   const height = g[GEOMETRY.height];
   if (width <= 0 || height <= 0) return null;
   return { width, height };
+}
+
+// --- edición -----------------------------------------------------------------
+//
+// Editar es reescribir UN registro, nunca regenerar el archivo. Estas funciones
+// devuelven el `raw` nuevo y dejan intacto todo lo que no tocaron.
+
+/** Índice del campo de geometría dentro de la lista de campos separada por `#`. */
+function geometryFieldIndex(raw: string): number {
+  const fields = raw.split('#');
+  return fields.findIndex((f, i) => i > 0 && f.startsWith('*'));
+}
+
+/** Devuelve `raw` con el bloque de geometría reemplazado por `geometry`. */
+export function withGeometry(rec: CadeRecordModel, geometry: number[]): string {
+  const idx = geometryFieldIndex(rec.raw);
+  if (idx === -1) return rec.raw;
+  const fields = rec.raw.split('#');
+  fields[idx] = '*' + geometry.join('*');
+  return fields.join('#');
+}
+
+/** Devuelve `raw` con el id reemplazado. */
+export function withId(rec: CadeRecordModel, id: number): string {
+  const m = /^\*(\d+)\*/.exec(rec.raw);
+  if (!m) return rec.raw;
+  return '*'.concat(String(id), rec.raw.slice(m[0].length - 1));
+}
+
+export function withPosition(rec: CadeRecordModel, x: number, y: number): string {
+  const g = [...rec.geometry];
+  if (g.length <= GEOMETRY.y) return rec.raw;
+  g[GEOMETRY.x] = x;
+  g[GEOMETRY.y] = y;
+  return withGeometry(rec, g);
+}
+
+export function withWirePoints(rec: CadeRecordModel, pts: WirePoints): string {
+  const g = [...rec.geometry];
+  if (g.length <= GEOMETRY.y2) return rec.raw;
+  g[GEOMETRY.x] = pts.x1;
+  g[GEOMETRY.y] = pts.y1;
+  g[GEOMETRY.x2] = pts.x2;
+  g[GEOMETRY.y2] = pts.y2;
+  return withGeometry(rec, g);
+}
+
+/**
+ * Serializa reemplazando los registros indicados.
+ *
+ * Se indexa por posición dentro de `project.records`, que es 1:1 con el orden
+ * del archivo. Todo registro ausente del mapa se escribe tal cual.
+ */
+export function serializeWith(project: Project, edits: Map<number, string>): string {
+  const magic = project.hasMagic ? 'CADe_SIMU' : '';
+  const parts: string[] = [];
+  project.records.forEach((rec, i) => parts.push(edits.get(i) ?? rec.raw));
+  return magic + project.prefix + parts.join('');
+}
+
+/** Id libre siguiente: los ids del archivo son estrictamente crecientes. */
+export function nextId(project: Project): number {
+  return project.records.reduce((max, r) => Math.max(max, r.id), 0) + 1;
+}
+
+/** Caja ocupada por un componente en coordenadas de hoja. */
+export function boundsOf(rec: CadeRecordModel): { x: number; y: number; w: number; h: number } | null {
+  const box = boxOf(rec);
+  if (!box) return null;
+  return { x: rec.geometry[GEOMETRY.x]!, y: rec.geometry[GEOMETRY.y]!, w: box.width, h: box.height };
 }
