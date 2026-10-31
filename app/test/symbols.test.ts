@@ -5,7 +5,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from '../src/format/cade.ts';
 import { buildProject, boxOf } from '../src/model/project.ts';
-import { resolveSymbol, symbolFor, fallbackSymbol } from '../src/symbols/library.ts';
+import { resolveSymbol, symbolList, fallbackSymbol } from '../src/symbols/library.ts';
 import { TEMPLATES, TEMPLATE_CODES } from '../src/symbols/templates.ts';
 
 const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
@@ -48,15 +48,16 @@ test('todo cable de los fixtures tiene puntos finitos', () => {
 });
 
 test('los símbolos declarados tienen bornes con posición dentro de la caja', () => {
-  const codes = [1000, 2001, 3000, 3005, 6001, 6003, 6007, 6009, 7000, 7001, 8000, 8001, 8012, 8013, 8016, 8017, 8018, 9000, 9003];
-  for (const code of codes) {
-    const sym = symbolFor(code);
-    assert.ok(sym, `falta el símbolo ${code}`);
-    assert.ok(sym.pins.length > 0, `el símbolo ${code} no declara bornes`);
+  for (const sym of symbolList()) {
+    // Una alimentación no declara bornes: el registro real tampoco los tiene.
+    if (sym.pins.length === 0) {
+      assert.equal(sym.group, 'alimentacion', `${sym.code} (${sym.name}) no declara bornes`);
+      continue;
+    }
     for (const p of sym.pins) {
-      assert.ok(p.nx >= 0 && p.nx <= 1, `${code}: nx fuera de rango`);
-      assert.ok(p.ny >= 0 && p.ny <= 1, `${code}: ny fuera de rango`);
-      assert.notEqual(p.name, '', `${code}: borne sin nombre`);
+      assert.ok(p.nx >= 0 && p.nx <= 1, `${sym.code}: nx fuera de rango`);
+      assert.ok(p.ny >= 0 && p.ny <= 1, `${sym.code}: ny fuera de rango`);
+      assert.notEqual(p.name, '', `${sym.code}: borne sin nombre`);
     }
   }
 });
@@ -80,14 +81,17 @@ test('cada plantilla generada es un registro de componente reparseable', () => {
   }
 });
 
-test('la cola de la geometría puede imitar una cabecera de registro', () => {
+test('la cola de la geometría no se confunde con una cabecera de registro', () => {
   // Hallazgo real: el registro del motor termina en `*15*16#`, que calza con el
-  // patrón `*<id>*<código>#`. Sólo el orden global de ids lo desambigua, así que
-  // parsear un registro suelto es fiable únicamente modelando el raw completo.
+  // patrón `*<id>*<código>#`. Antes se desambiguaba sólo por el orden global de
+  // ids, así que un documento de dos registros lo partía en tres. Un registro
+  // real tiene al menos dos '#', y eso alcanza para descartar la cola.
   const raw = TEMPLATES[1000]!.raw;
   assert.match(raw, /\*15\*16#$/);
-  assert.equal(parse(raw).records.length, 2);
-  assert.ok(parse(raw).records[0]!.raw.length < raw.length);
+
+  const parsed = parse(raw);
+  assert.equal(parsed.records.length, 1);
+  assert.equal(parsed.records[0]!.raw, raw);
 });
 
 test('las plantillas cubren todos los códigos con símbolo dedicado', () => {

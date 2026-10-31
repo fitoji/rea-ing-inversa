@@ -46,8 +46,9 @@ Fecha: 2026-10-30 · rama `feat/simuelectro`
 - ✅ Parser `.cade`/`.cad` con round-trip byte a byte (107 tests, 3 archivos reales).
 - ✅ Modelo de dominio `Project → Sheet → Component → Pin → Wire`.
 - ✅ Editor con undo/redo, multi-selección, copiar/pegar y borrar sobre el texto.
-- ✅ Librería de símbolos IEC 60617: 22 códigos con símbolo dedicado y fallback rotulado.
+- ✅ Librería de símbolos IEC 60617 con el catálogo real de CADe_SIMU (270 códigos extraídos del binario).
 - ✅ App Vite + React + SVG corriendo: paleta, lienzo con zoom/pan/grilla/snap, inspector.
+- ✅ UI sobre shadcn/ui con modo día/noche (la preferencia queda guardada).
 - ✅ Pines derivados del archivo: cada borne dibujado es un extremo de cable real.
 - ✅ Modelo de cable: número (`geometry[21]`), tramos, uniones (`4001`).
 - ✅ Arrastrar extremos con snap a bornes y codo ortogonal automático.
@@ -79,16 +80,17 @@ Plan detallado con todas las tareas: [`odd/tasks/simuelectro.md`](odd/tasks/simu
 
 ## Uso
 
-```bash
-cd app
-npm install
+El repo es un workspace de pnpm: los scripts se corren **desde la raíz** y se ejecutan en `app/`.
 
-npm run dev     # abre la app en http://localhost:5187
-npm test        # 61 tests sobre tres archivos reales
-npm run build   # typecheck + bundle de producción
+```bash
+pnpm install
+
+pnpm dev        # abre la app en http://localhost:5187
+pnpm test       # 113 tests sobre tres archivos reales
+pnpm build      # typecheck + bundle de producción
 
 # inventario de códigos de un archivo
-node src/report.ts test/fixtures/arranque-paro-motor-3f.cad
+pnpm report test/fixtures/arranque-paro-motor-3f.cad
 ```
 
 Salida del inventario: cada código con su frecuencia, los designadores observados y los `layouts` cuando un registro no sigue el layout estándar de 11 campos.
@@ -140,3 +142,7 @@ Detalle completo en [`docs/cade-format.md`](docs/cade-format.md).
 Los fixtures de `app/test/fixtures/` son esquemas eléctricos de terceros, usados como datos de prueba. En `data/` (fuera de git) vive el binario propietario de CADe_SIMU, que **no** se versiona ni se redistribuye.
 
 Este repositorio no contiene código de CADe_SIMU. El conocimiento del formato proviene de observar archivos de datos; la implementación es propia.
+
+## Créditos
+
+Los símbolos normalizados de `app/src/symbols/qet.ts` provienen de la colección de elementos de **QElectroTech** (EN 60617), licencia **CC-BY 3.0**. Ver [NOTICE-qet.md](NOTICE-qet.md).

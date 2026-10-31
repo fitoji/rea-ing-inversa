@@ -1,10 +1,24 @@
 import { useEffect, useState } from 'react';
-import type { JSX } from 'react';
+import type { JSX, ReactNode } from 'react';
+import { InfoIcon, MousePointerClickIcon, RotateCwIcon, Trash2Icon, TriangleAlertIcon } from 'lucide-react';
 import { GEOMETRY, boxOf, wirePoints, type CadeRecordModel } from '../model/project.ts';
 import { resolveSymbol } from '../symbols/library.ts';
 import type { Rotation } from '../editor/state.ts';
 import { cableLength, cableNumberOf, cableSegments, type Finding, type Network } from '../editor/network.ts';
 import type { Point } from '../editor/pins.ts';
+import { PanelHead } from './PanelHead.tsx';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+
+const DL = 'grid grid-cols-[88px_1fr] gap-x-2 gap-y-1 text-xs';
+const DT = 'text-muted-foreground';
+const DD = 'font-mono text-[11.5px] text-foreground/80 [overflow-wrap:anywhere]';
 
 interface Props {
   selected: CadeRecordModel[];
@@ -16,6 +30,8 @@ interface Props {
   onDelete: () => void;
   onCableNumber: (ids: number[], value: number) => void;
   onAddJunction: (x: number, y: number) => void;
+  /** Lleva el lienzo al lugar del aviso y lo resalta. */
+  onFocusFinding: (finding: Finding) => void;
   vertex: Point | null;
   onDeleteVertex: () => void;
   supply: { phase: number | null; neutral: number | null };
@@ -23,77 +39,77 @@ interface Props {
 }
 
 export function Inspector(props: Props): JSX.Element {
-  const { selected, findings, onAddJunction, vertex, onDeleteVertex } = props;
+  const { selected, findings, onAddJunction, onFocusFinding, vertex, onDeleteVertex } = props;
 
   const vertexBlock = vertex ? (
-    <>
-      <div className="section-label">Vértice seleccionado</div>
-      <dl className="kv">
-        <dt>Posición</dt>
-        <dd>
-          {vertex.x}, {vertex.y}
-        </dd>
+    <div className="flex flex-col gap-2">
+      <SectionLabel>Vértice seleccionado</SectionLabel>
+      <dl className={DL}>
+        <Row label="Posición" value={`${vertex.x}, ${vertex.y}`} />
       </dl>
-      <div style={{ display: 'flex', gap: 6, padding: '0 12px 12px' }}>
-        <button className="btn" onClick={onDeleteVertex}>
-          Eliminar vértice (⌫)
-        </button>
-      </div>
-    </>
+      <Button variant="outline" size="sm" className="self-start" onClick={onDeleteVertex}>
+        <Trash2Icon data-icon="inline-start" />
+        Eliminar vértice (⌫)
+      </Button>
+    </div>
   ) : null;
 
   if (selected.length === 0) {
     return (
-      <aside className="inspector">
-        <div className="panel-head">Propiedades</div>
+      <InspectorShell>
         {vertexBlock}
-        <div className="empty-state">
-          Nada seleccionado.
-          <br />
-          Clic en un componente o en un cable. <b>Shift</b>+clic suma a la selección; arrastrar sobre el lienzo vacío
-          selecciona varios. <b>Arrastrá un cable</b> para doblarlo; los cuadrados azules son sus vértices y se borran
-          con <b>⌫</b>.
-        </div>
-        <Findings findings={findings} onAddJunction={onAddJunction} />
-      </aside>
+        <Empty className="px-0 py-4">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <MousePointerClickIcon />
+            </EmptyMedia>
+            <EmptyTitle>Nada seleccionado</EmptyTitle>
+            <EmptyDescription className="text-xs">
+              Clic en un componente o en un cable. <b>Shift</b>+clic suma a la selección; arrastrar sobre el lienzo
+              vacío selecciona varios. <b>Arrastrá un cable</b> para doblarlo; los cuadrados azules son sus vértices y se
+              borran con <b>⌫</b>.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+        <Findings findings={findings} onAddJunction={onAddJunction} onFocusFinding={onFocusFinding} />
+      </InspectorShell>
     );
   }
 
   if (selected.length > 1) {
     const wires = selected.filter((r) => r.kind === 'connection');
     return (
-      <aside className="inspector">
-        <div className="panel-head">Propiedades</div>
-        <div className="kv">
-          <dt>Selección</dt>
-          <dd>{selected.length} registros</dd>
+      <InspectorShell>
+        <SectionLabel>Selección</SectionLabel>
+        <dl className={DL}>
+          <Row label="Registros" value={selected.length} />
           {wires.length > 0 && (
             <>
-              <dt>Cable</dt>
-              <dd>nº {cableNumberOf(wires[0]!)}</dd>
-              <dt>Longitud</dt>
-              <dd>{cableLength(props.network, wires.map((w) => w.id))} u</dd>
+              <Row label="Cable" value={`nº ${cableNumberOf(wires[0]!)}`} />
+              <Row label="Longitud" value={`${cableLength(props.network, wires.map((w) => w.id))} u`} />
             </>
           )}
-        </div>
+        </dl>
         {vertexBlock}
-        <div className="pins">
+        <div className="flex flex-wrap gap-1">
           {selected.slice(0, 24).map((r) => (
-            <span className="chip" key={r.id}>
+            <Badge key={r.id} variant="outline" className="h-5 px-1.5 font-mono text-[10.5px] font-normal">
               {r.designator || `#${r.id}`}
-            </span>
+            </Badge>
           ))}
         </div>
-        <div style={{ display: 'flex', gap: 6, padding: '0 12px' }}>
-          <button className="btn" onClick={props.onRotate}>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={props.onRotate}>
+            <RotateCwIcon data-icon="inline-start" />
             Rotar
-          </button>
-          <button className="btn" onClick={props.onDelete}>
+          </Button>
+          <Button variant="outline" size="sm" onClick={props.onDelete}>
+            <Trash2Icon data-icon="inline-start" />
             Borrar
-          </button>
+          </Button>
         </div>
-        <Findings findings={findings} onAddJunction={onAddJunction} />
-      </aside>
+        <Findings findings={findings} onAddJunction={onAddJunction} onFocusFinding={onFocusFinding} />
+      </InspectorShell>
     );
   }
 
@@ -101,37 +117,95 @@ export function Inspector(props: Props): JSX.Element {
   return <Single key={rec.id} rec={rec} vertexBlock={vertexBlock} {...props} />;
 }
 
+function InspectorShell({ children }: { children: ReactNode }): JSX.Element {
+  return (
+    <aside className="flex min-h-0 w-[268px] shrink-0 flex-col border-l border-border bg-card">
+      <PanelHead>Propiedades</PanelHead>
+      <ScrollArea className="min-h-0 flex-1">
+        <div className="flex flex-col gap-3 px-3 pb-3">{children}</div>
+      </ScrollArea>
+    </aside>
+  );
+}
+
+function SectionLabel({ children }: { children: ReactNode }): JSX.Element {
+  return (
+    <div className="text-[10px] font-semibold tracking-[0.7px] text-muted-foreground uppercase">{children}</div>
+  );
+}
+
+function Row({ label, value }: { label: string; value: ReactNode }): JSX.Element {
+  return (
+    <>
+      <dt className={DT}>{label}</dt>
+      <dd className={DD}>{value}</dd>
+    </>
+  );
+}
+
 function Findings({
   findings,
   onAddJunction,
+  onFocusFinding,
 }: {
   findings: Finding[];
   onAddJunction: (x: number, y: number) => void;
+  onFocusFinding: (finding: Finding) => void;
 }): JSX.Element | null {
   if (findings.length === 0) return null;
   return (
-    <>
-      <div className="section-label">Avisos ({findings.length})</div>
-      <div className="findings">
-        {findings.slice(0, 10).map((f, i) => (
-          <div className="finding" key={`${f.code}-${i}`}>
-            <span className={f.level === 'error' ? 'finding-dot err' : 'finding-dot'} />
-            <span>{f.message}</span>
+    <div className="flex flex-col gap-2">
+      <SectionLabel>Avisos ({findings.length})</SectionLabel>
+      {findings.slice(0, 10).map((f, i) => (
+        <Alert
+          key={`${f.code}-${i}`}
+          variant={f.level === 'error' ? 'destructive' : 'default'}
+          role="button"
+          tabIndex={0}
+          title="Ir al lugar del aviso"
+          className="cursor-pointer transition-colors hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
+          onClick={() => onFocusFinding(f)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onFocusFinding(f);
+            }
+          }}
+        >
+          <TriangleAlertIcon />
+          <AlertDescription className="text-xs">
+            {f.message}
             {f.code === 'tee-without-junction' && f.at && (
-              <button className="btn tiny" onClick={() => onAddJunction(f.at!.x, f.at!.y)}>
+              <Button
+                variant="secondary"
+                size="xs"
+                className="mt-1.5"
+                onClick={() => onAddJunction(f.at!.x, f.at!.y)}
+              >
                 Crear unión
-              </button>
+              </Button>
             )}
-          </div>
-        ))}
-      </div>
-    </>
+          </AlertDescription>
+        </Alert>
+      ))}
+    </div>
+  );
+}
+
+/** Aviso informativo del panel (no es un error de red). */
+function Note({ children }: { children: ReactNode }): JSX.Element {
+  return (
+    <Alert>
+      <InfoIcon />
+      <AlertDescription className="text-xs">{children}</AlertDescription>
+    </Alert>
   );
 }
 
 function Single({
   rec,
   rotation,
+  onFocusFinding,
   network,
   findings,
   onDesignator,
@@ -153,15 +227,18 @@ function Single({
   const deg = rotation[rec.id] ?? 0;
 
   return (
-    <aside className="inspector">
-      <div className="panel-head">Propiedades</div>
+    <InspectorShell>
       {vertexBlock}
 
       {rec.kind === 'component' ? (
         <>
-          <div className="field">
-            <label>Designador</label>
-            <input
+          <Field className="gap-1.5">
+            <FieldLabel htmlFor="designator" className="text-[10px] tracking-[0.6px] text-muted-foreground uppercase">
+              Designador
+            </FieldLabel>
+            <Input
+              id="designator"
+              className="h-7 font-mono text-xs"
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               onBlur={() => {
@@ -171,52 +248,45 @@ function Single({
                 if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
               }}
             />
-          </div>
+          </Field>
 
-          <dl className="kv">
-            <dt>Tipo</dt>
-            <dd>{sym.name}</dd>
-            <dt>Código</dt>
-            <dd>{rec.code}</dd>
-            <dt>Posición</dt>
-            <dd>
-              {rec.geometry[GEOMETRY.x]}, {rec.geometry[GEOMETRY.y]}
-            </dd>
-            {box && (
-              <>
-                <dt>Tamaño</dt>
-                <dd>
-                  {box.width} × {box.height}
-                </dd>
-              </>
-            )}
-            <dt>Registro</dt>
-            <dd>#{rec.id}</dd>
+          <dl className={DL}>
+            <Row label="Tipo" value={sym.name} />
+            <Row label="Código" value={rec.code} />
+            <Row label="Posición" value={`${rec.geometry[GEOMETRY.x]}, ${rec.geometry[GEOMETRY.y]}`} />
+            {box && <Row label="Tamaño" value={`${box.width} × ${box.height}`} />}
+            <Row label="Registro" value={`#${rec.id}`} />
           </dl>
 
-          <div className="section-label">Bornes ({rec.pins.length})</div>
-          <div className="pins">
+          <SectionLabel>Bornes ({rec.pins.length})</SectionLabel>
+          <div className="flex flex-wrap gap-1">
             {rec.pins.map((pin, i) => (
-              <span className="chip" key={`${pin}-${i}`}>
+              <Badge key={`${pin}-${i}`} variant="outline" className="h-5 px-1.5 font-mono text-[10.5px] font-normal">
                 {pin}
-              </span>
+              </Badge>
             ))}
-            {rec.pins.length === 0 && <span className="chip">sin bornes declarados</span>}
+            {rec.pins.length === 0 && (
+              <Badge variant="outline" className="h-5 px-1.5 text-[10.5px] font-normal">
+                sin bornes declarados
+              </Badge>
+            )}
           </div>
 
-          <div style={{ display: 'flex', gap: 6, padding: '0 12px 12px' }}>
-            <button className="btn" onClick={onRotate}>
-              Rotar 90° {deg > 0 && <span style={{ opacity: 0.7 }}>({deg}°)</span>}
-            </button>
-            <button className="btn" onClick={onDelete}>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={onRotate}>
+              <RotateCwIcon data-icon="inline-start" />
+              Rotar 90° {deg > 0 && <span className="text-muted-foreground">({deg}°)</span>}
+            </Button>
+            <Button variant="outline" size="sm" onClick={onDelete}>
+              <Trash2Icon data-icon="inline-start" />
               Borrar
-            </button>
+            </Button>
           </div>
 
           {deg > 0 && (
-            <div className="note">
+            <Note>
               La rotación es visual y todavía no se guarda: el formato no expuso aún el campo de orientación.
-            </div>
+            </Note>
           )}
         </>
       ) : (
@@ -232,8 +302,8 @@ function Single({
         />
       )}
 
-      <Findings findings={findings} onAddJunction={onAddJunction} />
-    </aside>
+      <Findings findings={findings} onAddJunction={onAddJunction} onFocusFinding={onFocusFinding} />
+    </InspectorShell>
   );
 }
 
@@ -270,37 +340,35 @@ function CablePanel({
     if (n !== cable) onCableNumber(segments, n);
   };
 
+  const supplyValue = [
+    ...(supply.phase === rec.id ? ['phase'] : []),
+    ...(supply.neutral === rec.id ? ['neutral'] : []),
+  ];
+
   return (
     <>
-      <dl className="kv">
-        <dt>Tipo</dt>
-        <dd>{isJunction ? 'Punto de unión' : rec.code === 4019 ? 'Cable (variante)' : 'Cable'}</dd>
-        <dt>Código</dt>
-        <dd>{rec.code}</dd>
-        <dt>Tramos</dt>
-        <dd>{segments.length}</dd>
-        <dt>Longitud</dt>
-        <dd>{cableLength(network, segments)} u</dd>
+      <dl className={DL}>
+        <Row label="Tipo" value={isJunction ? 'Punto de unión' : rec.code === 4019 ? 'Cable (variante)' : 'Cable'} />
+        <Row label="Código" value={rec.code} />
+        <Row label="Tramos" value={segments.length} />
+        <Row label="Longitud" value={`${cableLength(network, segments)} u`} />
         {pts && !isJunction && (
           <>
-            <dt>Desde</dt>
-            <dd>
-              {pts.x1}, {pts.y1}
-            </dd>
-            <dt>Hasta</dt>
-            <dd>
-              {pts.x2}, {pts.y2}
-            </dd>
+            <Row label="Desde" value={`${pts.x1}, ${pts.y1}`} />
+            <Row label="Hasta" value={`${pts.x2}, ${pts.y2}`} />
           </>
         )}
-        <dt>Registro</dt>
-        <dd>#{rec.id}</dd>
+        <Row label="Registro" value={`#${rec.id}`} />
       </dl>
 
       {!isJunction && (
-        <div className="field">
-          <label>Número de cable</label>
-          <input
+        <Field className="gap-1.5">
+          <FieldLabel htmlFor="cable-number" className="text-[10px] tracking-[0.6px] text-muted-foreground uppercase">
+            Número de cable
+          </FieldLabel>
+          <Input
+            id="cable-number"
+            className="h-7 font-mono text-xs"
             value={cableDraft}
             onChange={(e) => setCableDraft(e.target.value)}
             onBlur={commitNumber}
@@ -308,46 +376,47 @@ function CablePanel({
               if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
             }}
           />
-        </div>
+        </Field>
       )}
 
       {segments.length > 1 && (
-        <div className="note">
+        <Note>
           Este cable son {segments.length} tramos que comparten el número. Cambiar el número los mueve a todos.
+        </Note>
+      )}
+
+      <Note>
+        Arrastrá un cuadrado azul para mover ese vértice. Un clic lo enfoca y <b>⌫</b> lo elimina sin borrar el cable.
+      </Note>
+
+      {!isJunction && (
+        <div className="flex flex-col gap-2">
+          <SectionLabel>Alimentación</SectionLabel>
+          <ToggleGroup
+            type="multiple"
+            variant="outline"
+            size="sm"
+            spacing={2}
+            value={supplyValue}
+            onValueChange={(values) => {
+              if (values.includes('phase') !== (supply.phase === rec.id)) onSetSupply('phase', rec.id);
+              if (values.includes('neutral') !== (supply.neutral === rec.id)) onSetSupply('neutral', rec.id);
+            }}
+          >
+            <ToggleGroupItem value="phase" title="La red de este cable es la fase">
+              Fase
+            </ToggleGroupItem>
+            <ToggleGroupItem value="neutral" title="La red de este cable es el neutro">
+              Neutro
+            </ToggleGroupItem>
+          </ToggleGroup>
         </div>
       )}
 
-      <div className="note" style={{ background: '#101820', borderColor: '#243240', color: '#8fa6c0' }}>
-        Arrastrá un cuadrado azul para mover ese vértice. Un clic lo enfoca y <b>⌫</b> lo elimina sin borrar el cable.
-      </div>
-
-      {!isJunction && (
-        <>
-          <div className="section-label">Alimentación</div>
-          <div style={{ display: 'flex', gap: 6, padding: '0 12px 10px' }}>
-            <button
-              className={supply.phase === rec.id ? 'btn on' : 'btn'}
-              onClick={() => onSetSupply('phase', rec.id)}
-              title="La red de este cable es la fase"
-            >
-              Fase
-            </button>
-            <button
-              className={supply.neutral === rec.id ? 'btn on' : 'btn'}
-              onClick={() => onSetSupply('neutral', rec.id)}
-              title="La red de este cable es el neutro"
-            >
-              Neutro
-            </button>
-          </div>
-        </>
-      )}
-
-      <div style={{ display: 'flex', gap: 6, padding: '0 12px' }}>
-        <button className="btn" onClick={onDelete}>
-          Borrar cable
-        </button>
-      </div>
+      <Button variant="outline" size="sm" className="self-start" onClick={onDelete}>
+        <Trash2Icon data-icon="inline-start" />
+        Borrar cable
+      </Button>
     </>
   );
 }

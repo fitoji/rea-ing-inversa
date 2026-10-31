@@ -78,6 +78,12 @@ export function parse(text: string): CadeDocument {
 
   const candidates: Candidate[] = [];
   for (const m of body.matchAll(CANDIDATE)) {
+    // Un registro real tiene, como mínimo, cabecera + designador + geometría:
+    // al menos dos '#'. El final de una geometría puede imitar `*id*codigo#`
+    // (`...*0*15*16#`) y quedarse con un solo '#' hasta el final del texto; sin
+    // este filtro, en un documento corto se toma como un registro aparte.
+    const tail = body.slice(m.index!);
+    if ((tail.match(/#/g) ?? []).length < 2) continue;
     candidates.push({ at: m.index!, id: Number(m[1]), code: Number(m[2]) });
   }
 

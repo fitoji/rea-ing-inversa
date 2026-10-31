@@ -24,6 +24,12 @@ interface Props {
   onDragPreview: (op: DragOp | null) => void;
   onDragCommit: (op: DragOp) => void;
   onPlace: (x: number, y: number) => void;
+  /** Origen del cable que se está dibujando (primer clic). */
+  wireStart: Point | null;
+  /** Componentes energizados por la simulación. */
+  live: Set<number>;
+  /** Registros y punto marcados como falla desde un aviso. */
+  highlight: { ids: number[]; at: Point | null } | null;
   onZoom: (k: number) => void;
   onInsertVertex: (id: number, x: number, y: number) => void;
   onVertexSelect: (vertex: Point | null) => void;
@@ -59,6 +65,9 @@ export function Canvas(props: Props): JSX.Element {
     onDragPreview,
     onDragCommit,
     onPlace,
+    wireStart,
+    live,
+    highlight,
     onZoom,
     onInsertVertex,
     onVertexSelect,
@@ -69,6 +78,7 @@ export function Canvas(props: Props): JSX.Element {
   const [drag, setDrag] = useState<DragState | null>(null);
   const [pan, setPan] = useState<{ px: number; py: number; vx: number; vy: number } | null>(null);
   const [marquee, setMarquee] = useState<{ x1: number; y1: number; x2: number; y2: number } | null>(null);
+  const [hover, setHover] = useState<Point | null>(null);
 
   const toWorld = useCallback(
     (clientX: number, clientY: number) => {
@@ -285,6 +295,7 @@ export function Canvas(props: Props): JSX.Element {
       return;
     }
     const world = toWorld(e.clientX, e.clientY);
+    if (wireStart) setHover(snapPoint(world));
 
     if (drag?.kind === 'move') {
       const dx = snapValue(world.x - drag.sx);
@@ -375,7 +386,7 @@ export function Canvas(props: Props): JSX.Element {
   const selectedWires = records.filter((r) => r.kind === 'connection' && selection.has(r.id));
 
   return (
-    <div className="canvas-wrap">
+    <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden bg-background">
       <svg
         ref={svgRef}
         className={cursorClass}
@@ -388,10 +399,10 @@ export function Canvas(props: Props): JSX.Element {
       >
         <defs>
           <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-            <path d="M10 0H0V10" fill="none" stroke="#1a1f28" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+            <path className="grid-minor" d="M10 0H0V10" fill="none" strokeWidth="1" vectorEffect="non-scaling-stroke" />
           </pattern>
           <pattern id="grid-major" width="50" height="50" patternUnits="userSpaceOnUse">
-            <path d="M50 0H0V50" fill="none" stroke="#232a35" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+            <path className="grid-major" d="M50 0H0V50" fill="none" strokeWidth="1" vectorEffect="non-scaling-stroke" />
           </pattern>
         </defs>
 
@@ -411,6 +422,8 @@ export function Canvas(props: Props): JSX.Element {
                 key={rec.id}
                 rec={rec}
                 selected={selection.has(rec.id)}
+                live={live.has(rec.id)}
+                bad={highlight?.ids.includes(rec.id) ?? false}
                 rotation={rotation[rec.id] ?? 0}
                 pins={pins.get(rec.id) ?? []}
               />
@@ -450,6 +463,24 @@ export function Canvas(props: Props): JSX.Element {
             );
           })}
 
+          {highlight?.at && (
+            <g>
+              <circle className="mark" cx={highlight.at.x} cy={highlight.at.y} r={5} />
+              <path
+                className="mark"
+                d={`M${highlight.at.x - 3} ${highlight.at.y}H${highlight.at.x + 3}M${highlight.at.x} ${highlight.at.y - 3}V${highlight.at.y + 3}`}
+                style={{ animation: 'none', strokeWidth: 0.3 }}
+              />
+            </g>
+          )}
+
+          {wireStart && hover && (
+            <g className="ghost">
+              <line className="wire" x1={wireStart.x} y1={wireStart.y} x2={hover.x} y2={hover.y} />
+              <circle className="junction" cx={wireStart.x} cy={wireStart.y} r={1.15} />
+            </g>
+          )}
+
           {marquee && (
             <rect
               className="marquee"
@@ -462,11 +493,13 @@ export function Canvas(props: Props): JSX.Element {
         </g>
       </svg>
 
-      <div className="canvas-hint">
+      <div className="pointer-events-none absolute bottom-3 left-3 rounded-md border border-border/70 bg-background/85 px-2 py-1 text-[11px] text-muted-foreground backdrop-blur-sm">
         arrastrá componentes · <b>arrastrá un cable</b> para doblarlo · <b>⌫</b> borra el vértice enfocado ·{' '}
         <b>alt</b>+arrastrar para desplazar
       </div>
-      <div className="zoom-tag">{Math.round(view.k * 100)}%</div>
+      <div className="pointer-events-none absolute right-3 bottom-3 rounded-md border border-border/70 bg-background/85 px-2 py-0.5 font-mono text-[11px] text-muted-foreground backdrop-blur-sm">
+        {Math.round(view.k * 100)}%
+      </div>
     </div>
   );
 }
@@ -474,11 +507,15 @@ export function Canvas(props: Props): JSX.Element {
 function Component({
   rec,
   selected,
+  live,
+  bad,
   rotation,
   pins,
 }: {
   rec: CadeRecordModel;
   selected: boolean;
+  live: boolean;
+  bad: boolean;
   rotation: Rotation;
   pins: Point[];
 }): JSX.Element | null {
@@ -497,7 +534,7 @@ function Component({
   return (
     <g data-id={rec.id} transform={`translate(${x} ${y})`} style={{ cursor: 'move' }}>
       <rect className="hitbox" x={0} y={0} width={box.width} height={box.height} />
-      <rect className={selected ? 'body sel' : 'body'} x={0} y={0} width={box.width} height={box.height} rx={0.6} />
+      <rect className={selected ? 'body sel' : bad ? 'body bad' : live ? 'body live' : 'body'} x={0} y={0} width={box.width} height={box.height} rx={0.6} />
       <g transform={`translate(${inset} ${inset})`}>
         <SymbolGlyph code={rec.code} pinNames={rec.pins} w={iw} h={ih} rotation={rotation} selected={selected} />
       </g>

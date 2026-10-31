@@ -1,9 +1,17 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" class="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>simuElectro</title>
+    <script>
+      // Antes del primer paint: si el usuario eligió modo día, evitamos el flash oscuro.
+      try {
+        if (localStorage.getItem('simuelectro:mode') === 'light') {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,0 +1,16 @@
+{
+  "name": "simuelectro-workspace",
+  "private": true,
+  "packageManager": "pnpm@12.15.0",
+  "scripts": {
+    "dev": "pnpm --filter simuelectro dev",
+    "build": "pnpm --filter simuelectro build",
+    "preview": "pnpm --filter simuelectro preview",
+    "test": "pnpm --filter simuelectro test",
+    "report": "pnpm --filter simuelectro report",
+    "spike": "pnpm --filter simuelectro spike",
+    "catalog": "pnpm --filter simuelectro catalog",
+    "qet": "pnpm --filter simuelectro qet",
+    "qet:sheet": "pnpm --filter simuelectro qet:sheet"
+  }
+}

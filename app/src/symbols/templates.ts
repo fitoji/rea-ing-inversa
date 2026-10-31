@@ -39,4 +39,14 @@ export function templateFor(code: number): string | undefined {
 /** Plantilla de un punto de unión (código 4001): geometría de longitud cero. */
 export const JUNCTION_TEMPLATE: string | null = "*32*4001##########*0*0*0*0*0*0*0*0*162*105*162*105*0*0*0*0*0*0*0*0*0*15*0#";
 
+/** Plantilla por tipo de cable: un tramo real, con sus campos de estilo. */
+export const WIRE_TEMPLATES: Record<number, string> = {
+  4000: "*6*4000##########*0*0*0*0*0*0*0*0*30*66*30*78*0*0*0*0*0*0*2*0*0*1*0#",
+  4009: "*36*4009##########*0*0*0*0*0*0*0*0*144*156*144*162*0*0*0*0*0*0*2*0*0*17*0#",
+  4010: "*18*4010##########*0*0*0*0*0*0*0*0*48*66*48*150*0*0*0*0*0*0*2*0*0*13*0#",
+  4019: "*49*4019##########*0*0*0*0*0*0*0*0*111*33*111*42*0*0*0*0*0*0*0*0*0*0*0#",
+};
+
+export const WIRE_CODES: number[] = Object.keys(WIRE_TEMPLATES).map(Number).sort((a, b) => a - b);
+
 export const TEMPLATE_CODES: number[] = Object.keys(TEMPLATES).map(Number).sort((a, b) => a - b);

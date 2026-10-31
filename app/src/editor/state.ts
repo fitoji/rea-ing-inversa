@@ -313,13 +313,29 @@ function parseOne(raw: string): CadeRecordModel | null {
   });
 }
 
+/** Siguiente designador libre para una plantilla: -M1, -M2, … */
+function freeDesignator(used: Set<string>, template: string): string {
+  const m = /^(.*?)(\d*)$/.exec(template);
+  const prefix = m?.[1] ?? template;
+  let n = Number.parseInt(m?.[2] ?? '', 10);
+  if (!Number.isFinite(n)) n = 1;
+  let candidate = `${prefix}${n}`;
+  while (used.has(candidate)) candidate = `${prefix}${++n}`;
+  return candidate;
+}
+
 /** Inserta un componente nuevo a partir de una plantilla real del archivo. */
 export function addComponent(state: EditorState, templateRaw: string, x: number, y: number): EditorState {
   const project = projectOf(state);
   const id = nextId(project);
   const template = parseOne(templateRaw);
   if (!template || template.kind !== 'component') return state;
-  const raw = withPosition({ ...template, raw: withId(template, id) }, Math.round(x), Math.round(y));
+  // El designador no puede repetirse: si -M1 ya existe, entra como -M2.
+  const used = new Set(project.records.map((r) => r.designator).filter((d) => d !== ''));
+  const fields = template.raw.split('#');
+  if (fields[1]) fields[1] = freeDesignator(used, fields[1]);
+  const named = { ...template, raw: fields.join('#'), designator: fields[1] ?? '' };
+  const raw = withPosition({ ...named, raw: withId(named, id) }, Math.round(x), Math.round(y));
   const magic = project.hasMagic ? 'CADe_SIMU' : '';
   const text = magic + project.prefix + project.records.map((r) => r.raw).join('') + raw;
   return commit(state, text, [id]);
@@ -739,6 +755,29 @@ export function mergeVertex(state: EditorState, x: number, y: number): EditorSta
       .filter((_, i) => i !== second.index)
       .join('');
   return commit(state, text, [first.rec.id]);
+}
+
+/** Inserta un tramo de cable entre dos puntos. */
+export function addWire(
+  state: EditorState,
+  from: Point,
+  to: Point,
+  templateRaw: string,
+): EditorState {
+  if (from.x === to.x && from.y === to.y) return state;
+  const project = projectOf(state);
+  const template = parseOne(templateRaw);
+  if (!template || template.kind === 'component') return state;
+  const id = nextId(project);
+  const g = [...template.geometry];
+  g[GEOMETRY.x] = Math.round(from.x);
+  g[GEOMETRY.y] = Math.round(from.y);
+  if (g.length > GEOMETRY.x2) g[GEOMETRY.x2] = Math.round(to.x);
+  if (g.length > GEOMETRY.y2) g[GEOMETRY.y2] = Math.round(to.y);
+  const raw = withGeometry({ ...template, raw: withId(template, id) }, g);
+  const text =
+    (project.hasMagic ? 'CADe_SIMU' : '') + project.prefix + project.records.map((r) => r.raw).join('') + raw;
+  return commit(state, text, [id]);
 }
 
 /** Agrega un registro de unión (4001) en el punto indicado. */

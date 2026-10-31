@@ -18,9 +18,18 @@ export type SymbolGroup =
   | 'potencia'
   | 'proteccion'
   | 'mando'
+  | 'alimentacion'
+  | 'senalizacion'
+  | 'sensor'
+  | 'linea'
   | 'borne'
   | 'carga'
   | 'otro';
+
+import { circle, contact, left, line, pinsBoth, rect, right, threePole } from './draw.ts';
+import { FAMILY_SYMBOLS, LINE_SYMBOLS } from './families.ts';
+import { QET_SYMBOLS } from './qet.ts';
+import { withQetGeometry } from './qet-adapter.ts';
 
 export interface SymbolPin {
   name: string;
@@ -50,69 +59,15 @@ export interface SymbolDef {
   name: string;
   group: SymbolGroup;
   pins: SymbolPin[];
+  /** Tamaño con el que se inserta el componente (sólo si no hay plantilla real). */
+  size?: { w: number; h: number };
   shapes(w: number, h: number): Shape[];
   labels?(w: number, h: number): Label[];
 }
 
 // --- helpers de dibujo -------------------------------------------------------
-
-const line = (x1: number, y1: number, x2: number, y2: number): string =>
-  `M${round(x1)} ${round(y1)}L${round(x2)} ${round(y2)}`;
-
-const rect = (x: number, y: number, w: number, h: number): string =>
-  `M${round(x)} ${round(y)}H${round(x + w)}V${round(y + h)}H${round(x)}Z`;
-
-const circle = (cx: number, cy: number, r: number): string =>
-  `M${round(cx - r)} ${round(cy)}a${round(r)} ${round(r)} 0 1 0 ${round(r * 2)} 0a${round(r)} ${round(r)} 0 1 0 ${round(-r * 2)} 0Z`;
-
-const round = (n: number): number => Math.round(n * 100) / 100;
-
-const left = (ny: number, name: string): SymbolPin => ({ name, nx: 0, ny, side: 'left' });
-const right = (ny: number, name: string): SymbolPin => ({ name, nx: 1, ny, side: 'right' });
-
-/** Reparto vertical: n pines equiespaciados entre 0.2 y 0.8. */
-function spread(n: number): number[] {
-  if (n === 0) return [];
-  if (n === 1) return [0.5];
-  const lo = 0.18;
-  const hi = 0.82;
-  return Array.from({ length: n }, (_, i) => lo + ((hi - lo) * i) / (n - 1));
-}
-
-function pinsBoth(n: number, names: string[]): SymbolPin[] {
-  const half = Math.ceil(n / 2);
-  const ys = spread(half);
-  const out: SymbolPin[] = [];
-  for (let i = 0; i < n; i++) {
-    const isLeft = i < half;
-    const idx = isLeft ? i : i - half;
-    out.push(isLeft ? left(ys[idx]!, names[i] ?? String(i)) : right(ys[idx]!, names[i] ?? String(i)));
-  }
-  return out;
-}
-
-/** Contacto NA / NC genérico sobre una fila `y`. */
-function contact(w: number, y: number, nc: boolean): Shape[] {
-  const mx = w / 2;
-  const gap = Math.min(w * 0.16, 4.5);
-  const shapes: Shape[] = [
-    { d: line(0, y, mx - gap, y) },
-    { d: line(mx + gap, y, w, y) },
-  ];
-  if (nc) {
-    shapes.push({ d: line(mx - gap, y - gap, mx + gap, y), thin: true });
-    shapes.push({ d: line(mx + gap, y - gap * 0.8, mx + gap, y + gap * 0.8), thin: true });
-  } else {
-    shapes.push({ d: line(mx - gap, y, mx + gap, y - gap * 0.9), thin: true });
-  }
-  return shapes;
-}
-
-/** Tres contactos de potencia apilados (contactor / interruptor). */
-function threePole(w: number, h: number, nc = false): Shape[] {
-  const ys = spread(3).map((n) => n * h);
-  return ys.flatMap((y) => contact(w, y, nc));
-}
+// (line, rect, circle, left, right, spread, pinsBoth, contact, threePole y
+// poles viven en draw.ts: las familias generadas los comparten.)
 
 const genericPins = (names: string[]): SymbolPin[] =>
   names.length === 0 ? pinsBoth(2, ['1', '2']) : pinsBoth(names.length, names);
@@ -148,7 +103,7 @@ const motor3f: SymbolDef = {
 
 const powerContact: SymbolDef = {
   code: 2001,
-  name: 'Contacto de potencia 3P',
+  name: 'Contactor III',
   group: 'potencia',
   pins: [
     left(0.18, '1'),
@@ -163,73 +118,43 @@ const powerContact: SymbolDef = {
   },
 };
 
-const terminal: SymbolDef = {
-  code: 3000,
-  name: 'Borne',
-  group: 'borne',
-  pins: [left(0.5, '1'), right(0.5, '2')],
-  shapes(w, h) {
-    const r = Math.min(w * 0.22, h * 0.22, 3);
-    const cy = h / 2;
-    return [
-      { d: line(0, cy, w / 2 - r, cy) },
-      { d: line(w / 2 + r, cy, w, cy) },
-      { d: circle(w / 2, cy, r), fill: true },
-    ];
-  },
-};
+/** Bornes de los aparatos tripolares: 1-3-5 arriba, 2-4-6 abajo. */
+const SIX_POLES: SymbolPin[] = [
+  left(0.18, '1'),
+  left(0.5, '3'),
+  left(0.82, '5'),
+  right(0.18, '2'),
+  right(0.5, '4'),
+  right(0.82, '6'),
+];
 
-const viaBorne: SymbolDef = {
-  ...terminal,
-  code: 3001,
-  name: 'Borne de paso',
-};
-
-const terminalBlock: SymbolDef = {
-  ...terminal,
-  code: 3005,
-  name: 'Bornera',
-};
-
-const terminal3: SymbolDef = {
-  ...terminal,
-  code: 3003,
-  name: 'Borne doble',
-};
+/** Detalle de disparo magnético/térmico que distingue al automático. */
+function tripDetail(w: number, h: number): Shape[] {
+  const cy = h / 2;
+  const mx = w / 2;
+  return [
+    { d: rect(mx - w * 0.06, cy - h * 0.3, w * 0.12, h * 0.12), thin: true },
+    { d: line(mx, cy - h * 0.3, mx, cy - h * 0.4), thin: true },
+  ];
+}
 
 const fuse: SymbolDef = {
   code: 6009,
-  name: 'Fusible',
+  name: 'Disyuntor III',
   group: 'proteccion',
-  pins: [left(0.5, '1'), right(0.5, '2')],
+  pins: SIX_POLES,
   shapes(w, h) {
-    const cy = h / 2;
-    const pad = w * 0.24;
-    return [
-      { d: line(0, cy, pad, cy) },
-      { d: rect(pad, cy - h * 0.13, w - pad * 2, h * 0.26) },
-      { d: line(pad, cy, w - pad, cy), thin: true },
-      { d: line(w - pad, cy, w, cy) },
-    ];
+    return threePole(w, h, false);
   },
 };
 
 const breaker: SymbolDef = {
   code: 6003,
-  name: 'Interruptor termomagnético',
+  name: 'Automático III',
   group: 'proteccion',
-  pins: [left(0.5, '1'), right(0.5, '2')],
+  pins: SIX_POLES,
   shapes(w, h) {
-    const cy = h / 2;
-    const mx = w / 2;
-    const gap = Math.min(w * 0.16, 4.5);
-    return [
-      { d: line(0, cy, mx - gap, cy) },
-      { d: line(mx + gap, cy, w, cy) },
-      { d: line(mx - gap, cy, mx + gap, cy - gap * 0.9), thin: true },
-      { d: rect(mx - gap * 0.5, cy - h * 0.3, gap, h * 0.16), thin: true },
-      { d: line(mx, cy - h * 0.3, mx, cy - h * 0.4), thin: true },
-    ];
+    return [...threePole(w, h, false), ...tripDetail(w, h)];
   },
 };
 
@@ -237,59 +162,73 @@ const thermalRelay: SymbolDef = {
   code: 6007,
   name: 'Relé térmico',
   group: 'proteccion',
-  pins: [left(0.5, '1'), right(0.5, '2')],
+  pins: SIX_POLES,
   shapes(w, h) {
     const cy = h / 2;
     return [
-      ...contact(w, cy, false),
-      { d: rect(w * 0.34, cy - h * 0.16, w * 0.32, h * 0.32), thin: true },
-      { d: line(w * 0.34, cy + h * 0.16, w * 0.66, cy - h * 0.16), thin: true },
+      ...threePole(w, h, false),
+      { d: rect(w * 0.36, cy - h * 0.12, w * 0.28, h * 0.24), thin: true },
+      { d: line(w * 0.36, cy + h * 0.12, w * 0.64, cy - h * 0.12), thin: true },
     ];
   },
 };
 
 const circuitBreaker4: SymbolDef = {
   code: 6001,
-  name: 'Seccionador 4P',
+  name: 'Automático IN',
   group: 'proteccion',
   pins: [left(0.3, '1'), left(0.7, '3'), right(0.3, '2'), right(0.7, '4')],
   shapes(w, h) {
-    return [...contact(w, h * 0.3, false), ...contact(w, h * 0.7, false)];
+    return [...threePole(w, h, false), ...tripDetail(w, h)];
   },
 };
 
 const breaker4: SymbolDef = {
   ...circuitBreaker4,
   code: 6002,
-  name: 'Interruptor 4P',
+  name: 'Automático II',
 };
 
 const coil: SymbolDef = {
-  code: 7000,
-  name: 'Bobina de contactor',
+  code: 9000,
+  name: 'Bobina monoestable',
   group: 'mando',
   pins: [left(0.5, 'A1'), right(0.5, 'A2')],
+  size: { w: 9, h: 15 },
   shapes(w, h) {
     return [{ d: rect(w * 0.2, h * 0.2, w * 0.6, h * 0.6) }];
   },
   labels(w, h) {
-    return [{ x: w / 2, y: h / 2, value: 'KM', size: Math.min(w, h) * 0.3, anchor: 'middle' }];
+    return [{ x: w / 2, y: h / 2, value: 'K', size: Math.min(w, h) * 0.3, anchor: 'middle' }];
   },
 };
 
+/** Contacto auxiliar NA (código 7000: bornes 13-14 en los archivos reales). */
 const auxContact: SymbolDef = {
-  code: 7001,
-  name: 'Contacto auxiliar',
+  code: 7000,
+  name: 'Contacto auxiliar NA',
   group: 'mando',
-  pins: [left(0.5, '1'), right(0.5, '2')],
+  pins: [left(0.5, '13'), right(0.5, '14')],
+  size: { w: 6, h: 15 },
   shapes(w, h) {
     return contact(w, h / 2, false);
   },
 };
 
+/** Contacto auxiliar NC (código 7001: bornes 11-12). */
+const auxContactNC: SymbolDef = {
+  ...auxContact,
+  code: 7001,
+  name: 'Contacto auxiliar NC',
+  pins: [left(0.5, '11'), right(0.5, '12')],
+  shapes(w, h) {
+    return contact(w, h / 2, true);
+  },
+};
+
 const pushNO: SymbolDef = {
   code: 8000,
-  name: 'Pulsador NA',
+  name: 'Contacto pulsador NA',
   group: 'mando',
   pins: [left(0.5, '13'), right(0.5, '14')],
   shapes(w, h) {
@@ -308,7 +247,7 @@ const pushNO: SymbolDef = {
 
 const pushNC: SymbolDef = {
   code: 8001,
-  name: 'Pulsador NC',
+  name: 'Contacto pulsador NC',
   group: 'mando',
   pins: [left(0.5, '11'), right(0.5, '12')],
   shapes(w, h) {
@@ -328,7 +267,7 @@ const pushNC: SymbolDef = {
 
 const selectorNO: SymbolDef = {
   code: 8012,
-  name: 'Selector NA',
+  name: 'Contacto final de carrera NA',
   group: 'mando',
   pins: [left(0.5, '13'), right(0.5, '14')],
   shapes(w, h) {
@@ -339,7 +278,7 @@ const selectorNO: SymbolDef = {
 
 const selectorNC: SymbolDef = {
   code: 8013,
-  name: 'Selector NC',
+  name: 'Contacto final de carrera NC',
   group: 'mando',
   pins: [left(0.5, '11'), right(0.5, '12')],
   shapes(w, h) {
@@ -352,7 +291,7 @@ const lamp: SymbolDef = {
   code: 8016,
   name: 'Lámpara de señalización',
   group: 'mando',
-  pins: [left(0.5, 'X1'), right(0.5, 'X2')],
+  pins: [left(0.5, '97'), right(0.5, '98')],
   shapes(w, h) {
     const r = Math.min(w, h) * 0.32;
     const cx = w / 2;
@@ -388,34 +327,300 @@ const auxNC2: SymbolDef = {
   },
 };
 
-const motorTerminal: SymbolDef = {
-  code: 9000,
-  name: 'Borne de motor',
-  group: 'carga',
+/** Electroválvula: bobina con designador EV (código 9003). */
+const electrovalve: SymbolDef = {
+  ...coil,
+  code: 9003,
+  name: 'Electroválvula',
+  labels(w, h) {
+    return [{ x: w / 2, y: h / 2, value: 'EV', size: Math.min(w, h) * 0.28, anchor: 'middle' }];
+  },
+};
+
+// --- catálogo extendido ------------------------------------------------------
+//
+// Cada código de acá sale de `catalog.ts`, que se extrae del binario: nombre y
+// designador son los que usa CADe_SIMU, no una suposición. El registro para
+// insertarlos lo sintetiza `place.ts` clonando la forma de un componente real
+// del mismo tamaño en bornes.
+
+/** Motor con la misma caja que el trifásico pero con sus propios bornes. */
+const motorVariant = (code: number, name: string, pins: SymbolPin[]): SymbolDef => ({
+  code,
+  name,
+  group: 'motor',
+  pins,
+  size: { w: 24, h: 24 },
+  shapes(w, h) {
+    const r = Math.min(w, h) * 0.42;
+    const cx = w / 2;
+    const cy = h / 2;
+    const out: Shape[] = [{ d: circle(cx, cy, r) }];
+    for (const p of pins) {
+      if (p.side === 'left') out.push({ d: line(0, p.ny * h, cx - r, p.ny * h) });
+      else if (p.side === 'right') out.push({ d: line(cx + r, p.ny * h, w, p.ny * h) });
+      else if (p.side === 'bottom') out.push({ d: line(cx, cy + r, cx, h) });
+      else out.push({ d: line(p.nx * w, 0, p.nx * w, cy - r) });
+    }
+    return out;
+  },
+  labels(w, h) {
+    return [{ x: w / 2, y: h / 2, value: 'M', size: Math.min(w, h) * 0.34, anchor: 'middle' }];
+  },
+});
+
+const motorSingle: SymbolDef = motorVariant(1002, 'Motor monofásico', [left(0.38, 'U1'), left(0.66, 'U2')]);
+
+const motorDahlander: SymbolDef = motorVariant(1003, 'Motor Dahlander', [
+  left(0.22, 'U1'),
+  left(0.5, 'V1'),
+  left(0.78, 'W1'),
+  right(0.22, 'U2'),
+  right(0.5, 'V2'),
+  right(0.78, 'W2'),
+]);
+
+const motorWound: SymbolDef = motorVariant(1004, 'Motor rotor bobinado', [
+  left(0.22, 'U1'),
+  left(0.5, 'V1'),
+  left(0.78, 'W1'),
+  right(0.22, 'K'),
+  right(0.5, 'L'),
+  right(0.78, 'M'),
+]);
+
+const motorTwoSpeeds: SymbolDef = motorVariant(1005, 'Motor dos velocidades', [
+  left(0.22, 'U1'),
+  left(0.5, 'V1'),
+  left(0.78, 'W1'),
+  right(0.22, 'U2'),
+  right(0.5, 'V2'),
+  right(0.78, 'W2'),
+]);
+
+const motorAsSingle: SymbolDef = motorVariant(1010, 'Motor trifásico como monofásico', [
+  left(0.38, 'L'),
+  left(0.66, 'N'),
+]);
+
+/** Alimentación: barra con un borne por conductor y su rótulo. */
+const feed = (code: number, name: string, pins: SymbolPin[], label?: string): SymbolDef => ({
+  code,
+  name,
+  group: 'alimentacion',
+  pins,
+  size: { w: 12, h: Math.max(12, pins.length * 6) },
+  shapes(w, h) {
+    const bar = w * 0.35;
+    return [
+      { d: line(bar, 0, bar, h), thin: true },
+      ...pins.map((p) => ({ d: line(bar, p.ny * h, w, p.ny * h) })),
+    ];
+  },
+  labels(w, h) {
+    if (!label) return [];
+    return [{ x: w * 0.62, y: h / 2, value: label, size: Math.min(w, h) * 0.42, anchor: 'middle' }];
+  },
+});
+
+const feedL: SymbolDef = feed(3000, 'Alimentación L', [], 'L');
+const feedN: SymbolDef = feed(3001, 'Alimentación N', [], 'N');
+const feedLN: SymbolDef = feed(3003, 'Alimentación L N', [], 'L/N');
+const feed3PE: SymbolDef = feed(3005, 'Alimentación L1 L2 L3 PE', [], 'L123');
+
+const feedPE: SymbolDef = feed(3002, 'Alimentación PE', [right(0.5, 'PE')]);
+
+const feed3: SymbolDef = feed(3004, 'Alimentación L1 L2 L3', [
+  right(0.2, 'L1'),
+  right(0.5, 'L2'),
+  right(0.8, 'L3'),
+]);
+
+const feed3N: SymbolDef = feed(3006, 'Alimentación L1 L2 L3 N', [
+  right(0.15, 'L1'),
+  right(0.38, 'L2'),
+  right(0.62, 'L3'),
+  right(0.85, 'N'),
+]);
+
+const feed3NPE: SymbolDef = feed(3007, 'Alimentación L1 L2 L3 N PE', [
+  right(0.1, 'L1'),
+  right(0.3, 'L2'),
+  right(0.5, 'L3'),
+  right(0.7, 'N'),
+  right(0.9, 'PE'),
+]);
+
+const feedPos: SymbolDef = feed(3008, 'Alimentación +', [right(0.5, '+')]);
+
+const feedDC: SymbolDef = feed(3010, 'Alimentación + -', [right(0.3, '+'), right(0.7, '-')]);
+
+/** Aparato de un polo: un solo corte más el detalle de disparo. */
+const onePole = (code: number, name: string): SymbolDef => ({
+  code,
+  name,
+  group: 'proteccion',
   pins: [left(0.5, '1'), right(0.5, '2')],
+  size: { w: 12, h: 15 },
+  shapes(w, h) {
+    return [...contact(w, h / 2, false), ...tripDetail(w, h)];
+  },
+});
+
+const auto1: SymbolDef = onePole(6000, 'Automático I');
+
+const disyuntor1: SymbolDef = onePole(6010, 'Disyuntor I');
+
+const disyuntor2: SymbolDef = {
+  code: 6008,
+  name: 'Disyuntor II',
+  group: 'proteccion',
+  pins: [left(0.3, '1'), left(0.7, '3'), right(0.3, '2'), right(0.7, '4')],
+  size: { w: 12, h: 15 },
+  shapes(w, h) {
+    return [...contact(w, h * 0.3, false), ...contact(w, h * 0.7, false)];
+  },
+};
+
+const auxNANC: SymbolDef = {
+  code: 7002,
+  name: 'Contacto auxiliar NA-NC',
+  group: 'mando',
+  pins: [left(0.3, '13'), left(0.7, '11'), right(0.3, '14'), right(0.7, '12')],
+  size: { w: 6, h: 15 },
+  shapes(w, h) {
+    return [...contact(w, h * 0.3, false), ...contact(w, h * 0.7, true)];
+  },
+};
+
+const relayCoil: SymbolDef = {
+  ...coil,
+  code: 7016,
+  name: 'Rele',
+  pins: [left(0.5, 'A1'), right(0.5, 'A2')],
+  labels(w, h) {
+    return [{ x: w / 2, y: h / 2, value: 'KA', size: Math.min(w, h) * 0.28, anchor: 'middle' }];
+  },
+};
+
+const timerOn: SymbolDef = {
+  ...coil,
+  code: 9004,
+  name: 'Temporizador a la conexión',
+  size: { w: 15, h: 15 },
+  shapes(w, h) {
+    return [
+      { d: rect(w * 0.2, h * 0.2, w * 0.6, h * 0.6) },
+      { d: circle(w * 0.72, h * 0.78, Math.min(w, h) * 0.14), thin: true },
+      { d: line(w * 0.72, h * 0.78, w * 0.72, h * 0.72), thin: true },
+    ];
+  },
+  labels(w, h) {
+    return [{ x: w / 2, y: h / 2, value: 'KT', size: Math.min(w, h) * 0.28, anchor: 'middle' }];
+  },
+};
+
+const signalLamp: SymbolDef = {
+  ...lamp,
+  code: 9008,
+  name: 'Señalización óptica',
+  group: 'senalizacion',
+  size: { w: 12, h: 15 },
+};
+
+const buzzer: SymbolDef = {
+  code: 9011,
+  name: 'Zumbador',
+  group: 'senalizacion',
+  pins: [left(0.5, 'X1'), right(0.5, 'X2')],
+  size: { w: 15, h: 15 },
   shapes(w, h) {
     const cy = h / 2;
+    const r = Math.min(w, h) * 0.3;
+    const cx = w / 2;
     return [
-      { d: line(0, cy, w * 0.35, cy) },
-      { d: line(w * 0.65, cy, w, cy) },
-      { d: rect(w * 0.35, cy - h * 0.18, w * 0.3, h * 0.36), fill: true },
+      { d: line(0, cy, cx - r, cy) },
+      { d: line(cx + r, cy, w, cy) },
+      { d: circle(cx, cy, r) },
+      { d: `M${cx - r * 0.5} ${cy + r * 0.4}a${r} ${r} 0 0 1 ${r} 0`, thin: true },
     ];
   },
 };
 
-const motorTerminal3: SymbolDef = {
-  ...motorTerminal,
-  code: 9003,
-  name: 'Borne de motor 3F',
+const pushNANC: SymbolDef = {
+  code: 8002,
+  name: 'Contacto pulsador NA-NC',
+  group: 'senalizacion',
+  pins: [left(0.3, '13'), left(0.7, '11'), right(0.3, '14'), right(0.7, '12')],
+  size: { w: 6, h: 15 },
+  shapes(w, h) {
+    return [...contact(w, h * 0.3, false), ...contact(w, h * 0.7, true)];
+  },
+};
+
+/** Pulsador tipo seta: contacto normal más la tapa de hongo. */
+const mushroom = (code: number, name: string, nc: boolean): SymbolDef => ({
+  code,
+  name,
+  group: 'senalizacion',
+  pins: nc ? [left(0.5, '11'), right(0.5, '12')] : [left(0.5, '13'), right(0.5, '14')],
+  size: { w: 9, h: 15 },
+  shapes(w, h) {
+    const cy = h / 2;
+    const mx = w / 2;
+    const gap = Math.min(w * 0.18, 3.5);
+    const cap = `M${mx - gap} ${cy - h * 0.34}H${mx + gap}V${cy - h * 0.26}H${mx - gap}Z`;
+    return [
+      ...contact(w, cy, nc),
+      { d: line(mx, cy, mx, cy - h * 0.26), thin: true },
+      { d: cap, fill: true },
+    ];
+  },
+});
+
+const mushroomNA: SymbolDef = mushroom(8004, 'Contacto pulsador seta NA', false);
+const mushroomNC: SymbolDef = mushroom(8005, 'Contacto pulsador seta NC', true);
+
+const switchNO: SymbolDef = {
+  code: 8008,
+  name: 'Contacto interruptor NA',
+  group: 'senalizacion',
+  pins: [left(0.5, '13'), right(0.5, '14')],
+  size: { w: 9, h: 15 },
+  shapes(w, h) {
+    const cy = h / 2;
+    return [...contact(w, cy, false), { d: line(w * 0.62, cy - h * 0.2, w * 0.72, cy - h * 0.34), thin: true }];
+  },
+};
+
+const switchNANC: SymbolDef = {
+  code: 8010,
+  name: 'Contacto interruptor NA-NC',
+  group: 'senalizacion',
+  pins: [left(0.3, '13'), left(0.7, '11'), right(0.3, '14'), right(0.7, '12')],
+  size: { w: 9, h: 15 },
+  shapes(w, h) {
+    return [
+      ...contact(w, h * 0.3, false),
+      ...contact(w, h * 0.7, true),
+      { d: line(w * 0.62, h * 0.3, w * 0.72, h * 0.12), thin: true },
+    ];
+  },
 };
 
 const ALL: SymbolDef[] = [
   motor3f,
   powerContact,
-  terminal,
-  viaBorne,
-  terminal3,
-  terminalBlock,
+  feedL,
+  feedN,
+  feedLN,
+  feed3PE,
+  feedPE,
+  feed3,
+  feed3N,
+  feed3NPE,
+  feedPos,
+  feedDC,
   fuse,
   breaker,
   thermalRelay,
@@ -423,6 +628,7 @@ const ALL: SymbolDef[] = [
   breaker4,
   coil,
   auxContact,
+  auxContactNC,
   pushNO,
   pushNC,
   selectorNO,
@@ -430,11 +636,35 @@ const ALL: SymbolDef[] = [
   lamp,
   thermalContact,
   auxNC2,
-  motorTerminal,
-  motorTerminal3,
+  electrovalve,
+  motorSingle,
+  motorDahlander,
+  motorWound,
+  motorTwoSpeeds,
+  motorAsSingle,
+  auto1,
+  disyuntor1,
+  disyuntor2,
+  auxNANC,
+  relayCoil,
+  timerOn,
+  signalLamp,
+  buzzer,
+  pushNANC,
+  mushroomNA,
+  mushroomNC,
+  switchNO,
+  switchNANC,
+  ...FAMILY_SYMBOLS,
 ];
 
 const BY_CODE = new Map<number, SymbolDef>(ALL.map((s) => [s.code, s]));
+
+// Los símbolos normalizados de EN 60617 pisan el dibujo a mano del mismo código.
+for (const [code, qet] of Object.entries(QET_SYMBOLS)) {
+  const sym = BY_CODE.get(Number(code));
+  if (sym) BY_CODE.set(Number(code), withQetGeometry(sym, qet));
+}
 
 export function symbolFor(code: number): SymbolDef | undefined {
   return BY_CODE.get(code);
@@ -442,6 +672,11 @@ export function symbolFor(code: number): SymbolDef | undefined {
 
 export function symbolList(): SymbolDef[] {
   return [...ALL];
+}
+
+/** Cables: se dibujan como una línea y se insertan como tramo, no como componente. */
+export function lineList(): SymbolDef[] {
+  return [...LINE_SYMBOLS];
 }
 
 /**

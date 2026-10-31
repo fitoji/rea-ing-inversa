@@ -1,0 +1,9 @@
+# pnpm workspace + settings (pnpm v12 reads both from this file, not from package.json).
+packages:
+  - app
+
+# esbuild ships a native binary and needs its postinstall script to finish the
+# install. Everything else stays unapproved by default, so a new dependency with
+# scripts fails the install instead of running code silently.
+allowBuilds:
+  esbuild: true

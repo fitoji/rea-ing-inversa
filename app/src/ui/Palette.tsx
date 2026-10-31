@@ -1,20 +1,59 @@
-import type { JSX } from 'react';
-import { symbolList, type SymbolGroup } from '../symbols/library.ts';
-import { TEMPLATE_CODES } from '../symbols/templates.ts';
+import type { CSSProperties, JSX } from 'react';
+import { useEffect, useState } from 'react';
+import { BoxesIcon, StarIcon } from 'lucide-react';
+import { lineList, symbolList, type SymbolDef, type SymbolGroup } from '../symbols/library.ts';
 import { SymbolGlyph } from './SymbolGlyph.tsx';
+import { PanelHead } from './PanelHead.tsx';
 import type { Sheet } from '../model/project.ts';
+import { readFavorites, writeFavorites } from './favorites.ts';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const GROUP_LABEL: Record<SymbolGroup, string> = {
   motor: 'Motores',
   potencia: 'Potencia',
   proteccion: 'Protección',
-  mando: 'Mando y señalización',
+  mando: 'Mando',
+  alimentacion: 'Alimentación',
+  senalizacion: 'Señalización y pulsadores',
+  sensor: 'Sensores',
+  linea: 'Líneas y cables',
   borne: 'Borneras',
   carga: 'Cargas',
   otro: 'Otros',
 };
 
-const GROUP_ORDER: SymbolGroup[] = ['motor', 'potencia', 'proteccion', 'mando', 'carga', 'borne', 'otro'];
+const GROUP_ORDER: SymbolGroup[] = [
+  'alimentacion',
+  'motor',
+  'potencia',
+  'proteccion',
+  'mando',
+  'senalizacion',
+  'sensor',
+  'linea',
+  'carga',
+  'borne',
+  'otro',
+];
+
+/** Tono por familia: pinta las miniaturas, no el esquema. */
+const GROUP_TONE: Record<SymbolGroup, string> = {
+  alimentacion: 'var(--tone-alimentacion)',
+  motor: 'var(--tone-motor)',
+  potencia: 'var(--tone-potencia)',
+  proteccion: 'var(--tone-proteccion)',
+  mando: 'var(--tone-mando)',
+  senalizacion: 'var(--tone-senalizacion)',
+  sensor: 'var(--tone-sensor)',
+  linea: 'var(--wire)',
+  carga: 'var(--tone-otro)',
+  borne: 'var(--tone-otro)',
+  otro: 'var(--tone-otro)',
+};
 
 interface Props {
   placing: number | null;
@@ -25,58 +64,169 @@ interface Props {
 }
 
 export function Palette({ placing, onPick, sheets, activeSheet, onSheet }: Props): JSX.Element {
-  const available = symbolList().filter((s) => TEMPLATE_CODES.includes(s.code));
+  const available = [...symbolList(), ...lineList()];
   const byGroup = new Map<SymbolGroup, typeof available>();
   for (const sym of available) {
     const list = byGroup.get(sym.group) ?? [];
     list.push(sym);
     byGroup.set(sym.group, list);
   }
+  // Categorías plegadas: con el catálogo completo la lista no entra de una vista.
+  const [open, setOpen] = useState<string[]>(['fav']);
+  const [favorites, setFavorites] = useState<number[]>(readFavorites);
+
+  useEffect(() => writeFavorites(favorites), [favorites]);
+
+  const toggleFavorite = (code: number): void =>
+    setFavorites((prev) => (prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code]));
+
+  const favSymbols = favorites
+    .map((code) => available.find((sym) => sym.code === code))
+    .filter((sym): sym is (typeof available)[number] => sym !== undefined);
 
   return (
-    <aside className="palette">
-      <div className="panel-head">Insertar componente</div>
-      <div className="palette-body">
-        {GROUP_ORDER.filter((g) => byGroup.has(g)).map((group) => (
-          <div key={group}>
-            <div className="group-title">{GROUP_LABEL[group]}</div>
-            {byGroup.get(group)!.map((sym) => (
-              <button
-                key={sym.code}
-                className={placing === sym.code ? 'pal-item on' : 'pal-item'}
-                onClick={() => onPick(placing === sym.code ? null : sym.code)}
-                title={`${sym.name} — código ${sym.code}`}
-              >
-                <span className="pal-swatch">
-                  <svg width={30} height={26} viewBox="-4 -6 26 24">
-                    <SymbolGlyph code={sym.code} pinNames={sym.pins.map((p) => p.name)} w={18} h={15} />
-                  </svg>
-                </span>
-                <span className="pal-name">{sym.name}</span>
-                <span className="pal-code">{sym.code}</span>
-              </button>
-            ))}
-          </div>
-        ))}
-        {available.length === 0 && (
-          <div className="empty-state">Sin plantillas. Corré `node scripts/make-templates.ts`.</div>
-        )}
-      </div>
+    <aside className="flex min-h-0 w-[232px] shrink-0 flex-col border-r border-border bg-card">
+      <PanelHead>Insertar componente</PanelHead>
 
-      <div className="sheets">
-        <div className="group-title">Hojas</div>
+      <ScrollArea className="min-h-0 flex-1">
+        <div className="px-1.5 pb-3">
+          <Accordion type="multiple" value={open} onValueChange={setOpen}>
+            {favSymbols.length > 0 && (
+              <AccordionItem value="fav" className="border-border/60">
+                <AccordionTrigger className="items-center gap-1.5 px-1.5 py-1.5 text-[10px] font-semibold tracking-[0.5px] text-muted-foreground uppercase hover:text-foreground hover:no-underline">
+                  <StarIcon className="size-3 shrink-0 fill-current text-[var(--tone-senalizacion)]" />
+                  <span className="truncate">Favoritos</span>
+                  <Badge variant="ghost" className="ml-auto h-4 shrink-0 px-1 font-mono text-[10px] font-normal">
+                    {favSymbols.length}
+                  </Badge>
+                </AccordionTrigger>
+                <AccordionContent className="pt-0.5 pb-1">
+                  {favSymbols.map((sym) => (
+                    <SymbolRow
+                      key={sym.code}
+                      sym={sym}
+                      group={sym.group}
+                      active={placing === sym.code}
+                      favorite
+                      onPick={onPick}
+                      onToggleFavorite={toggleFavorite}
+                    />
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
+            )}
+
+            {GROUP_ORDER.filter((g) => byGroup.has(g)).map((group) => (
+              <AccordionItem key={group} value={group} className="border-border/60">
+                <AccordionTrigger className="items-center gap-1.5 px-1.5 py-1.5 text-[10px] font-semibold tracking-[0.5px] text-muted-foreground uppercase hover:text-foreground hover:no-underline">
+                  <span className="size-1.5 shrink-0 rounded-full" style={{ background: GROUP_TONE[group] }} />
+                  <span className="truncate">{GROUP_LABEL[group]}</span>
+                  <Badge variant="ghost" className="ml-auto h-4 shrink-0 px-1 font-mono text-[10px] font-normal">
+                    {byGroup.get(group)!.length}
+                  </Badge>
+                </AccordionTrigger>
+                <AccordionContent className="pt-0.5 pb-1">
+                  {byGroup.get(group)!.map((sym) => (
+                    <SymbolRow
+                      key={sym.code}
+                      sym={sym}
+                      group={group}
+                      active={placing === sym.code}
+                      favorite={favorites.includes(sym.code)}
+                      onPick={onPick}
+                      onToggleFavorite={toggleFavorite}
+                    />
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+
+          {available.length === 0 && (
+            <Empty className="p-4">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <BoxesIcon />
+                </EmptyMedia>
+                <EmptyTitle>Sin plantillas</EmptyTitle>
+                <EmptyDescription className="text-xs">
+                  Corré <span className="font-mono">node scripts/make-templates.ts</span>.
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          )}
+        </div>
+      </ScrollArea>
+
+      <div className="shrink-0 border-t border-border p-1.5">
+        <div className="px-1.5 pt-1 pb-1 text-[10px] tracking-[0.5px] text-muted-foreground uppercase">Hojas</div>
         {sheets.map((sheet, i) => (
-          <button
+          <Button
             key={sheet.index}
-            className={i === activeSheet ? 'sheet-item on' : 'sheet-item'}
+            variant={i === activeSheet ? 'secondary' : 'ghost'}
+            size="sm"
+            className="w-full justify-start gap-2 px-1.5 text-xs"
+            aria-current={i === activeSheet ? 'true' : undefined}
             onClick={() => onSheet(i)}
           >
-            <span className="sheet-badge">{String(i + 1).padStart(2, '0')}</span>
-            Hoja {i + 1}
-            {sheet.titleBlock?.raw.includes('CADe_S1') ? ' · PLC' : ''}
-          </button>
+            <Badge variant="outline" className="h-4 shrink-0 px-1 font-mono text-[10px] font-normal">
+              {String(i + 1).padStart(2, '0')}
+            </Badge>
+            <span className="min-w-0 flex-1 truncate text-left">
+              Hoja {i + 1}
+              {sheet.titleBlock?.raw.includes('CADe_S1') ? ' · PLC' : ''}
+            </span>
+          </Button>
         ))}
       </div>
     </aside>
+  );
+}
+
+interface RowProps {
+  sym: SymbolDef;
+  group: SymbolGroup;
+  active: boolean;
+  favorite: boolean;
+  onPick: (code: number | null) => void;
+  onToggleFavorite: (code: number) => void;
+}
+
+/** Una fila de la paleta: elegir el componente y marcarlo como favorito. */
+function SymbolRow({ sym, group, active, favorite, onPick, onToggleFavorite }: RowProps): JSX.Element {
+  return (
+    <div className="flex items-center gap-0.5">
+      <Button
+        variant={active ? 'secondary' : 'ghost'}
+        className="h-auto min-w-0 flex-1 justify-start gap-2 px-1.5 py-1"
+        title={`${sym.name} — código ${sym.code}`}
+        aria-pressed={active}
+        onClick={() => onPick(active ? null : sym.code)}
+      >
+        <span
+          className="pal-tone grid size-[30px] shrink-0 place-items-center rounded-md border"
+          style={{ '--ink': GROUP_TONE[group] } as CSSProperties}
+        >
+          <svg className="size-[26px]" viewBox="-4 -6 26 24" aria-hidden="true">
+            <SymbolGlyph code={sym.code} pinNames={sym.pins.map((p) => p.name)} w={18} h={15} />
+          </svg>
+        </span>
+        <span className="min-w-0 flex-1 truncate text-left text-xs">{sym.name}</span>
+        <Badge variant="outline" className="ml-auto h-4 shrink-0 px-1 font-mono text-[10px] font-normal">
+          {sym.code}
+        </Badge>
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon-xs"
+        className="shrink-0"
+        aria-label={favorite ? `Quitar ${sym.name} de favoritos` : `Marcar ${sym.name} como favorito`}
+        aria-pressed={favorite}
+        title={favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+        onClick={() => onToggleFavorite(sym.code)}
+      >
+        <StarIcon className={favorite ? 'fill-current text-[var(--tone-senalizacion)]' : 'text-muted-foreground'} />
+      </Button>
+    </div>
   );
 }

@@ -178,6 +178,22 @@ test('addComponent: inserta al final con el id siguiente y en la posición pedid
   assert.deepEqual(s.selection, [added.id]);
 });
 
+test('addComponent: no repite el designador aunque la plantilla lo traiga usado', () => {
+  const template = parse(ARRANQUE).records.find((r) => r.code === 1000)!.raw;
+  let s = createEditor(ARRANQUE);
+  const usados = new Set(projectOf(s).records.map((r) => r.designator));
+
+  s = addComponent(s, template, 200, 60);
+  s = addComponent(s, template, 220, 60);
+
+  const added = projectOf(s)
+    .records.slice(-2)
+    .map((r) => r.designator);
+  assert.equal(added.length, 2);
+  assert.notEqual(added[0], added[1], 'los dos motores nuevos comparten designador');
+  for (const d of added) assert.ok(!usados.has(d), `el designador ${d} ya existía`);
+});
+
 test('rotateSelection: rota 90 grados acumulativos sin tocar el texto', () => {
   const motorId = idOf(1000);
   let s = select(createEditor(ARRANQUE), [motorId]);

@@ -231,7 +231,14 @@ export function validate(records: CadeRecordModel[]): Finding[] {
   }
   for (const [k, count] of seen) {
     if (count > 1) {
-      findings.push({ level: 'warn', code: 'duplicate-junction', message: `Dos uniones superpuestas en ${k}`, ids: [] });
+      const [jx, jy] = k.split(',').map(Number);
+      findings.push({
+        level: 'warn',
+        code: 'duplicate-junction',
+        message: `Dos uniones superpuestas en ${k}`,
+        ids: [],
+        at: { x: jx ?? 0, y: jy ?? 0 },
+      });
     }
   }
 
@@ -247,6 +254,7 @@ export function validate(records: CadeRecordModel[]): Finding[] {
           code: 'overlap',
           message: `Símbolos superpuestos: ${components[i]!.designator || components[i]!.code} y ${components[j]!.designator || components[j]!.code}`,
           ids: [components[i]!.id, components[j]!.id],
+          at: { x: a.x + a.w / 2, y: a.y + a.h / 2 },
         });
       }
     }
@@ -268,6 +276,7 @@ export function validate(records: CadeRecordModel[]): Finding[] {
           code: 'cable-disconnected',
           message: `Cable ${cable} con un extremo desconectado en ${k}`,
           ids,
+          at: { x: node.x, y: node.y },
         });
       }
     }

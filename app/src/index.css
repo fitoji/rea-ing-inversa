@@ -1,0 +1,217 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@import '@fontsource-variable/geist';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: 'Geist Variable', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Diagram semantics: the drawing keeps its own vocabulary. */
+  --color-wire: var(--wire);
+  --color-warn: var(--warn);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/*
+ * Two themes with the same token names. `:root` is the day theme; `html.dark`
+ * (the default, and what the toolbar toggle switches to) overrides it. The
+ * schematic has its own ink tokens because a drawing is not UI chrome: the
+ * wires, symbols and grid need their own values per theme.
+ */
+:root {
+  color-scheme: light;
+
+  --radius: 0.4375rem;
+
+  --background: #f6f8fb;
+  --foreground: #16202c;
+  --card: #ffffff;
+  --card-foreground: #16202c;
+  --popover: #ffffff;
+  --popover-foreground: #16202c;
+  --primary: #2f5c9e;
+  --primary-foreground: #f2f7ff;
+  --secondary: #dfe9f7;
+  --secondary-foreground: #14345c;
+  --muted: #edf1f6;
+  --muted-foreground: #5d6a7a;
+  --accent: #e8eef6;
+  --accent-foreground: #16202c;
+  --destructive: #c92a2a;
+  --border: #d7dee8;
+  --input: #c9d3e0;
+  --ring: #2f6fd0;
+
+  --wire: #0f9d63;
+  --warn: #b97d05;
+  --select: #2f6fd0;
+
+  /* Tono por familia, sólo para la paleta: el lienzo sigue siendo técnico. */
+  --tone-alimentacion: #2f7fc4;
+  --tone-motor: #2f6fd0;
+  --tone-potencia: #7c4dbe;
+  --tone-proteccion: #c92a2a;
+  --tone-mando: #0f9d63;
+  --tone-senalizacion: #a9770a;
+  --tone-sensor: #0e8c82;
+  --tone-otro: #5d6a7a;
+
+  --ink: #3d4a5c;
+  --ink-soft: #6b7789;
+  --body-fill: #ffffff;
+  --body-stroke: #9aa8ba;
+  --body-sel-fill: #eaf1fb;
+  --pin-fill: #ffffff;
+  --pin-stroke: #7d8b9c;
+  --pin-sel-fill: #dce9fa;
+  --pin-sel-stroke: #2f6fd0;
+  --label: #37455a;
+  --grid-minor: #e3e9f1;
+  --grid-major: #cfd8e4;
+  --handle-hover: #dce7f7;
+  --wire-alt: #0f8f86;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --background: #0e1116;
+  --foreground: #e2e8f0;
+  --card: #14181f;
+  --card-foreground: #e2e8f0;
+  --popover: #171c24;
+  --popover-foreground: #e2e8f0;
+  --primary: #2c4a7c;
+  --primary-foreground: #dce9ff;
+  --secondary: #24344d;
+  --secondary-foreground: #dce9ff;
+  --muted: #1e2531;
+  --muted-foreground: #98a3b3;
+  --accent: #222b38;
+  --accent-foreground: #e2e8f0;
+  --destructive: #ff6b6b;
+  --border: #232832;
+  --input: #2b323e;
+  --ring: #5b9dff;
+
+  --wire: #3fbf8f;
+  --warn: #f0b429;
+  --select: #5b9dff;
+
+  --tone-alimentacion: #6bb6f0;
+  --tone-motor: #7aa9ff;
+  --tone-potencia: #b794f6;
+  --tone-proteccion: #ff8787;
+  --tone-mando: #5fd0a0;
+  --tone-senalizacion: #f5c451;
+  --tone-sensor: #4fd1c5;
+  --tone-otro: #98a3b3;
+
+  --ink: #93a7c2;
+  --ink-soft: #6e7f95;
+  --body-fill: #10151c;
+  --body-stroke: #303c4d;
+  --body-sel-fill: #13202f;
+  --pin-fill: #0b0f15;
+  --pin-stroke: #6a7f99;
+  --pin-sel-fill: #16202c;
+  --pin-sel-stroke: #9cc4ff;
+  --label: #a9bbd0;
+  --grid-minor: #1a1f28;
+  --grid-major: #232a35;
+  --handle-hover: #1b2a3d;
+  --wire-alt: #35a89b;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply font-sans;
+    height: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    height: 100%;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  #root {
+    height: 100%;
+  }
+
+  input,
+  textarea,
+  [contenteditable='true'],
+  .selectable {
+    user-select: text;
+  }
+
+  ::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+/*
+ * Radix wraps ScrollArea content in a `display: table` box, which sizes to
+ * max-content and defeats flex truncation. Block layout makes rows shrink.
+ */
+[data-slot='scroll-area-viewport'] > div {
+  display: block !important;
+}
+
+/*
+ * Miniatura de la paleta: el tono de la familia entra por `--ink`, así el mismo
+ * dibujo se pinta del color de su categoría sin tocar el esquema del lienzo.
+ */
+.pal-tone {
+  background: color-mix(in oklab, var(--ink) 12%, transparent);
+  border-color: color-mix(in oklab, var(--ink) 30%, transparent);
+}

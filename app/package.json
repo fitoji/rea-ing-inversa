@@ -13,11 +13,25 @@
     "preview": "vite preview",
     "test": "node --test",
     "report": "node src/report.ts",
-    "spike": "node spike/make-spike.ts"
+    "spike": "node spike/make-spike.ts",
+    "catalog": "node scripts/make-catalog.ts",
+    "qet": "node scripts/import-qet.ts",
+    "qet:sheet": "node scripts/qet-sheet.ts"
   },
   "dependencies": {
+    "@fontsource-variable/geist": "^5.3.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "class-variance-authority": "^0.7.1",
+    "cn": "^0.5.1",
+    "lucide-react": "~1.65.0",
+    "next-themes": "^0.4.6",
+    "radix-ui": "^1.8.1",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "shadcn": "^4.23.0",
+    "sonner": "^2.0.8",
+    "tailwindcss": "^4.3.3",
+    "tw-animate-css": "^1.4.0"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

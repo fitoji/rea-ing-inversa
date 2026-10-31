@@ -18,7 +18,9 @@
  *   [n+1] vacío (el raw termina en '#')
  */
 
+import { parse } from '../format/cade.ts';
 import type { CadeDocument, CadeRecord } from '../format/cade.ts';
+import { CATALOG } from '../symbols/catalog.ts';
 
 export type RecordKind = 'component' | 'connection' | 'text' | 'sheet-title' | 'config' | 'unknown';
 
@@ -67,6 +69,8 @@ export interface Project {
   sheets: Sheet[];
 }
 
+const WIRE_CODES = new Set([4000, 4001, 4002, 4003, 4004, 4009, 4010, 4018, 4019]);
+
 const COMPONENT_CODES = new Set([
   1000, 2001, 3000, 3001, 3003, 3005, 6001, 6002, 6003, 6007, 6009, 7000, 7001, 8000, 8001, 8012,
   8013, 8016, 8017, 8018, 9000, 9003,
@@ -76,8 +80,12 @@ export function classify(code: number): RecordKind {
   if (code === 8) return 'text';
   if (code === 20000) return 'sheet-title';
   if (code === 10501) return 'config';
+  // Los cables viven en 4xxx, pero no todo 4xxx es un cable: las regletas y
+  // conectores (4011-4017) son componentes con bornes.
+  if (WIRE_CODES.has(code)) return 'connection';
+  // El resto del catálogo (extraído del binario) son componentes dibujables.
+  if (CATALOG[code] !== undefined) return 'component';
   if (COMPONENT_CODES.has(code)) return 'component';
-  if (code >= 4000 && code < 5000) return 'connection';
   return 'unknown';
 }
 
@@ -266,4 +274,17 @@ export function boundsOf(rec: CadeRecordModel): { x: number; y: number; w: numbe
   const box = boxOf(rec);
   if (!box) return null;
   return { x: rec.geometry[GEOMETRY.x]!, y: rec.geometry[GEOMETRY.y]!, w: box.width, h: box.height };
+}
+
+/**
+ * Invariante de compatibilidad: el texto se puede abrir y volver a serializar
+ * sin cambiar un byte. Es la garantía que sostiene el ida y vuelta con
+ * CADe_SIMU; si falla, guardar rompería el archivo.
+ */
+export function roundTrips(text: string): boolean {
+  try {
+    return serializeProject(buildProject(parse(text))) === text;
+  } catch {
+    return false;
+  }
 }
