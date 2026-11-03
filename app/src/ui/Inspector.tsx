@@ -119,7 +119,7 @@ export function Inspector(props: Props): JSX.Element {
 
 function InspectorShell({ children }: { children: ReactNode }): JSX.Element {
   return (
-    <aside className="flex min-h-0 w-[268px] shrink-0 flex-col border-l border-border bg-card">
+    <aside className="relative z-10 flex min-h-0 w-[268px] shrink-0 flex-col border-l border-border bg-card shadow-chrome-left">
       <PanelHead>Propiedades</PanelHead>
       <ScrollArea className="min-h-0 flex-1">
         <div className="flex flex-col gap-3 px-3 pb-3">{children}</div>

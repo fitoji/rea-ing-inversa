@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { JSX } from 'react';
 import {
+  BookOpenIcon,
+  ClipboardPasteIcon,
+  CopyIcon,
   FolderOpenIcon,
   FilePlusIcon,
   Grid3x3Icon,
@@ -55,11 +58,25 @@ import { simulate } from '../sim/solver.ts';
 import { partKey } from '../sim/netlist.ts';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Menubar,
+  MenubarCheckboxItem,
+  MenubarContent,
+  MenubarGroup,
+  MenubarItem,
+  MenubarMenu,
+  MenubarRadioGroup,
+  MenubarRadioItem,
+  MenubarSeparator,
+  MenubarShortcut,
+  MenubarSub,
+  MenubarSubContent,
+  MenubarSubTrigger,
+  MenubarTrigger,
+} from '@/components/ui/menubar';
 import { Separator } from '@/components/ui/separator';
 import { Spinner } from '@/components/ui/spinner';
 import { Toaster } from '@/components/ui/sonner';
-import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
@@ -122,6 +139,24 @@ export function App(): JSX.Element {
     setPreview(null);
     setFitToken((t) => t + 1);
   }, []);
+
+  /** Proyecto nuevo: si hay cambios sin guardar, primero pregunta. */
+  const newProject = useCallback(() => {
+    if (!state) return;
+    if (state.dirty && !window.confirm('Hay cambios sin guardar. ¿Empezar un proyecto nuevo igual?')) return;
+    openText(blankDocument(), 'sin título.cade');
+    toast('proyecto nuevo');
+  }, [state, openText]);
+
+  /** Guardar: si el documento no re-parsea igual, no se escribe nada. */
+  const saveDocument = useCallback(() => {
+    if (!state) return;
+    if (!roundTrips(state.text)) {
+      flash('no se guardó: el documento no re-parsea igual');
+      return;
+    }
+    downloadCade(state.text, fileName);
+  }, [state, fileName, flash]);
 
   useEffect(() => {
     void loadSample(SAMPLES[0]!).then((text) => openText(text, SAMPLES[0]!.name));
@@ -328,56 +363,156 @@ export function App(): JSX.Element {
 
   const componentCount = project.records.filter((r) => r.kind === 'component').length;
   const wireCount = project.records.filter((r) => r.kind === 'connection').length;
-  const sampleValue = SAMPLES.some((s) => s.name === fileName) ? fileName : undefined;
 
   return (
     <TooltipProvider delayDuration={400}>
       <div className="flex h-full flex-col">
-        <header className="flex h-[46px] shrink-0 items-center gap-1.5 border-b border-border bg-card px-3">
-          <div className="mr-1.5 flex items-baseline gap-1.5">
+        <header className="relative z-10 flex h-[46px] shrink-0 items-center gap-2 border-b border-border bg-card px-3 shadow-chrome-down">
+          <div className="mr-0.5 flex shrink-0 items-baseline gap-1.5">
             <strong className="text-[13.5px] font-semibold tracking-tight">simuElectro</strong>
-            <span className="font-mono text-[10.5px] text-muted-foreground">v0.1</span>
+            <span className="font-mono text-[10.5px] text-muted-foreground">v0.2</span>
           </div>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              if (state.dirty && !window.confirm('Hay cambios sin guardar. ¿Empezar un proyecto nuevo igual?')) return;
-              openText(blankDocument(), 'sin título.cade');
-              toast('proyecto nuevo');
-            }}
-          >
-            <FilePlusIcon data-icon="inline-start" />
-            Nuevo
-          </Button>
+          <Menubar>
+            <MenubarMenu>
+              <MenubarTrigger>Archivo</MenubarTrigger>
+              <MenubarContent>
+                <MenubarGroup>
+                  <MenubarItem onSelect={newProject}>
+                    <FilePlusIcon />
+                    Nuevo
+                  </MenubarItem>
+                  <MenubarItem onSelect={() => fileInput.current?.click()}>
+                    <FolderOpenIcon />
+                    Abrir…
+                  </MenubarItem>
+                  <MenubarSub>
+                    <MenubarSubTrigger>
+                      <BookOpenIcon />
+                      Ejemplos
+                    </MenubarSubTrigger>
+                    <MenubarSubContent>
+                      <MenubarGroup>
+                        {SAMPLES.map((s) => (
+                          <MenubarItem
+                            key={s.name}
+                            onSelect={() => {
+                              void loadSample(s).then((text) => openText(text, s.name));
+                            }}
+                          >
+                            {s.label}
+                            {fileName === s.name && <MenubarShortcut>actual</MenubarShortcut>}
+                          </MenubarItem>
+                        ))}
+                      </MenubarGroup>
+                    </MenubarSubContent>
+                  </MenubarSub>
+                </MenubarGroup>
+                <MenubarSeparator />
+                <MenubarGroup>
+                  <MenubarItem onSelect={saveDocument}>
+                    <SaveIcon />
+                    Guardar .cade
+                  </MenubarItem>
+                </MenubarGroup>
+              </MenubarContent>
+            </MenubarMenu>
 
-          <Select
-            value={sampleValue}
-            onValueChange={(name) => {
-              const sample = SAMPLES.find((s) => s.name === name);
-              if (!sample) return;
-              void loadSample(sample).then((text) => openText(text, sample.name));
-            }}
-          >
-            <SelectTrigger size="sm" className="w-[176px]">
-              <SelectValue placeholder={fileName === '' ? 'Ejemplos' : fileName} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {SAMPLES.map((s) => (
-                  <SelectItem key={s.name} value={s.name}>
-                    {s.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+            <MenubarMenu>
+              <MenubarTrigger>Editar</MenubarTrigger>
+              <MenubarContent>
+                <MenubarGroup>
+                  <MenubarItem disabled={state.past.length === 0} onSelect={() => setState(undo(state))}>
+                    <Undo2Icon />
+                    Deshacer
+                    <MenubarShortcut>⌘Z</MenubarShortcut>
+                  </MenubarItem>
+                  <MenubarItem disabled={state.future.length === 0} onSelect={() => setState(redo(state))}>
+                    <Redo2Icon />
+                    Rehacer
+                    <MenubarShortcut>⇧⌘Z</MenubarShortcut>
+                  </MenubarItem>
+                </MenubarGroup>
+                <MenubarSeparator />
+                <MenubarGroup>
+                  <MenubarItem
+                    disabled={state.selection.length === 0}
+                    onSelect={() => {
+                      setState((s) => (s ? copySelection(s) : s));
+                      flash('copiado');
+                    }}
+                  >
+                    <CopyIcon />
+                    Copiar
+                    <MenubarShortcut>⌘C</MenubarShortcut>
+                  </MenubarItem>
+                  <MenubarItem onSelect={() => setState((s) => (s ? paste(s) : s))}>
+                    <ClipboardPasteIcon />
+                    Pegar
+                    <MenubarShortcut>⌘V</MenubarShortcut>
+                  </MenubarItem>
+                </MenubarGroup>
+                <MenubarSeparator />
+                <MenubarGroup>
+                  <MenubarItem onSelect={() => setState(rotateSelection(state))}>
+                    <RotateCwIcon />
+                    Rotar 90°
+                    <MenubarShortcut>R</MenubarShortcut>
+                  </MenubarItem>
+                  <MenubarItem variant="destructive" onSelect={() => setState(deleteSelection(state))}>
+                    <Trash2Icon />
+                    Borrar selección
+                    <MenubarShortcut>⌫</MenubarShortcut>
+                  </MenubarItem>
+                </MenubarGroup>
+              </MenubarContent>
+            </MenubarMenu>
 
-          <Button variant="ghost" size="sm" onClick={() => fileInput.current?.click()}>
-            <FolderOpenIcon data-icon="inline-start" />
-            Abrir…
-          </Button>
+            <MenubarMenu>
+              <MenubarTrigger>Ver</MenubarTrigger>
+              <MenubarContent>
+                <MenubarGroup>
+                  <MenubarCheckboxItem checked={showGrid} onCheckedChange={(checked) => setShowGrid(checked === true)}>
+                    <Grid3x3Icon />
+                    Grilla
+                  </MenubarCheckboxItem>
+                  <MenubarCheckboxItem checked={snap} onCheckedChange={(checked) => setSnap(checked === true)}>
+                    <MagnetIcon />
+                    Snap (paso de 3)
+                  </MenubarCheckboxItem>
+                  <MenubarItem onSelect={() => setFitToken((t) => t + 1)}>
+                    <Maximize2Icon />
+                    Encuadrar
+                    <MenubarShortcut>⌘0</MenubarShortcut>
+                  </MenubarItem>
+                </MenubarGroup>
+                <MenubarSeparator />
+                <MenubarRadioGroup value={mode} onValueChange={(value) => setMode(value as Mode)}>
+                  <MenubarRadioItem value="light">
+                    <SunIcon />
+                    Modo día
+                  </MenubarRadioItem>
+                  <MenubarRadioItem value="dark">
+                    <MoonIcon />
+                    Modo noche
+                  </MenubarRadioItem>
+                </MenubarRadioGroup>
+              </MenubarContent>
+            </MenubarMenu>
+
+            <MenubarMenu>
+              <MenubarTrigger>Simulación</MenubarTrigger>
+              <MenubarContent>
+                <MenubarGroup>
+                  <MenubarItem onSelect={toggleSimulation}>
+                    {running ? <SquareIcon /> : <PlayIcon />}
+                    {running ? 'Detener simulación' : 'Simular'}
+                  </MenubarItem>
+                </MenubarGroup>
+              </MenubarContent>
+            </MenubarMenu>
+          </Menubar>
+
           <input
             ref={fileInput}
             type="file"
@@ -391,7 +526,9 @@ export function App(): JSX.Element {
             }}
           />
 
-          <Separator orientation="vertical" className="mx-1 h-5" />
+          <span className="max-w-[200px] shrink-0 truncate font-mono text-[11px] text-muted-foreground">{fileName}</span>
+
+          <div className="flex-1" />
 
           <Tooltip>
             <TooltipTrigger asChild>
@@ -423,39 +560,7 @@ export function App(): JSX.Element {
             <TooltipContent>Rehacer (⇧⌘Z)</TooltipContent>
           </Tooltip>
 
-          <Separator orientation="vertical" className="mx-1 h-5" />
-
-          <Button variant="ghost" size="sm" title="Rotar 90° (R)" onClick={() => setState(rotateSelection(state))}>
-            <RotateCwIcon data-icon="inline-start" />
-            Rotar
-          </Button>
-          <Button variant="ghost" size="sm" title="Borrar (⌫)" onClick={() => setState(deleteSelection(state))}>
-            <Trash2Icon data-icon="inline-start" />
-            Borrar
-          </Button>
-
-          <Separator orientation="vertical" className="mx-1 h-5" />
-
-          <Toggle pressed={showGrid} onPressedChange={setShowGrid} variant="outline" size="sm">
-            <Grid3x3Icon data-icon="inline-start" />
-            Grilla
-          </Toggle>
-          <Toggle
-            pressed={snap}
-            onPressedChange={setSnap}
-            variant="outline"
-            size="sm"
-            title="Paso de 3 unidades"
-          >
-            <MagnetIcon data-icon="inline-start" />
-            Snap
-          </Toggle>
-          <Button variant="ghost" size="sm" title="Encuadrar (⌘0)" onClick={() => setFitToken((t) => t + 1)}>
-            <Maximize2Icon data-icon="inline-start" />
-            Encuadrar
-          </Button>
-
-          <div className="flex-1" />
+          <Separator orientation="vertical" className="mx-0.5 h-5" />
 
           <Tooltip>
             <TooltipTrigger asChild>
@@ -473,8 +578,6 @@ export function App(): JSX.Element {
             <TooltipContent>{running ? 'Detener la simulación' : 'Simular con la alimentación indicada'}</TooltipContent>
           </Tooltip>
 
-          <Separator orientation="vertical" className="mx-1 h-5" />
-
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -490,19 +593,9 @@ export function App(): JSX.Element {
             <TooltipContent>{mode === 'dark' ? 'Modo día' : 'Modo noche'}</TooltipContent>
           </Tooltip>
 
-          <Separator orientation="vertical" className="mx-1 h-5" />
+          <Separator orientation="vertical" className="mx-0.5 h-5" />
 
-          <Button
-            size="sm"
-            onClick={() => {
-              // Antes de escribir el archivo: si no re-parsea igual, no se guarda.
-              if (!roundTrips(state.text)) {
-                flash('no se guardó: el documento no re-parsea igual');
-                return;
-              }
-              downloadCade(state.text, fileName);
-            }}
-          >
+          <Button size="sm" onClick={saveDocument}>
             <SaveIcon data-icon="inline-start" />
             Guardar .cade
           </Button>
@@ -558,7 +651,7 @@ export function App(): JSX.Element {
           />
         </div>
 
-        <footer className="flex h-[26px] shrink-0 items-center gap-3.5 border-t border-border bg-card px-3 font-mono text-[11px] text-muted-foreground">
+        <footer className="relative z-10 flex h-[26px] shrink-0 items-center gap-3.5 border-t border-border bg-card px-3 font-mono text-[11px] tabular-nums text-muted-foreground shadow-chrome-up">
           <span
             className={cn('size-1.5 shrink-0 rounded-full', state.dirty ? 'bg-warn' : 'bg-wire')}
             aria-hidden="true"

@@ -85,7 +85,7 @@ export function Palette({ placing, onPick, sheets, activeSheet, onSheet }: Props
     .filter((sym): sym is (typeof available)[number] => sym !== undefined);
 
   return (
-    <aside className="flex min-h-0 w-[232px] shrink-0 flex-col border-r border-border bg-card">
+    <aside className="relative z-10 flex min-h-0 w-[232px] shrink-0 flex-col border-r border-border bg-card shadow-chrome-right">
       <PanelHead>Insertar componente</PanelHead>
 
       <ScrollArea className="min-h-0 flex-1">
