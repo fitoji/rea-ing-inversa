@@ -10,6 +10,7 @@
     "report": "pnpm --filter simuelectro report",
     "spike": "pnpm --filter simuelectro spike",
     "catalog": "pnpm --filter simuelectro catalog",
+    "componentes": "pnpm --filter simuelectro componentes",
     "qet": "pnpm --filter simuelectro qet",
     "qet:sheet": "pnpm --filter simuelectro qet:sheet"
   }
