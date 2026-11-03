@@ -1,10 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="-1.5 -1.5 18 18" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" width="81" height="45" viewBox="-1.5 -1.5 27 15" role="img">
 <title>Temporizador a la conexión</title>
-<rect x="-1.5" y="-1.5" width="18" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
-<path d="M3 3H12V12H3Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8.7 11.7a2.1 2.1 0 1 0 4.2 0a2.1 2.1 0 1 0 -4.2 0Z" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M10.8 11.7L10.8 10.8" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="0" cy="7.5" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<circle cx="15" cy="7.5" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<text x="7.5" y="7.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="4.2" fill="#37455a" text-anchor="middle" dominant-baseline="middle">KT</text>
+<rect x="-1.5" y="-1.5" width="27" height="15" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M0 0L24 0L24 12L0 12Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="0" cy="6" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="24" cy="6" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<text x="12" y="6" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="3.3600000000000003" fill="#37455a" text-anchor="middle" dominant-baseline="middle">KT</text>
 </svg>

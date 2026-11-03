@@ -19,7 +19,15 @@ import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CATALOG } from '../src/symbols/catalog.ts';
-import { lineList, symbolList, type Label, type Shape, type SymbolDef, type SymbolGroup } from '../src/symbols/library.ts';
+import {
+  lineList,
+  resolveSymbol,
+  symbolList,
+  type Label,
+  type Shape,
+  type SymbolDef,
+  type SymbolGroup,
+} from '../src/symbols/library.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const DOCS = join(HERE, '..', '..', 'docs');
@@ -88,7 +96,13 @@ const textOf = (label: Label): string =>
   `<text x="${label.x}" y="${label.y}" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="${label.size}" fill="${LABEL_INK}" text-anchor="${label.anchor ?? 'middle'}" dominant-baseline="middle">${escapeXml(label.value)}</text>`;
 
 /** SVG autocontenido: sin CSS externo, para que se vea igual en cualquier visor. */
-function glyphSvg(sym: SymbolDef): string {
+function glyphSvg(input: SymbolDef): string {
+  // resolveSymbol aplica la geometría importada de EN 60617 (qet-adapter): si no,
+  // la miniatura mostraría el dibujo a mano y no lo que pinta el lienzo.
+  const sym = resolveSymbol(
+    input.code,
+    input.pins.map((pin) => pin.name),
+  );
   const w = sym.size?.w ?? DEFAULT_BOX;
   const h = sym.size?.h ?? DEFAULT_BOX;
   const viewW = w + PAD * 2;

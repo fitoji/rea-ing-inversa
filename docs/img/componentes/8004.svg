@@ -1,11 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="36" height="54" viewBox="-1.5 -1.5 12 18" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" width="27" height="81" viewBox="-1.5 -1.5 9 27" role="img">
 <title>Contacto pulsador seta NA</title>
-<rect x="-1.5" y="-1.5" width="12" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
-<path d="M0 7.5L3.06 7.5" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M5.94 7.5L9 7.5" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M3.06 7.5L5.94 6.2" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M4.5 7.5L4.5 3.6" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M2.88 2.3999999999999995H6.12V3.5999999999999996H2.88Z" stroke="#3d4a5c" stroke-width="0.38" fill="#3d4a5c" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="0" cy="7.5" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<circle cx="9" cy="7.5" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<rect x="-1.5" y="-1.5" width="9" height="27" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18L3 18Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 0L0 3L6 3L6 21L0 21L0 24" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="0" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="6" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
 </svg>

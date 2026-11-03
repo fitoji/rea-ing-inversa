@@ -1,8 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="36" height="54" viewBox="-1.5 -1.5 12 18" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" width="81" height="81" viewBox="-1.5 -1.5 27 27" role="img">
 <title>Bobina monoestable</title>
-<rect x="-1.5" y="-1.5" width="12" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
-<path d="M1.8 3H7.2V12H1.8Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="0" cy="7.5" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<circle cx="9" cy="7.5" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<text x="4.5" y="7.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="2.6999999999999997" fill="#37455a" text-anchor="middle" dominant-baseline="middle">K</text>
+<rect x="-1.5" y="-1.5" width="27" height="27" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M12 0L12 6" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 18L12 24" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 6L24 6L24 18L0 18Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="12" cy="24" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="12" cy="0" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<text x="12" y="12" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="7.199999999999999" fill="#37455a" text-anchor="middle" dominant-baseline="middle">K</text>
 </svg>
