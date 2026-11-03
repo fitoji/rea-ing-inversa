@@ -25,7 +25,7 @@ abrir/guardar   ver/dibujar  editar      simular      producto
 | **1 — Parser** | abrir y guardar sin pérdida | round-trip byte a byte | 🟢 5/5 |
 | **2 — Render** | ver y dibujar el esquema | esquema en pantalla con zoom y símbolos | 🟢 5/5 |
 | **3 — Cables** | editar cables como en 2026 | arrastrar extremo con auto-ruteo | 🟢 6/6 |
-| **4 — Simulación** | que el circuito funcione | arranque directo e inversión de giro | 🟡 2/4 |
+| **4 — Simulación** | que el circuito funcione | arranque directo e inversión de giro | 🟡 3/4 |
 | **5 — Producto** | que se pueda usar a diario | instalador macOS + Windows | ⚪ 0/4 |
 
 ### Hitos
@@ -86,7 +86,7 @@ El repo es un workspace de pnpm: los scripts se corren **desde la raíz** y se e
 pnpm install
 
 pnpm dev        # abre la app en http://localhost:5187
-pnpm test       # 113 tests sobre tres archivos reales
+pnpm test       # 153 tests: formato, cables, símbolos y simulación
 pnpm build      # typecheck + bundle de producción
 
 # inventario de códigos de un archivo
@@ -135,7 +135,8 @@ Detalle completo en [`docs/cade-format.md`](docs/cade-format.md).
 
 - 2 de 161 registros mal delimitados en `inversion-giro-cej.cade` (códigos `0` y `5`).
 - La tabla de códigos de componente está incompleta: falta la extracción desde el binario.
-- No hay simulación todavía.
+- La simulación modela contactos y bobinas; no modela temporizadores ni disparo de protecciones.
+- El motor se considera alimentado con dos o más fases con tensión (esquema unifilar), no por fase y neutro.
 
 ## Muestras y legalidad
 
