@@ -169,10 +169,29 @@ export function simulate(circuit: Circuit, options: SimOptions = {}): SimState {
     const returnNets = reach(ret);
 
     // 3. cargas
+    //
+    // El motor es trifásico: en un esquema unifilar no tiene retorno, así que se
+    // considera alimentado cuando al menos dos de sus bornes están sobre redes
+    // con tensión. Exigirle fase y neutro lo dejaba siempre apagado.
+    const motorLive = new Map<string, Set<number>>();
+    for (const device of devices) {
+      if (device.kind !== 'motor') continue;
+      const nets = motorLive.get(device.part) ?? new Set<number>();
+      if (liveNets.has(device.a)) nets.add(device.a);
+      if (liveNets.has(device.b)) nets.add(device.b);
+      motorLive.set(device.part, nets);
+    }
+
     const loads = new Set<string>();
     const nextEnergized = new Set<string>();
     for (const device of devices) {
       if (!LOAD_KINDS.has(device.kind)) continue;
+      if (device.kind === 'motor') {
+        const phases = motorLive.get(device.part)?.size ?? 0;
+        const straddles = (liveNets.has(device.a) && returnNets.has(device.b)) || (liveNets.has(device.b) && returnNets.has(device.a));
+        if (phases >= 2 || straddles) loads.add(device.id);
+        continue;
+      }
       const forward = liveNets.has(device.a) && returnNets.has(device.b);
       const backward = liveNets.has(device.b) && returnNets.has(device.a);
       if (!forward && !backward) continue;

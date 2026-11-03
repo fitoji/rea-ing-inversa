@@ -61,15 +61,21 @@ test('los bornes de un aparato caen en redes distintas cuando el dibujo las sepa
   assert.equal(new Set(motor.nets).size >= 3, true, `el motor debe tener al menos 3 redes: ${JSON.stringify(motor.nets)}`);
 });
 
-test('hallazgo documentado: en el arranque, bobina y STAR comparten las dos redes', () => {
-  // En `arranque-paro-motor-3f.cad` la bobina -KM1 está dibujada entre los dos
-  // extremos de STAR, así que la extracción las deja EN PARALELO. Queda anotado
-  // como observación: o el esquema es así, o falta identificar algún campo que
-  // diga cómo se conecta la bobina. No se fuerza ninguna interpretación.
+test('en el arranque, el contacto auxiliar queda en paralelo con STAR y la bobina en serie', () => {
+  // Antes el código 7000 (contacto auxiliar) estaba clasificado como bobina, así
+  // que el "contactor" era en realidad su contacto y la bobina real (9000) se
+  // leía como motor. Con el mapeo corregido el dibujo dice lo que debe: el
+  // auxiliar de -KM1 puentea a STAR (enclavamiento) y la bobina cuelga de la
+  // red que sale de ellos.
   const nl = buildNetlist(load('arranque-paro-motor-3f.cad').records);
   const star = nl.devices.find((d) => d.part === 'STAR' && d.kind === 'pushbutton')!;
+  const aux = nl.devices.find((d) => d.part === 'KM1' && d.code === 7000)!;
   const coil = nl.devices.find((d) => d.kind === 'coil')!;
-  assert.deepEqual([...coil.nets], [...star.nets]);
+
+  assert.deepEqual([...aux.nets], [...star.nets], 'el auxiliar puentea al pulsador');
+  assert.notDeepEqual([...coil.nets], [...star.nets], 'la bobina no está en paralelo con STAR');
+  const shared = coil.nets.filter((n) => star.nets.includes(n));
+  assert.equal(shared.length, 1, 'la bobina sale de una de las dos redes del pulsador');
 });
 
 test('normalización de designador: el guion inicial no cambia el aparato', () => {
@@ -80,7 +86,9 @@ test('normalización de designador: el guion inicial no cambia el aparato', () =
 });
 
 test('clasificación de códigos en tipos de aparato', () => {
-  assert.equal(kindOf(7000), 'coil');
+  assert.equal(kindOf(7000), 'contact');
+  assert.equal(kindOf(9000), 'coil');
+  assert.equal(kindOf(9008), 'lamp');
   assert.equal(kindOf(2001), 'contact');
   assert.equal(kindOf(7001), 'contact');
   assert.equal(kindOf(8000), 'pushbutton');

@@ -53,16 +53,15 @@ export function simKindOf(device: Device): SimDevice['kind'] | null {
     case 'lamp':
       return 'lamp';
     case 'motor':
-      // Los bornes 9000/9003 son pasatapas del motor, no cargas.
-      return device.code === 1000 ? 'motor' : null;
+      return 'motor';
     case 'fuse':
       return 'fuse';
     case 'thermal':
       return device.code === 6007 ? 'thermal' : 'contactNC';
     case 'contact':
-      // 2001 es el contacto de potencia: su estado lo manda la bobina del
-      // mismo designador. 7001 es un auxiliar, también NA.
-      return 'contactNO';
+      // El estado lo manda la bobina del mismo designador. 7001 es el auxiliar
+      // NC; 2001 y 7000 son NA.
+      return device.code === 7001 ? 'contactNC' : 'contactNO';
     case 'pushbutton':
       return device.code === 8000 ? 'buttonNO' : 'buttonNC';
     case 'selector':
@@ -112,6 +111,28 @@ export function circuitFrom(records: CadeRecordModel[], options: CircuitOptions 
   const ret = netOfRecord(options.neutralRecord) ?? supplyNetOf(records, netlist, returnCode);
   if (live === null || ret === null || live === ret) return null;
 
+  // Los símbolos de alimentación son el mismo nodo aunque estén dibujados en
+  // lugares distintos: en un plano la fase es una sola y el neutro también.
+  // Sin esto, una bobina que cierra contra el símbolo de neutro queda aislada
+  // de la fase marcada y el aparato no energiza.
+  const netsOfSymbols = (codes: number[]): Set<number> => {
+    // Un símbolo de alimentación no tiene tramos propios: sus redes se leen de
+    // `members`, que es donde el netlist anota qué componente toca cada red.
+    const ids = new Set(
+      records.filter((rec) => rec.kind === 'component' && codes.includes(rec.code)).map((rec) => rec.id),
+    );
+    const set = new Set<number>();
+    for (const [net, touching] of netlist.members) {
+      for (const id of touching) if (ids.has(id)) set.add(net);
+    }
+    return set;
+  };
+  // 3000 L, 3003 L+N, 3004 L1L2L3, 3005 L1L2L3+PE, 3006 L1L2L3N, 3007 con PE:
+  // todos son el mismo nodo de fase del plano.
+  const liveGroup = netsOfSymbols([3000, 3003, 3004, 3005, 3006, 3007]);
+  const returnGroup = netsOfSymbols([3001]);
+  const remap = (net: number): number => (liveGroup.has(net) ? live : returnGroup.has(net) ? ret : net);
+
   const devices: SimDevice[] = [];
   for (const device of netlist.devices) {
     const kind = simKindOf(device);
@@ -120,8 +141,8 @@ export function circuitFrom(records: CadeRecordModel[], options: CircuitOptions 
       devices.push({
         id: `${device.recordId}:${a}-${b}`,
         kind,
-        a: device.nets[a]!,
-        b: device.nets[b]!,
+        a: remap(device.nets[a]!),
+        b: remap(device.nets[b]!),
         part: device.part,
       });
     }

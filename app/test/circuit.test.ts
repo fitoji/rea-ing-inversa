@@ -32,14 +32,14 @@ test('los tipos de cable son códigos distintos, no colores', () => {
 test('cada aparato mapea a un comportamiento del solver', () => {
   const fake = (code: number, kind: Device['kind']): Device =>
     ({ recordId: 1, code, designator: 'X', part: 'X', kind, pinNames: [], nets: [0, 1], poles: [[0, 1]] });
-  assert.equal(simKindOf(fake(7000, 'coil')), 'coil');
+  assert.equal(simKindOf(fake(9000, 'coil')), 'coil');
+  assert.equal(simKindOf(fake(7001, 'contact')), 'contactNC');
   assert.equal(simKindOf(fake(2001, 'contact')), 'contactNO');
   assert.equal(simKindOf(fake(8000, 'pushbutton')), 'buttonNO');
   assert.equal(simKindOf(fake(8001, 'pushbutton')), 'buttonNC');
   assert.equal(simKindOf(fake(6009, 'fuse')), 'fuse');
   assert.equal(simKindOf(fake(6007, 'thermal')), 'thermal');
   assert.equal(simKindOf(fake(1000, 'motor')), 'motor');
-  assert.equal(simKindOf(fake(9000, 'motor')), null, 'los pasatapas del motor no son cargas');
   assert.equal(simKindOf(fake(6003, 'unknown')), null);
 });
 

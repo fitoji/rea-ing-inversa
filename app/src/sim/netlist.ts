@@ -62,15 +62,19 @@ export function partKey(designator: string): string {
 }
 
 export function kindOf(code: number): DeviceKind {
-  if (code === 7000) return 'coil';
-  if (code === 7001) return 'contact';
-  if (code === 2001) return 'contact';
+  // Bobinas: lo que se energiza. 9000 es la bobina monoestable del catálogo y
+  // 7018 la de un contactor; 9001/9004/9005/9006 son relés y temporizadores.
+  if (code === 9000 || code === 9001 || code === 7018 || code === 9004 || code === 9005 || code === 9006) return 'coil';
+  // Contactos: 7000/7001 auxiliares y 2001 el de potencia del contactor.
+  if (code === 7000 || code === 7001 || code === 2001) return 'contact';
   if (code === 8000 || code === 8001) return 'pushbutton';
   if (code === 8012 || code === 8013) return 'selector';
-  if (code === 8016) return 'lamp';
-  if (code === 6009) return 'fuse';
+  if (code === 8016 || code === 9008 || code === 9009) return 'lamp';
+  // Protecciones: fusibles, automáticos, disyuntores y diferenciales conducen
+  // mientras no se modelen disparos. El térmico es su propio tipo.
   if (code === 6007 || code === 8017) return 'thermal';
-  if (code === 1000 || code === 9000 || code === 9003) return 'motor';
+  if (code >= 6000 && code < 7000) return 'fuse';
+  if (code === 1000) return 'motor';
   if (code >= 3000 && code < 4000) return 'terminal';
   return 'unknown';
 }
