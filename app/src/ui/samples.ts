@@ -10,6 +10,7 @@ import arranqueUrl from '../../test/fixtures/arranque-paro-motor-3f.cad?url';
 import ej0defUrl from '../../test/fixtures/ej0def.cad?url';
 import inversionUrl from '../../test/fixtures/inversion-giro-cej.cade?url';
 import pr1Url from '../../test/fixtures/pr1-rodolfo-giusti.cad?url';
+import demoUrl from '../../test/fixtures/luz-con-interruptor.cade?url';
 
 export interface Sample {
   name: string;
@@ -22,6 +23,7 @@ export const SAMPLES: Sample[] = [
   { name: 'ej0def.cad', label: 'Ejemplo básico (Q1 + térmico)', url: ej0defUrl },
   { name: 'inversion-giro-cej.cade', label: 'Inversión de giro con PLC', url: inversionUrl },
   { name: 'pr1-rodolfo-giusti.cad', label: 'PR1 · motor con guardamotor y contactor', url: pr1Url },
+  { name: 'luz-con-interruptor.cade', label: 'Interruptor y lámpara (probar simulación)', url: demoUrl },
 ];
 
 const decoder = new TextDecoder('latin1');
