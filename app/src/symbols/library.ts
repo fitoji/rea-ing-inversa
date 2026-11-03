@@ -28,6 +28,8 @@ export type SymbolGroup =
 
 import { circle, contact, left, line, pinsBoth, rect, right, threePole } from './draw.ts';
 import { FAMILY_SYMBOLS, LINE_SYMBOLS } from './families.ts';
+import { DXF_SYMBOLS } from './dxf.ts';
+import { getPack } from './pack.ts';
 import { QET_SYMBOLS } from './qet.ts';
 import { withQetGeometry } from './qet-adapter.ts';
 
@@ -703,5 +705,31 @@ export function fallbackSymbol(code: number, pinNames: string[]): SymbolDef {
 
 /** Resuelve el símbolo de un componente, con fallback si el código es nuevo. */
 export function resolveSymbol(code: number, pinNames: string[]): SymbolDef {
-  return BY_CODE.get(code) ?? fallbackSymbol(code, pinNames);
+  // Los cables viven en LINE_SYMBOLS (no en BY_CODE) porque se insertan como
+  // tramo y no como componente; igual tienen dibujo propio y no deben caer al
+  // genérico cuando algo pide su símbolo (miniaturas, documentación).
+  const base = BY_CODE.get(code) ?? LINE_SYMBOLS.find((sym) => sym.code === code) ?? fallbackSymbol(code, pinNames);
+
+  // Paquete `dxf`: reemplaza sólo el trazo. Nombre, grupo, bornes y tamaño se
+  // conservan, así el registro que se escribe sigue siendo el mismo.
+  const dxf = DXF_SYMBOLS[code];
+  if (getPack() === 'dxf' && dxf) {
+    return { ...base, shapes: (w, h) => dxf.shapes.map((s) => ({ d: scalePath(s.d, w, h, dxf.aspect), fill: s.fill })) };
+  }
+  return base;
+}
+
+/** Escala un path normalizado (0..1) a la caja del registro, sin deformarlo. */
+function scalePath(d: string, w: number, h: number, aspect: number): string {
+  // El recorte mide `aspect` de ancho por 1 de alto: se ajusta por el lado que
+  // entra y se centra, así el símbolo conserva sus proporciones dentro de la
+  // caja del registro (que casi nunca tiene la misma relación).
+  const k = Math.min(w / aspect, h);
+  const offX = (w - aspect * k) / 2;
+  const offY = (h - k) / 2;
+  return d.replace(/([ML])([\d.]+) ([\d.]+)/g, (_, cmd: string, x: string, y: string) => {
+    const px = Math.round((Number(x) * aspect * k + offX) * 100) / 100;
+    const py = Math.round((Number(y) * k + offY) * 100) / 100;
+    return `${cmd}${px} ${py}`;
+  });
 }
