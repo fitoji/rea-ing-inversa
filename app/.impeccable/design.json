@@ -1,0 +1,307 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-03T09:25:00.000Z",
+  "title": "Design System: simuElectro",
+  "extensions": {
+    "colorMeta": {
+      "plano-bg": {
+        "role": "neutral",
+        "displayName": "Vacío de plano",
+        "canonical": "#0e1116",
+        "tonalRamp": ["#0c0d0f", "#27292c", "#45484d", "#656970", "#888c93", "#aeb1b7", "#d2d4d9", "#edeef1"]
+      },
+      "plano-card": {
+        "role": "neutral",
+        "displayName": "Cartón de panel",
+        "canonical": "#14181f",
+        "tonalRamp": ["#0c0d10", "#26292e", "#44484f", "#646972", "#878c96", "#adb1ba", "#d1d4da", "#edeef2"]
+      },
+      "plano-popover": {
+        "role": "neutral",
+        "displayName": "Cartón de menú",
+        "canonical": "#171c24",
+        "tonalRamp": ["#0c0d10", "#26292e", "#434850", "#636973", "#868d97", "#acb1bb", "#d0d4db", "#eceff2"]
+      },
+      "plano-border": {
+        "role": "neutral",
+        "displayName": "Borde de plano",
+        "canonical": "#232832",
+        "tonalRamp": ["#0c0d10", "#26292f", "#434851", "#636975", "#868c99", "#acb1bc", "#d0d4dc", "#eceef3"]
+      },
+      "plano-text": {
+        "role": "neutral",
+        "displayName": "Tinta de texto",
+        "canonical": "#e2e8f0",
+        "tonalRamp": ["#0c0d0f", "#26292d", "#44484e", "#646970", "#878d94", "#adb1b8", "#d1d4d9", "#edeff1"]
+      },
+      "plano-text-soft": {
+        "role": "neutral",
+        "displayName": "Tinta suave",
+        "canonical": "#98a3b3",
+        "tonalRamp": ["#0b0d11", "#242931", "#404854", "#606a78", "#828d9d", "#a8b2c0", "#ced5df", "#ebeff4"]
+      },
+      "plano-primary": {
+        "role": "primary",
+        "displayName": "Azul de chapa",
+        "canonical": "#2c4a7c",
+        "tonalRamp": ["#060d1b", "#182944", "#2e4771", "#49699e", "#6b8dc4", "#94b2e3", "#c0d6f9", "#e4efff"]
+      },
+      "plano-primary-ink": {
+        "role": "primary",
+        "displayName": "Tinta de chapa",
+        "canonical": "#dce9ff"
+      },
+      "plano-secondary": {
+        "role": "secondary",
+        "displayName": "Azul de hoja activa",
+        "canonical": "#24344d"
+      },
+      "plano-muted": {
+        "role": "neutral",
+        "displayName": "Fondo de hover",
+        "canonical": "#1e2531"
+      },
+      "plano-select": {
+        "role": "primary",
+        "displayName": "Tinta de selección",
+        "canonical": "#5b9dff",
+        "tonalRamp": ["#010c25", "#042657", "#0d448f", "#2466c3", "#4a8beb", "#7ab2ff", "#add6ff", "#dbf0ff"]
+      },
+      "plano-wire": {
+        "role": "secondary",
+        "displayName": "Verde de conductor",
+        "canonical": "#3fbf8f",
+        "tonalRamp": ["#001308", "#00341e", "#005937", "#008054", "#14a576", "#64c89e", "#a3e5c6", "#d7f7e7"]
+      },
+      "plano-wire-alt": {
+        "role": "secondary",
+        "displayName": "Verde de conductor alterno",
+        "canonical": "#35a89b"
+      },
+      "plano-warn": {
+        "role": "tertiary",
+        "displayName": "Ámbar de energizado",
+        "canonical": "#f0b429",
+        "tonalRamp": ["#180a00", "#3f2200", "#6a3d00", "#945c00", "#ba8000", "#daa83f", "#f3cf8c", "#feeccc"]
+      },
+      "plano-danger": {
+        "role": "tertiary",
+        "displayName": "Rojo de falla",
+        "canonical": "#ff6b6b",
+        "tonalRamp": ["#220002", "#52030c", "#880b1c", "#bb2933", "#e55356", "#ff8682", "#ffb8b3", "#ffe1de"]
+      },
+      "plano-ink": {
+        "role": "neutral",
+        "displayName": "Tinta de símbolo",
+        "canonical": "#93a7c2",
+        "tonalRamp": ["#090e14", "#202a36", "#3a495d", "#586a83", "#7a8ea8", "#a1b3ca", "#c9d5e6", "#e9eff8"]
+      },
+      "plano-grid": {
+        "role": "neutral",
+        "displayName": "Grilla menor",
+        "canonical": "#1a1f28",
+        "tonalRamp": ["#0c0d10", "#26292f", "#434851", "#636974", "#868c98", "#acb1bc", "#d0d4dc", "#eceef2"]
+      },
+      "day-bg": {
+        "role": "neutral",
+        "displayName": "Vacío de plano (día)",
+        "canonical": "#f6f8fb"
+      },
+      "day-card": {
+        "role": "neutral",
+        "displayName": "Cartón de panel (día)",
+        "canonical": "#ffffff"
+      },
+      "day-border": {
+        "role": "neutral",
+        "displayName": "Borde de plano (día)",
+        "canonical": "#d7dee8"
+      },
+      "day-text": {
+        "role": "neutral",
+        "displayName": "Tinta de texto (día)",
+        "canonical": "#16202c"
+      },
+      "day-text-soft": {
+        "role": "neutral",
+        "displayName": "Tinta suave (día)",
+        "canonical": "#5d6a7a"
+      },
+      "day-primary": {
+        "role": "primary",
+        "displayName": "Azul de chapa (día)",
+        "canonical": "#2f5c9e"
+      },
+      "day-wire": {
+        "role": "secondary",
+        "displayName": "Verde de conductor (día)",
+        "canonical": "#0f9d63"
+      },
+      "day-warn": {
+        "role": "tertiary",
+        "displayName": "Ámbar de energizado (día)",
+        "canonical": "#b97d05"
+      },
+      "day-select": {
+        "role": "primary",
+        "displayName": "Tinta de selección (día)",
+        "canonical": "#2f6fd0"
+      }
+    },
+    "typographyMeta": {
+      "body": { "displayName": "Cuerpo", "purpose": "Texto de interfaz, inspector y descripciones." },
+      "wordmark": { "displayName": "Wordmark", "purpose": "Sólo el nombre del producto en el header." },
+      "menu": { "displayName": "Menú", "purpose": "Disparadores del menubar y etiquetas de ítems." },
+      "button": { "displayName": "Botón", "purpose": "Etiquetas de botones y filas de la paleta." },
+      "label": { "displayName": "Rótulo", "purpose": "Encabezados de sección de 10px en mayúsculas." },
+      "data": { "displayName": "Dato", "purpose": "Designadores, códigos, conteos y zoom." }
+    },
+    "shadows": [
+      { "name": "chrome-down", "value": "0 1px 2px rgb(0 0 0 / 0.5), 0 4px 12px rgb(0 0 0 / 0.35)", "purpose": "Header proyectando sobre el lienzo (noche)." },
+      { "name": "chrome-up", "value": "0 -1px 2px rgb(0 0 0 / 0.5), 0 -4px 12px rgb(0 0 0 / 0.35)", "purpose": "Footer proyectando hacia arriba (noche)." },
+      { "name": "chrome-right", "value": "1px 0 2px rgb(0 0 0 / 0.5), 4px 0 12px rgb(0 0 0 / 0.35)", "purpose": "Paleta proyectando sobre el lienzo (noche)." },
+      { "name": "chrome-left", "value": "-1px 0 2px rgb(0 0 0 / 0.5), -4px 0 12px rgb(0 0 0 / 0.35)", "purpose": "Inspector proyectando sobre el lienzo (noche)." },
+      { "name": "chrome-down-day", "value": "0 1px 2px rgb(22 32 44 / 0.06), 0 3px 8px rgb(22 32 44 / 0.05)", "purpose": "Header en tema día." },
+      { "name": "floating", "value": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)", "purpose": "Menús, popovers y tooltips, siempre con anillo de 1px." }
+    ],
+    "motion": [
+      { "name": "state-transition", "value": "150ms ease", "purpose": "Hover, focus y press de controles." },
+      { "name": "menu-entry", "value": "100ms ease-out, fade-in + zoom-in-95", "purpose": "Entrada de menú, popover y tooltip." },
+      { "name": "mark-pulse", "value": "1.1s ease-in-out infinite", "purpose": "Pulso de la marca de error sobre el lienzo: la única animación del sistema." }
+    ],
+    "breakpoints": [
+      { "name": "none", "value": "1024px", "purpose": "No hay reflow: por debajo, el lienzo cede espacio y la composición se mantiene." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "La acción que guarda o confirma. Una sola por pantalla.",
+      "html": "<button class=\"ds-btn-primary\"><svg class=\"ds-ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z\"/><path d=\"M17 21v-8H7v8\"/><path d=\"M7 3v5h8\"/></svg>Guardar .cade</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:28px;padding:0 10px 0 6px;border:1px solid transparent;border-radius:5.6px;background:var(--primary);color:var(--primary-foreground);font:500 12.8px/18.5px -apple-system,system-ui,sans-serif;white-space:nowrap;cursor:pointer;transition:background-color .15s,transform .15s}.ds-btn-primary:hover{background:color-mix(in oklab,var(--primary) 80%,transparent)}.ds-btn-primary:active{transform:translateY(1px)}.ds-btn-primary:focus-visible{outline:3px solid color-mix(in oklab,var(--ring) 50%,transparent);outline-offset:0;border-color:var(--ring)}.ds-btn-primary .ds-ico{width:14px;height:14px;flex:none}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Acción de barra con etiqueta: deshacer, simular. Sin fondo hasta el hover.",
+      "html": "<button class=\"ds-btn-ghost\"><svg class=\"ds-ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><polygon points=\"5 3 19 12 5 21 5 3\"/></svg>Simular</button>",
+      "css": ".ds-btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:28px;padding:0 10px 0 6px;border:1px solid transparent;border-radius:5.6px;background:transparent;color:var(--foreground);font:500 12.8px/18.5px -apple-system,system-ui,sans-serif;white-space:nowrap;cursor:pointer;transition:background-color .15s}.ds-btn-ghost:hover{background:var(--muted)}.ds-btn-ghost:focus-visible{outline:3px solid color-mix(in oklab,var(--ring) 50%,transparent);border-color:var(--ring)}.ds-btn-ghost .ds-ico{width:14px;height:14px;flex:none}"
+    },
+    {
+      "name": "Icon Button",
+      "kind": "button",
+      "refersTo": "button-icon",
+      "description": "28x28 para acciones frecuentes de la barra. Nunca la única ruta a una acción.",
+      "html": "<button class=\"ds-btn-icon\" aria-label=\"Deshacer\"><svg class=\"ds-ico\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 7v6h6\"/><path d=\"M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13\"/></svg></button>",
+      "css": ".ds-btn-icon{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;padding:0;border:1px solid transparent;border-radius:5.6px;background:transparent;color:var(--foreground);cursor:pointer;transition:background-color .15s}.ds-btn-icon:hover{background:var(--muted)}.ds-btn-icon:focus-visible{outline:3px solid color-mix(in oklab,var(--ring) 50%,transparent);border-color:var(--ring)}.ds-btn-icon[disabled]{opacity:.5;pointer-events:none}.ds-btn-icon .ds-ico{width:14px;height:14px}"
+    },
+    {
+      "name": "Menubar Trigger",
+      "kind": "nav",
+      "refersTo": "menubar-trigger",
+      "description": "Disparador de texto del menubar: Archivo, Editar, Ver, Simulación.",
+      "html": "<div class=\"ds-menubar\"><button class=\"ds-menubar-trigger\" aria-expanded=\"true\">Archivo</button><button class=\"ds-menubar-trigger\">Editar</button><button class=\"ds-menubar-trigger\">Ver</button></div>",
+      "css": ".ds-menubar{display:inline-flex;align-items:center;gap:2px;height:32px;padding:3px;border:1px solid var(--border);border-radius:7px}.ds-menubar-trigger{height:24px;padding:2px 6px;border:0;border-radius:4.2px;background:transparent;color:var(--foreground);font:500 14px/20px -apple-system,system-ui,sans-serif;cursor:pointer;transition:background-color .15s}.ds-menubar-trigger:hover,.ds-menubar-trigger[aria-expanded=true]{background:var(--muted)}.ds-menubar-trigger:focus-visible{outline:3px solid color-mix(in oklab,var(--ring) 50%,transparent)}"
+    },
+    {
+      "name": "Menu Surface",
+      "kind": "card",
+      "refersTo": "menu-surface",
+      "description": "Superficie de menú: la única elevación alta del sistema.",
+      "html": "<div class=\"ds-menu\"><button class=\"ds-menu-item\">Nuevo</button><button class=\"ds-menu-item\">Abrir…</button><span class=\"ds-menu-sep\"></span><button class=\"ds-menu-item\">Guardar .cade<span class=\"ds-menu-key\">⌘S</span></button></div>",
+      "css": ".ds-menu{display:flex;flex-direction:column;min-width:144px;padding:4px;border-radius:7px;background:var(--popover);color:var(--popover-foreground);box-shadow:0 0 0 1px color-mix(in oklab,var(--foreground) 10%,transparent),0 4px 6px -1px rgb(0 0 0/.1),0 2px 4px -2px rgb(0 0 0/.1)}.ds-menu-item{display:flex;align-items:center;gap:6px;height:28px;padding:4px 6px;border:0;border-radius:5.6px;background:transparent;color:inherit;font:400 14px/20px -apple-system,system-ui,sans-serif;text-align:left;cursor:pointer}.ds-menu-item:hover,.ds-menu-item:focus-visible{background:var(--accent);outline:0}.ds-menu-key{margin-left:auto;font:400 11px/16px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em;color:var(--muted-foreground)}.ds-menu-sep{height:1px;margin:4px -4px;background:var(--border)}"
+    },
+    {
+      "name": "Counter Badge",
+      "kind": "chip",
+      "refersTo": "badge-counter",
+      "description": "Código de componente o conteo. Píldora de 20px en mono de 10px.",
+      "html": "<span class=\"ds-badge\">8371</span><span class=\"ds-badge ds-badge-destructive\">3 avisos</span>",
+      "css": ".ds-badge{display:inline-flex;align-items:center;justify-content:center;height:20px;padding:2px 6px;border:1px solid var(--border);border-radius:18.2px;background:transparent;color:var(--muted-foreground);font:400 10px/14.5px ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums;white-space:nowrap}.ds-badge-destructive{border-color:transparent;background:color-mix(in oklab,var(--destructive) 10%,transparent);color:var(--destructive)}"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Campo de propiedad: 32px, borde de 1px, sin relleno.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Designador</span><input class=\"ds-input\" value=\"KM1\" /></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:4px}.ds-field-label{font:600 10px/14.5px -apple-system,system-ui,sans-serif;letter-spacing:.5px;text-transform:uppercase;color:var(--muted-foreground)}.ds-input{height:32px;padding:0 10px;border:1px solid var(--input);border-radius:7px;background:transparent;color:var(--foreground);font:400 13px/1.45 -apple-system,system-ui,sans-serif;caret-color:var(--select)}.ds-input:focus-visible{outline:3px solid color-mix(in oklab,var(--ring) 50%,transparent);border-color:var(--ring)}.ds-input::selection{background:color-mix(in oklab,var(--select) 26%,transparent)}"
+    },
+    {
+      "name": "Chrome Frame",
+      "kind": "nav",
+      "refersTo": "chrome-header",
+      "description": "Header de 46px y footer de 26px: las dos cotas que fijan la densidad.",
+      "html": "<div class=\"ds-frame\"><header class=\"ds-chrome-header\"><strong class=\"ds-wordmark\">simuElectro</strong><span class=\"ds-version\">v0.1</span></header><div class=\"ds-frame-body\">lienzo</div><footer class=\"ds-chrome-footer\"><span>arranque-paro-motor-3f.cad</span><span>43 registros</span><span>541%</span></footer></div>",
+      "css": ".ds-frame{display:flex;flex-direction:column;height:220px;background:var(--background);border-radius:7px;overflow:hidden}.ds-chrome-header{display:flex;align-items:baseline;gap:6px;height:46px;padding:0 12px;background:var(--card);border-bottom:1px solid var(--border);box-shadow:0 1px 2px rgb(0 0 0/.5),0 4px 12px rgb(0 0 0/.35);color:var(--foreground)}.ds-wordmark{font:600 13.5px/1.45 -apple-system,system-ui,sans-serif;letter-spacing:-.01em}.ds-version{font:400 10.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted-foreground)}.ds-frame-body{flex:1;display:grid;place-items:center;color:var(--muted-foreground);font:400 11px/16px ui-monospace,SFMono-Regular,Menlo,monospace}.ds-chrome-footer{display:flex;align-items:center;gap:14px;height:26px;padding:0 12px;background:var(--card);border-top:1px solid var(--border);box-shadow:0 -1px 2px rgb(0 0 0/.5),0 -4px 12px rgb(0 0 0/.35);color:var(--muted-foreground);font:400 11px/16px ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}"
+    }
+  ],
+  "narrative": {
+    "northStar": "El plano de obra",
+    "overview": "El sistema se lee como un plano técnico, no como una aplicación: el lienzo es el documento y todo el chrome es el caballete que lo sostiene. Por eso el fondo de la aplicación es un azul-negro profundo, los paneles son cartón un paso más claro y la separación entre zonas la hace un borde de 1px antes que cualquier sombra. La densidad es la de un taller: filas de 28px, rótulos de 10px en mayúsculas, contadores en mono de 11px. No hay aire decorativo ni tarjetas dentro de tarjetas.\n\nLa paleta tiene dos registros que no se mezclan. Acero —azul y neutros— es todo lo que es interfaz: navegación, botones, paneles, bordes. Tinta de dibujo —verde de conductor, ámbar de energizado, azul de selección— es todo lo que ocurre dentro del plano: cables, símbolos, marcas de aviso. Un botón nunca se pinta verde; un cable nunca se pinta gris de chrome. Cuando una zona se sale del registro, deja de leerse como herramienta.\n\nLa tipografía sostiene la misma división: Geist para leer y decidir, monoespaciada para medir. Designadores, códigos de componente, conteos, zoom y alimentación van en mono porque son datos del plano, no texto de interfaz.",
+    "keyCharacteristics": [
+      "Dos temas completos (noche por defecto, día como alternativa) con los mismos nombres de token.",
+      "Chrome plano con elevación sutil direccional; el borde hace la separación, la sombra sólo insinúa la capa.",
+      "Cero gradientes, cero transparencias decorativas, cero violeta.",
+      "El color con más permiso es el verde del conductor, y vive dentro del lienzo."
+    ],
+    "rules": [
+      {
+        "name": "La regla del acero y la tinta",
+        "body": "El azul y los neutros son de la interfaz; el verde, el ámbar y el rojo son del plano. Un control de chrome usa tinta de chrome aunque esté cerca de un cable.",
+        "section": "colors"
+      },
+      {
+        "name": "La regla del 1px",
+        "body": "Toda frontera entre zonas se resuelve primero con un borde de 1px. La sombra no reemplaza al borde ni lo duplica con más grosor.",
+        "section": "colors"
+      },
+      {
+        "name": "La regla de las dos voces",
+        "body": "Si el valor se mide o se compara, va en mono. Si se lee o se decide, va en Geist. No hay excepciones decorativas: un título no se pone mono para \"parecer técnico\".",
+        "section": "typography"
+      },
+      {
+        "name": "La regla del rótulo mudo",
+        "body": "Las mayúsculas están reservadas para rótulos de 10px. Ningún texto de lectura, botón o menú se escribe en mayúsculas.",
+        "section": "typography"
+      },
+      {
+        "name": "La regla del marco fijo",
+        "body": "Sólo el contenido de un panel scrollea. Si algo del shell necesita scroll, el panel está mal dimensionado.",
+        "section": "layout"
+      },
+      {
+        "name": "La regla del blur corto",
+        "body": "Ninguna sombra de chrome pasa de 12px de blur ni de 4px de offset. Una sombra ancha convierte el plano en una tarjeta flotante.",
+        "section": "elevation"
+      },
+      {
+        "name": "La regla de la esquina de herramienta",
+        "body": "Ningún control redondea más de 7px. Lo redondo comunica \"consumidor\"; acá todo tiene que comunicar instrumento.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do separar zonas con 1px de borde antes de recurrir a una sombra.",
+      "Do reservar el verde, el ámbar y el rojo para lo que pasa dentro del plano.",
+      "Do usar mono de 11px con tabular-nums para cualquier cifra que se compare verticalmente.",
+      "Do mantener el header en 46px y el footer en 26px: son las dos cotas que fijan la densidad.",
+      "Do limitar el botón primario a una sola instancia visible por pantalla.",
+      "Do nombrar las acciones con palabras en los menús, con el atajo en mono a la derecha.",
+      "Do dejar el foco visible con borde de anillo más halo de 3px, en ambos temas."
+    ],
+    "donts": [
+      "Don't convertir esto en un dashboard SaaS: sin tarjetas flotantes, sin métricas grandes, sin gradientes, sin KPIs. Los números viven en el footer.",
+      "Don't pintar un control de chrome con la tinta del dibujo, ni un cable con el gris del chrome.",
+      "Don't pasar de 7px de radio en un control, ni usar píldoras fuera de las insignias contadoras.",
+      "Don't agregar sombras fuera de las cinco direccionales documentadas, ni subir el blur de 12px.",
+      "Don't usar mayúsculas fuera de los rótulos de 10px.",
+      "Don't introducir violeta, glassmorphism, blur decorativo ni transparencias fuera de los color-mix de estado del lienzo.",
+      "Don't ocultar un ítem deshabilitado: se muestra al 50% para que la acción siga siendo descubrible."
+    ]
+  }
+}
