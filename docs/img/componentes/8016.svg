@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="63" height="63" viewBox="-1.5 -1.5 21 21" role="img">
+<title>Lámpara de señalización</title>
+<rect x="-1.5" y="-1.5" width="21" height="21" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M0 9L3.24 9" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M14.76 9L18 9" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M3.24 9a5.76 5.76 0 1 0 11.52 0a5.76 5.76 0 1 0 -11.52 0Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.97 4.97L13.03 13.03" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M13.03 4.97L4.97 13.03" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="0" cy="9" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="18" cy="9" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+</svg>

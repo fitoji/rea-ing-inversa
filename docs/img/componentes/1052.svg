@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="81" height="81" viewBox="-1.5 -1.5 27 27" role="img">
+<title>Autotransformador III</title>
+<rect x="-1.5" y="-1.5" width="27" height="27" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M8.16 8.4a3.84 3.84 0 1 0 7.68 0a3.84 3.84 0 1 0 -7.68 0Z" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8.16 15.6a3.84 3.84 0 1 0 7.68 0a3.84 3.84 0 1 0 -7.68 0Z" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="0" cy="5.28" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="0" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="0" cy="18.72" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="24" cy="5.28" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="24" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="24" cy="18.72" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<text x="12" y="12" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8.16" fill="#37455a" text-anchor="middle" dominant-baseline="middle">T</text>
+</svg>

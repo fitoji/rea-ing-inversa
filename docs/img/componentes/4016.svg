@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="45" height="63" viewBox="-1.5 -1.5 15 21" role="img">
+<title>Regleta redonda 3</title>
+<rect x="-1.5" y="-1.5" width="15" height="21" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M0 2.16H12V15.84H0Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 3.24L3.84 3.24" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M5.16 3.24a0.84 0.84 0 1 0 1.68 0a0.84 0.84 0 1 0 -1.68 0Z" stroke="#3d4a5c" stroke-width="0.38" fill="#3d4a5c" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8.16 3.24L12 3.24" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 9L3.84 9" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M5.16 9a0.84 0.84 0 1 0 1.68 0a0.84 0.84 0 1 0 -1.68 0Z" stroke="#3d4a5c" stroke-width="0.38" fill="#3d4a5c" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8.16 9L12 9" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 14.76L3.84 14.76" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M5.16 14.76a0.84 0.84 0 1 0 1.68 0a0.84 0.84 0 1 0 -1.68 0Z" stroke="#3d4a5c" stroke-width="0.38" fill="#3d4a5c" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8.16 14.76L12 14.76" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="0" cy="3.24" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="0" cy="9" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="0" cy="14.76" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="12" cy="3.24" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="12" cy="9" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="12" cy="14.76" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+</svg>

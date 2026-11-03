@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="81" height="54" viewBox="-1.5 -1.5 27 18" role="img">
+<title>Barrera foto. receptor NA 3 hilos PNP</title>
+<rect x="-1.5" y="-1.5" width="27" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M4.32 1.8H24V13.2H4.32Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 6L4.32 6" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 10.5L4.32 10.5" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M21.41 1.8L21.41 13.2" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="0" cy="4.5" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="24" cy="7.5" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="0" cy="10.5" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<text x="13.200000000000001" y="7.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="3.9000000000000004" fill="#37455a" text-anchor="middle" dominant-baseline="middle">NA</text>
+</svg>

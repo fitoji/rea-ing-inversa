@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="63" height="63" viewBox="-1.5 -1.5 21 21" role="img">
+<title>Motor trifásico</title>
+<rect x="-1.5" y="-1.5" width="21" height="21" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M1.44 9a7.56 7.56 0 1 0 15.12 0a7.56 7.56 0 1 0 -15.12 0Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 5.04L1.44 5.04" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 9L1.44 9" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 12.96L1.44 12.96" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M9 16.56L9 18" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="0" cy="5.04" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="0" cy="9" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="0" cy="12.96" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="9" cy="18" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<text x="9" y="9" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="6.12" fill="#37455a" text-anchor="middle" dominant-baseline="middle">M</text>
+</svg>

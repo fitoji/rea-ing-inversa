@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="81" height="81" viewBox="-1.5 -1.5 27 27" role="img">
+<title>Variador velocidad ca III.</title>
+<rect x="-1.5" y="-1.5" width="27" height="27" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M0 0H24V24H0Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="0" cy="4.32" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="0" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="0" cy="19.68" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="24" cy="4.32" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="24" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="24" cy="19.68" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<text x="12" y="12" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8.16" fill="#37455a" text-anchor="middle" dominant-baseline="middle">G</text>
+</svg>

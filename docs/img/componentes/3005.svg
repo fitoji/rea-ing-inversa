@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="-1.5 -1.5 15 15" role="img">
+<title>Alimentación L1 L2 L3 PE</title>
+<rect x="-1.5" y="-1.5" width="15" height="15" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M4.2 0L4.2 12" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="7.4399999999999995" y="6" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="5.04" fill="#37455a" text-anchor="middle" dominant-baseline="middle">L123</text>
+</svg>

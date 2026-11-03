@@ -1,27 +1,30 @@
 #!/usr/bin/env node
 /**
- * Genera `docs/componentes.md`: el catálogo de componentes por familia, con
- * código, nombre, designador y bornes.
+ * Genera `docs/componentes.md` (catálogo de componentes por familia) y los
+ * dibujos de cada uno en `docs/img/componentes/<código>.svg`.
  *
- * El catálogo (`src/symbols/catalog.ts`) dice qué códigos existen y cómo se
- * llaman; las familias (`src/symbols/families.ts`) dicen cómo se dibujan y qué
- * bornes usan. Este script cruza las dos cosas para que la tabla se pueda
- * revisar sin abrir el código.
+ * Por qué existe: el catálogo (`src/symbols/catalog.ts`) dice qué códigos
+ * existen y cómo se llaman, y las familias (`src/symbols/families.ts`) dicen
+ * cómo se dibujan. Este script cruza las dos cosas para que la tabla se pueda
+ * revisar sin abrir el código, y saca los SVG del mismo `shapes(w, h)` que usa
+ * el lienzo: si el dibujo cambia en la app, cambia acá.
  *
- * No inventa datos: los 59 códigos del catálogo sin dibujo propio se listan
- * aparte como fallback, y los 3 dibujados que no están en el catálogo se
- * explican con nombre y procedencia.
+ * No inventa datos: los códigos del catálogo sin dibujo propio se listan aparte
+ * como fallback, y los dibujados que no están en el catálogo se explican con su
+ * procedencia.
  *
  * Uso: node scripts/make-component-docs.ts
  */
-import { writeFileSync } from 'node:fs';
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CATALOG } from '../src/symbols/catalog.ts';
-import { lineList, symbolList, type SymbolDef, type SymbolGroup } from '../src/symbols/library.ts';
+import { lineList, symbolList, type Label, type Shape, type SymbolDef, type SymbolGroup } from '../src/symbols/library.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const OUT = join(HERE, '..', '..', 'docs', 'componentes.md');
+const DOCS = join(HERE, '..', '..', 'docs');
+const OUT = join(DOCS, 'componentes.md');
+const IMG = join(DOCS, 'img', 'componentes');
 
 /** Nombres visibles de cada familia: los mismos que usa la paleta. */
 const LABEL: Record<SymbolGroup, string> = {
@@ -52,6 +55,64 @@ const ORDER: SymbolGroup[] = [
   'otro',
 ];
 
+// --- dibujo -----------------------------------------------------------------
+// Mismos colores del tema día y mismos trazos que diagram.css: la miniatura es
+// el símbolo del lienzo, no una ilustración aparte.
+
+const INK = '#3d4a5c';
+const INK_SOFT = '#6b7789';
+const LABEL_INK = '#37455a';
+const PIN_FILL = '#ffffff';
+const PIN_STROKE = '#7d8b9c';
+const CARD_FILL = '#f6f8fb';
+const CARD_STROKE = '#d7dee8';
+
+/** Unidades de margen alrededor de la caja del símbolo. */
+const PAD = 1.5;
+/** Multiplicador para que la miniatura se lea en una tabla. */
+const SCALE = 3;
+/** Caja por defecto para los símbolos que no declaran tamaño propio. */
+const DEFAULT_BOX = 18;
+
+const escapeXml = (text: string): string =>
+  text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+const pathOf = (shape: Shape): string => {
+  const stroke = shape.thin ? INK_SOFT : INK;
+  const width = shape.thin ? '0.26' : '0.38';
+  const fill = shape.fill ? `fill="${INK}"` : 'fill="none"';
+  return `<path d="${shape.d}" stroke="${stroke}" stroke-width="${width}" ${fill} stroke-linecap="round" stroke-linejoin="round"/>`;
+};
+
+const textOf = (label: Label): string =>
+  `<text x="${label.x}" y="${label.y}" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="${label.size}" fill="${LABEL_INK}" text-anchor="${label.anchor ?? 'middle'}" dominant-baseline="middle">${escapeXml(label.value)}</text>`;
+
+/** SVG autocontenido: sin CSS externo, para que se vea igual en cualquier visor. */
+function glyphSvg(sym: SymbolDef): string {
+  const w = sym.size?.w ?? DEFAULT_BOX;
+  const h = sym.size?.h ?? DEFAULT_BOX;
+  const viewW = w + PAD * 2;
+  const viewH = h + PAD * 2;
+  const shapes = sym.shapes(w, h);
+  const labels = sym.labels?.(w, h) ?? [];
+  const pins = sym.pins.map(
+    (pin) =>
+      `<circle cx="${Math.round(pin.nx * w * 100) / 100}" cy="${Math.round(pin.ny * h * 100) / 100}" r="1.4" fill="${PIN_FILL}" stroke="${PIN_STROKE}" stroke-width="0.42"/>`,
+  );
+  return [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(viewW * SCALE)}" height="${Math.round(viewH * SCALE)}" viewBox="${-PAD} ${-PAD} ${viewW} ${viewH}" role="img">`,
+    `<title>${escapeXml(sym.name)}</title>`,
+    `<rect x="${-PAD}" y="${-PAD}" width="${viewW}" height="${viewH}" rx="1.2" fill="${CARD_FILL}" stroke="${CARD_STROKE}" stroke-width="0.3"/>`,
+    ...shapes.map(pathOf),
+    ...pins,
+    ...labels.map(textOf),
+    '</svg>',
+    '',
+  ].join('\n');
+}
+
+// --- datos ------------------------------------------------------------------
+
 const cell = (text: string): string => text.replace(/\|/g, '\\|');
 const designatorOf = (code: number): string => {
   const designator = CATALOG[code]?.designator;
@@ -75,18 +136,26 @@ const drawnCodes = new Set(drawn.map((sym) => sym.code));
 const fallback = catalogCodes.filter((code) => !drawnCodes.has(code));
 const uncatalogued = drawn.filter((sym) => !(sym.code in CATALOG));
 
+// Las miniaturas se rehacen enteras: un código que desaparece no deja el SVG viejo.
+rmSync(IMG, { recursive: true, force: true });
+mkdirSync(IMG, { recursive: true });
+for (const sym of drawn) writeFileSync(join(IMG, `${sym.code}.svg`), glyphSvg(sym));
+
+// --- documento --------------------------------------------------------------
+
 const out: string[] = [
   '# Componentes',
   '',
-  'Catálogo de componentes eléctricos que ofrece la paleta del editor: qué códigos existen, cómo se llaman y qué bornes exponen.',
+  'Catálogo de componentes eléctricos que ofrece la paleta del editor: cómo se dibuja cada uno, qué código tiene, cómo se llama y qué bornes expone.',
   '',
   '## De dónde sale esto',
   '',
+  '- **Los dibujos** salen del mismo `shapes(w, h)` que usa el lienzo (`app/src/symbols/families.ts`) y se escriben como SVG sueltos en `docs/img/componentes/`. Si cambia el símbolo en la app, cambia la miniatura.',
   '- **Los códigos y nombres** vienen de `app/src/symbols/catalog.ts`, generado desde el menú real del binario CADe_SIMU con `pnpm catalog` (`app/scripts/make-catalog.ts`). No están adivinados por rango numérico.',
-  '- **Los grupos y los dibujos** viven en `app/src/symbols/families.ts`; los nombres visibles de cada familia y su orden, en `app/src/ui/Palette.tsx`.',
-  '- **Los bornes** de cada componente son una convención IEC elegida al dibujarlo, no un dato que venga en el archivo: el formato los guarda por registro y acá se listan los que la app asigna por defecto.',
+  '- **Los grupos y los nombres de familia** son los de la paleta (`app/src/ui/Palette.tsx`).',
+  '- **Los bornes** son una convención IEC elegida al dibujar cada símbolo, no un dato que venga en el archivo: el formato los guarda por registro y acá se listan los que la app asigna por defecto. En la miniatura se ven como círculos.',
   '',
-  `Totales: **${catalogCodes.length} códigos** en el catálogo generado, **${drawn.length} componentes** en la paleta, **${fallback.length} códigos del catálogo caen al fallback** (un rectángulo con el código adentro).`,
+  `Totales: **${catalogCodes.length} códigos** en el catálogo generado, **${drawn.length} componentes dibujados**, **${fallback.length} códigos del catálogo caen al fallback** (un rectángulo con el código adentro).`,
   '',
   ...(uncatalogued.length > 0
     ? [
@@ -116,11 +185,13 @@ for (const group of ORDER) {
     '',
     `## ${LABEL[group]} (${list.length})`,
     '',
-    '| Código | Nombre | Designador | Bornes |',
-    '| --- | --- | --- | --- |',
+    '| Dibujo | Código | Nombre | Designador | Bornes |',
+    '| --- | --- | --- | --- | --- |',
   );
   for (const sym of list) {
-    out.push(`| \`${sym.code}\` | ${cell(sym.name)} | ${designatorOf(sym.code)} | ${pinsOf(sym)} |`);
+    out.push(
+      `| ![${cell(sym.name)}](img/componentes/${sym.code}.svg) | \`${sym.code}\` | ${cell(sym.name)} | ${designatorOf(sym.code)} | ${pinsOf(sym)} |`,
+    );
   }
 }
 
@@ -128,7 +199,9 @@ out.push(
   '',
   `## Códigos sin símbolo dedicado (${fallback.length})`,
   '',
-  'Se dibujan con el fallback: un rectángulo con el código adentro y los bornes que declare el archivo. Siguen siendo válidos para abrir y guardar sin pérdida; lo que falta es el dibujo.',
+  'No tienen dibujo propio: el lienzo los pinta con el fallback, un rectángulo con el código adentro y los bornes que declare el archivo. Siguen siendo válidos para abrir y guardar sin pérdida; lo que falta es el dibujo, así que no llevan miniatura acá.',
+  '',
+  'Lo mismo pasa con cualquier código que no esté en el catálogo, por ejemplo `20000`, que aparece en el sample PR1: `resolveSymbol()` lo dibuja como `Genérico 20000` en lugar de romper el render.',
   '',
   '| Código | Nombre | Designador |',
   '| --- | --- | --- |',
@@ -141,15 +214,15 @@ out.push(
   '',
   '## Cómo mantenerlo',
   '',
-  '1. Regenerar la tabla: `pnpm componentes` (desde la raíz o desde `app/`).',
+  '1. Regenerar tabla y dibujos: `pnpm componentes` (desde la raíz o desde `app/`). El script borra `docs/img/componentes/` y la rehace, así no quedan SVG huérfanos.',
   '2. Si cambia el catálogo: correr `pnpm catalog` primero (necesita el binario en `data/`), después este script.',
-  '3. Cuando se agrega el dibujo de un código que estaba en fallback, sale de esa sección y aparece en su familia sin tocar nada más.',
+  '3. Cuando se agrega el dibujo de un código que estaba en fallback, sale de esa sección y aparece en su familia con su miniatura.',
   '4. Un componente nuevo necesita dibujo y bornes en `src/symbols/families.ts` más su plantilla en `src/symbols/templates.ts`.',
   '',
 );
 
 writeFileSync(OUT, out.join('\n'));
-console.log(`escrito docs/componentes.md`);
+console.log(`escrito docs/componentes.md + ${drawn.length} svg en docs/img/componentes/`);
 console.log(
-  `catálogo ${catalogCodes.length} · paleta ${drawn.length} · fallback ${fallback.length} · sin catálogo ${uncatalogued.length}`,
+  `catálogo ${catalogCodes.length} · dibujados ${drawn.length} · fallback ${fallback.length} · sin catálogo ${uncatalogued.length}`,
 );
