@@ -78,6 +78,17 @@ export function Inspector(props: Props): JSX.Element {
 
   if (selected.length > 1) {
     const wires = selected.filter((r) => r.kind === 'connection');
+
+    // Un cable son varios tramos y el lienzo los selecciona juntos. Si toda la
+    // selección es el MISMO cable, se muestra el panel del cable (con
+    // alimentación y vértices) en vez del panel de multi-selección: si no, un
+    // cable de 3 tramos no se podía marcar como fase ni como neutro.
+    const sameCable =
+      wires.length === selected.length && wires.length > 0 && new Set(wires.map((w) => cableNumberOf(w))).size === 1;
+    if (sameCable) {
+      return <Single key={wires[0]!.id} rec={wires[0]!} vertexBlock={vertexBlock} {...props} />;
+    }
+
     return (
       <InspectorShell>
         <SectionLabel>Selección</SectionLabel>

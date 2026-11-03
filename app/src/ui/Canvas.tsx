@@ -28,6 +28,12 @@ interface Props {
   wireStart: Point | null;
   /** Componentes energizados por la simulación. */
   live: Set<number>;
+  /** ids de registro de cable con tensión durante la simulación */
+  liveWires: Set<number>;
+  /** ids de componentes cuyo contacto está cerrado durante la simulación */
+  closedContacts: Set<number>;
+  /** Durante la simulación, un clic sobre un pulsador ya seleccionado lo aprieta. */
+  simulating: boolean;
   /** Registros y punto marcados como falla desde un aviso. */
   highlight: { ids: number[]; at: Point | null } | null;
   onZoom: (k: number) => void;
@@ -67,6 +73,9 @@ export function Canvas(props: Props): JSX.Element {
     onPlace,
     wireStart,
     live,
+    liveWires,
+    closedContacts,
+    simulating,
     highlight,
     onZoom,
     onInsertVertex,
@@ -271,7 +280,9 @@ export function Canvas(props: Props): JSX.Element {
       const group = isWire ? cableSegments(network, id) : [id];
       const already = group.some((g) => selection.has(g));
       if (e.shiftKey) onSelect(group, true);
-      else if (!already) onSelect(group, false);
+      // En simulación el clic sobre un pulsador ya seleccionado tiene que
+      // llegar igual: el aparato aprieta/suelta y la selección no cambia.
+      else if (!already || simulating) onSelect(group, false);
       if (!e.shiftKey) {
         const at = isWire && rec ? bendPoint(rec, world) : null;
         setDrag(
@@ -415,7 +426,8 @@ export function Canvas(props: Props): JSX.Element {
           )}
 
           {records.map((rec) => {
-            if (rec.kind === 'connection') return <Wire key={rec.id} rec={rec} selected={selection.has(rec.id)} />;
+            if (rec.kind === 'connection')
+              return <Wire key={rec.id} rec={rec} selected={selection.has(rec.id)} live={liveWires.has(rec.id)} />;
             if (rec.kind !== 'component') return null;
             return (
               <Component
@@ -423,6 +435,7 @@ export function Canvas(props: Props): JSX.Element {
                 rec={rec}
                 selected={selection.has(rec.id)}
                 live={live.has(rec.id)}
+                closed={closedContacts.has(rec.id)}
                 bad={highlight?.ids.includes(rec.id) ?? false}
                 rotation={rotation[rec.id] ?? 0}
                 pins={pins.get(rec.id) ?? []}
@@ -508,6 +521,7 @@ function Component({
   rec,
   selected,
   live,
+  closed,
   bad,
   rotation,
   pins,
@@ -515,6 +529,7 @@ function Component({
   rec: CadeRecordModel;
   selected: boolean;
   live: boolean;
+  closed: boolean;
   bad: boolean;
   rotation: Rotation;
   pins: Point[];
@@ -536,7 +551,7 @@ function Component({
       <rect className="hitbox" x={0} y={0} width={box.width} height={box.height} />
       <rect className={selected ? 'body sel' : bad ? 'body bad' : live ? 'body live' : 'body'} x={0} y={0} width={box.width} height={box.height} rx={0.6} />
       <g transform={`translate(${inset} ${inset})`}>
-        <SymbolGlyph code={rec.code} pinNames={rec.pins} w={iw} h={ih} rotation={rotation} selected={selected} />
+        <SymbolGlyph code={rec.code} pinNames={rec.pins} w={iw} h={ih} rotation={rotation} selected={selected} closed={closed} />
       </g>
 
       {pins.map((p, i) => (
@@ -552,18 +567,18 @@ function Component({
   );
 }
 
-function Wire({ rec, selected }: { rec: CadeRecordModel; selected: boolean }): JSX.Element | null {
+function Wire({ rec, selected, live }: { rec: CadeRecordModel; selected: boolean; live: boolean }): JSX.Element | null {
   const pts = wirePoints(rec);
   if (!pts) return null;
   if (pts.x1 === pts.x2 && pts.y1 === pts.y2) {
     // Registro de unión (4001): geometría de longitud cero.
-    return <circle className={selected ? 'junction sel' : 'junction'} cx={pts.x1} cy={pts.y1} r={1.15} />;
+    return <circle className={selected ? 'junction sel' : live ? 'junction live' : 'junction'} cx={pts.x1} cy={pts.y1} r={1.15} />;
   }
   return (
     <path
       data-id={rec.id}
       data-wire={rec.id}
-      className={selected ? 'wire sel' : `wire${rec.code === 4019 ? ' alt' : ''}`}
+      className={selected ? 'wire sel' : live ? 'wire live' : `wire${rec.code === 4019 ? ' alt' : ''}`}
       d={`M${pts.x1} ${pts.y1}L${pts.x2} ${pts.y2}`}
     />
   );

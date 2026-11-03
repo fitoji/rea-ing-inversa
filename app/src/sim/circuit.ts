@@ -84,6 +84,8 @@ export interface CircuitOptions {
 
 export interface BuiltCircuit {
   circuit: Circuit;
+  /** id de registro -> nets que toca; permite pintar los cables con tensión */
+  recordNets: Map<number, number[]>;
   /** net tomada como fase y net tomada como retorno */
   supply: [number, number];
   devices: Device[];
@@ -125,7 +127,12 @@ export function circuitFrom(records: CadeRecordModel[], options: CircuitOptions 
     }
   }
 
-  return { circuit: { devices, supply: [live, ret] }, supply: [live, ret], devices: netlist.devices };
+  return {
+    circuit: { devices, supply: [live, ret] },
+    recordNets: netlist.recordNets,
+    supply: [live, ret],
+    devices: netlist.devices,
+  };
 }
 
 /**

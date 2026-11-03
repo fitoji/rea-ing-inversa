@@ -40,7 +40,13 @@ export function pinsBoth(n: number, names: string[]): SymbolPin[] {
   return out;
 }
 
-/** Contacto NA / NC genérico sobre una fila `y`. */
+/**
+ * Contacto NA / NC genérico sobre una fila `y`.
+ *
+ * La hoja se marca como móvil (`blade`) para que el lienzo la gire al cerrar:
+ * `deg` es el giro que la lleva a apoyar sobre el borne contrario. El NC se
+ * dibuja apoyado y se abre, así que su giro se aplica al revés desde el lienzo.
+ */
 export function contact(w: number, y: number, nc: boolean): Shape[] {
   const mx = w / 2;
   const gap = Math.min(w * 0.16, 4.5);
@@ -49,10 +55,12 @@ export function contact(w: number, y: number, nc: boolean): Shape[] {
     { d: line(mx + gap, y, w, y) },
   ];
   if (nc) {
-    shapes.push({ d: line(mx - gap, y - gap, mx + gap, y), thin: true });
+    shapes.push({ d: line(mx - gap, y - gap, mx + gap, y), thin: true, blade: { px: mx - gap, py: y - gap, deg: -46 } });
     shapes.push({ d: line(mx + gap, y - gap * 0.8, mx + gap, y + gap * 0.8), thin: true });
   } else {
-    shapes.push({ d: line(mx - gap, y, mx + gap, y - gap * 0.9), thin: true });
+    const dy = gap * 0.9;
+    const deg = (Math.atan2(dy, gap * 2) * 180) / Math.PI;
+    shapes.push({ d: line(mx - gap, y, mx + gap, y - dy), thin: true, blade: { px: mx - gap, py: y, deg } });
   }
   return shapes;
 }

@@ -54,6 +54,8 @@ export interface SimState {
   closed: Set<string>;
   /** cargas energizadas: incluye bobinas, lámparas y motores */
   loads: Set<string>;
+  /** nets con tensión en el último paso; sirve para pintar los cables */
+  liveNets: Set<number>;
   iterations: number;
   stable: boolean;
   /** estado en el que se quedó oscilando, si no convergió */
@@ -179,7 +181,7 @@ export function simulate(circuit: Circuit, options: SimOptions = {}): SimState {
     }
 
     if (setKey(nextEnergized) === setKey(energized)) {
-      return { energized: nextEnergized, closed, loads, iterations: iteration, stable: true };
+      return { energized: nextEnergized, closed, loads, liveNets, iterations: iteration, stable: true };
     }
 
     const nextKey = setKey(nextEnergized);
@@ -189,6 +191,7 @@ export function simulate(circuit: Circuit, options: SimOptions = {}): SimState {
         energized: nextEnergized,
         closed,
         loads,
+        liveNets,
         iterations: iteration,
         stable: false,
         oscillating: { energized: oscillating },
@@ -198,5 +201,5 @@ export function simulate(circuit: Circuit, options: SimOptions = {}): SimState {
     energized = nextEnergized;
   }
 
-  return { energized, closed: new Set(), loads: new Set(), iterations: maxIterations, stable: false };
+  return { energized, closed: new Set(), loads: new Set(), liveNets: new Set(), iterations: maxIterations, stable: false };
 }

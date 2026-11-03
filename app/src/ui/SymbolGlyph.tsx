@@ -1,4 +1,4 @@
-import type { JSX } from 'react';
+import type { CSSProperties, JSX } from 'react';
 import { resolveSymbol } from '../symbols/library.ts';
 
 interface Props {
@@ -8,10 +8,34 @@ interface Props {
   h: number;
   rotation?: number;
   selected?: boolean;
+  /** Estado del contacto durante la simulación: cerrado o abierto. */
+  closed?: boolean;
+}
+
+/**
+ * Estilo de una hoja móvil: gira sobre su pivote cuando el contacto cambia de
+ * estado. El NC se dibuja apoyado, así que su giro (`deg` negativo) se aplica
+ * cuando está abierto; el NA al revés.
+ */
+function bladeStyle(d: string, blade: { px: number; py: number; deg: number }, closed: boolean): CSSProperties | undefined {
+  const m = /M(-?[\d.]+) (-?[\d.]+)L(-?[\d.]+) (-?[\d.]+)/.exec(d);
+  if (!m) return undefined;
+  const [x1, y1, x2, y2] = [Number(m[1]), Number(m[2]), Number(m[3]), Number(m[4])];
+  const minX = Math.min(x1, x2);
+  const minY = Math.min(y1, y2);
+  const spanX = Math.abs(x2 - x1) || 1;
+  const spanY = Math.abs(y2 - y1) || 1;
+  const active = blade.deg > 0 ? closed : !closed;
+  return {
+    transformBox: 'fill-box',
+    transformOrigin: `${((blade.px - minX) / spanX) * 100}% ${((blade.py - minY) / spanY) * 100}%`,
+    transform: active ? `rotate(${blade.deg}deg)` : 'none',
+    transition: 'transform 140ms cubic-bezier(0.2, 0.7, 0.3, 1)',
+  };
 }
 
 /** Dibuja un símbolo en su caja local (0,0)–(w,h). */
-export function SymbolGlyph({ code, pinNames, w, h, rotation = 0, selected = false }: Props): JSX.Element {
+export function SymbolGlyph({ code, pinNames, w, h, rotation = 0, selected = false, closed = false }: Props): JSX.Element {
   const sym = resolveSymbol(code, pinNames);
   const shapes = sym.shapes(w, h);
   const labels = sym.labels?.(w, h) ?? [];
@@ -21,7 +45,12 @@ export function SymbolGlyph({ code, pinNames, w, h, rotation = 0, selected = fal
   return (
     <g className={selected ? 'sym sel' : 'sym'} transform={`rotate(${rotation} ${cx} ${cy})`}>
       {shapes.map((s, i) => (
-        <path key={`s${i}`} d={s.d} className={s.fill ? 'fill' : s.thin ? 'thin' : undefined} />
+        <path
+          key={`s${i}`}
+          d={s.d}
+          className={s.fill ? 'fill' : s.thin ? 'thin' : undefined}
+          style={s.blade ? bladeStyle(s.d, s.blade, closed) : undefined}
+        />
       ))}
       {sym.pins.map((p) => (
         <circle key={`p-${p.name}`} className="pin" cx={p.nx * w} cy={p.ny * h} r={1.4}>

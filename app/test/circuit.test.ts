@@ -66,6 +66,11 @@ test('con fase y neutro indicados, el arranque directo simula de verdad', () => 
   assert.equal(pressed.stable, true);
   assert.equal(pressed.energized.has('KM1'), true, 'STAR debe energizar el contactor');
   assert.ok(pressed.loads.size > 0, 'la bobina debe quedar como carga activa');
+
+  // El lienzo pinta los cables con `liveNets`: en reposo llega la fase, y con
+  // STAR apretado la maniobra suma redes hasta el retorno.
+  assert.equal(idle.liveNets.has(built.circuit.supply[0]), true, 'la fase siempre está viva');
+  assert.ok(pressed.liveNets.size > idle.liveNets.size, 'apretar STAR debe encender más tramos');
 });
 
 test('el pulsador de paro corta la maniobra', () => {

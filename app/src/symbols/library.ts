@@ -46,6 +46,11 @@ export interface Shape {
   fill?: boolean;
   /** trazo fino para detalles (ejes, marcas) */
   thin?: boolean;
+  /**
+   * Hoja móvil de un contacto: gira sobre su pivote cuando el contacto cierra.
+   * `deg` es el giro a aplicar en estado cerrado (el dibujo es el estado abierto).
+   */
+  blade?: { px: number; py: number; deg: number };
 }
 
 export interface Label {

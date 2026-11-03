@@ -139,6 +139,35 @@
   stroke: var(--wire-alt);
 }
 
+/*
+ * Simulación: el conductor con tensión se pinta con la tinta de energizado y
+ * con guiones que corren, para que se lea el sentido de la corriente.
+ */
+.wire.live {
+  stroke: var(--warn);
+  stroke-width: 0.46;
+  stroke-dasharray: 1.8 1.6;
+  animation: wire-flow 0.8s linear infinite;
+}
+
+@keyframes wire-flow {
+  to {
+    stroke-dashoffset: -3.4;
+  }
+}
+
+/* Sin movimiento si el usuario lo pidió: el color solo alcanza para leerlo. */
+@media (prefers-reduced-motion: reduce) {
+  .wire.live {
+    animation: none;
+    stroke-dasharray: none;
+  }
+}
+
+.wire.live.alt {
+  stroke: var(--warn);
+}
+
 .wire.sel {
   stroke: var(--select);
   stroke-width: 0.46;
@@ -152,6 +181,10 @@
 
 .junction.sel {
   fill: var(--select);
+}
+
+.junction.live {
+  fill: var(--warn);
 }
 
 .marquee {

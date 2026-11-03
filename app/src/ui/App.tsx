@@ -210,16 +210,65 @@ export function App(): JSX.Element {
     return state;
   }, [running, built, pressed]);
 
-  /** Registros cuyo aparato quedó energizado en este estado. */
+  /** Registros cuyo aparato quedó energizado: bobina, lámpara o motor. */
   const live = useMemo(() => {
     const out = new Set<number>();
     if (!simulation || !project) return out;
+    const loaded = new Set<number>();
+    for (const id of simulation.loads) loaded.add(Number(id.split(':')[0]));
     for (const rec of project.records) {
       if (rec.kind !== 'component') continue;
-      if (simulation.energized.has(partKey(rec.designator))) out.add(rec.id);
+      if (simulation.energized.has(partKey(rec.designator)) || loaded.has(rec.id)) out.add(rec.id);
     }
     return out;
   }, [simulation, project]);
+
+  /**
+   * Contactos cerrados en este estado: la hoja se dibuja apoyada.
+   *
+   * El solver informa los dispositivos que conducen, pero un contacto auxiliar
+   * no está entre ellos: su estado lo manda el aparato del mismo designador.
+   * Por eso además se miran los contactos NA (7000/2001) de un aparato
+   * energizado y se abren los NC (7001) del mismo aparato.
+   */
+  const closedContacts = useMemo(() => {
+    const out = new Set<number>();
+    if (!simulation || !project) return out;
+    for (const id of simulation.closed) out.add(Number(id.split(':')[0]));
+    for (const rec of project.records) {
+      if (rec.kind !== 'component') continue;
+      if (rec.code !== 7000 && rec.code !== 7001 && rec.code !== 2001) continue;
+      const live = simulation.energized.has(partKey(rec.designator));
+      if (rec.code === 7001) {
+        if (!live) out.add(rec.id);
+        else out.delete(rec.id);
+      } else if (live) {
+        out.add(rec.id);
+      }
+    }
+    return out;
+  }, [simulation, project]);
+
+  /**
+   * Tramos con corriente: los que tocan una red viva y también los del retorno
+   * cuando una carga está cerrada. Sin eso el flujo se corta en la lámpara y no
+   * se ve el circuito completo.
+   */
+  const liveWires = useMemo(() => {
+    const out = new Set<number>();
+    if (!simulation || !built) return out;
+    const carrying = new Set<number>(simulation.liveNets);
+    for (const id of simulation.loads) {
+      const device = built.circuit.devices.find((d) => d.id === id);
+      if (!device) continue;
+      carrying.add(device.a);
+      carrying.add(device.b);
+    }
+    for (const [recordId, nets] of built.recordNets) {
+      if (nets.some((net) => carrying.has(net))) out.add(recordId);
+    }
+    return out;
+  }, [simulation, built]);
 
   const toggleSimulation = (): void => {
     if (running) {
@@ -638,6 +687,9 @@ export function App(): JSX.Element {
             onPlace={onPlace}
             wireStart={wireStart}
             live={live}
+            liveWires={liveWires}
+            closedContacts={closedContacts}
+            simulating={running}
             highlight={highlight}
             onZoom={setZoom}
             onInsertVertex={onInsertVertex}

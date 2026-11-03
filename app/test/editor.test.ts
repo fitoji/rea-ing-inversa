@@ -4,7 +4,8 @@ import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from '../src/format/cade.ts';
-import { boxOf, wirePoints } from '../src/model/project.ts';
+import { boxOf, buildProject, wirePoints } from '../src/model/project.ts';
+import { buildNetlist } from '../src/sim/netlist.ts';
 import {
   createEditor,
   projectOf,
@@ -217,4 +218,32 @@ test('setDesignator: cambia sólo el designador del registro indicado', () => {
   const untouched = records.filter((r) => r.id !== motorId);
   const original = parse(ARRANQUE).records.filter((r) => r.id !== motorId);
   untouched.forEach((r, i) => assert.equal(r.raw, original[i]!.raw));
+});
+
+test('mover un componente no le suelta los cables', () => {
+  // Reporte del usuario: al mover un aparato "perdía el contacto" y la
+  // simulación dejaba de conducir. Los cables tienen que viajar con él.
+  const unconnected = (text: string): number => {
+    const netlist = buildNetlist(buildProject(parse(text)).records);
+    let count = 0;
+    for (const device of netlist.devices) for (const net of device.nets) if (net === -1) count++;
+    return count;
+  };
+
+  for (const [name, text] of [
+    ['arranque', ARRANQUE],
+    ['demo', readFileSync(join(FIXTURES, 'luz-con-interruptor.cade'), 'latin1')],
+  ] as const) {
+    const base = unconnected(text);
+    const components = buildProject(parse(text)).records.filter((r) => r.kind === 'component' && r.code !== 20000);
+    for (const rec of components) {
+      let s = createEditor(text);
+      s = moveSelection(select(s, [rec.id], false), 6, 0);
+      assert.equal(
+        unconnected(s.text),
+        base,
+        `${name}: mover ${rec.code} (#${rec.id}) dejó bornes sin conectar`,
+      );
+    }
+  }
 });
