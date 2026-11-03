@@ -9,7 +9,7 @@ Catálogo de componentes eléctricos que ofrece la paleta del editor: cómo se d
 - **Los grupos y los nombres de familia** son los de la paleta (`app/src/ui/Palette.tsx`).
 - **Los bornes** son una convención IEC elegida al dibujar cada símbolo, no un dato que venga en el archivo: el formato los guarda por registro y acá se listan los que la app asigna por defecto. En la miniatura se ven como círculos.
 
-Totales: **270 códigos** en el catálogo generado, **214 componentes dibujados**, **59 códigos del catálogo caen al fallback** (un rectángulo con el código adentro).
+Totales: **270 códigos** en el catálogo generado, **215 componentes dibujados**, **59 códigos del catálogo caen al fallback** (un rectángulo con el código adentro).
 
 Hay **3 componentes dibujados que no figuran en el catálogo**: `8016` (Lámpara de señalización), `8017` (Contacto del térmico), `8018` (Contacto auxiliar NC doble). No salen del menú del CAD pero aparecen en archivos reales, así que su plantilla se generó desde los fixtures y el dibujo se escribió a mano. Por eso no tienen designador de catálogo.
 
@@ -149,7 +149,7 @@ De los 270 códigos, **125 no traen designador** en el catálogo: el menú del C
 | ![Contacto NA](img/componentes/10050.svg) | `10050` | Contacto NA | `-U` | 13 · 14 |
 | ![Contacto NC](img/componentes/10051.svg) | `10051` | Contacto NC | — | 11 · 12 |
 
-## Señalización y pulsadores (21)
+## Señalización y pulsadores (22)
 
 | Dibujo | Código | Nombre | Designador | Bornes |
 | --- | --- | --- | --- | --- |
@@ -168,6 +168,7 @@ De los 270 códigos, **125 no traen designador** en el catálogo: el menú del C
 | ![Pulsador](img/componentes/8100.svg) | `8100` | Pulsador | `-S` | 13 · 14 |
 | ![Piloto](img/componentes/8101.svg) | `8101` | Piloto | `-H` | X1 · X2 |
 | ![LED](img/componentes/8103.svg) | `8103` | LED | `-H` | X1 · X2 |
+| ![Señalización óptica](img/componentes/9008.svg) | `9008` | Señalización óptica | `-H` | 97 · 98 |
 | ![Señalización óptica](img/componentes/9008.svg) | `9008` | Señalización óptica | `-H` | 97 · 98 |
 | ![Señalización óptica intermitente](img/componentes/9009.svg) | `9009` | Señalización óptica intermitente | — | X1 · X2 |
 | ![Timbre](img/componentes/9010.svg) | `9010` | Timbre | — | X1 · X2 |

@@ -137,6 +137,27 @@ const lampDevice = (code: number, group: SymbolGroup, pulsed = false): SymbolDef
     return out;
   }, { w: 12, h: 15 });
 
+/**
+ * Señalización óptica: círculo con aspa, tal como la dibuja CADe_SIMU.
+ *
+ * No se toma de EN 60617: el elemento importado es sólo el aspa (sin cuerpo) y
+ * acá el símbolo tiene que leerse como la lámpara del CAD.
+ */
+const signalLamp = (code: number, group: SymbolGroup): SymbolDef =>
+  def(code, group, [left(0.5, '97'), right(0.5, '98')], (w, h) => {
+    const r = Math.min(w, h) * 0.32;
+    const cx = w / 2;
+    const cy = h / 2;
+    const d = r * Math.SQRT1_2;
+    return [
+      { d: line(0, cy, cx - r, cy) },
+      { d: line(cx + r, cy, w, cy) },
+      { d: circle(cx, cy, r) },
+      { d: line(cx - d, cy - d, cx + d, cy + d) },
+      { d: line(cx - d, cy + d, cx + d, cy - d) },
+    ];
+  }, { w: 15, h: 15 });
+
 /** Aparato acústico: círculo con la boca. */
 const soundDevice = (code: number): SymbolDef =>
   def(code, 'senalizacion', [left(0.5, 'X1'), right(0.5, 'X2')], (w, h) => {
@@ -296,6 +317,7 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
   contactDevice(10051, 'NC', 'mando'),
 
   // lámparas y avisos
+  signalLamp(9008, 'senalizacion'),
   lampDevice(8101, 'senalizacion'),
   lampDevice(8103, 'senalizacion'),
   lampDevice(9009, 'senalizacion', true),

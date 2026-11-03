@@ -1,14 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="63" height="81" viewBox="-1.5 -1.5 21 27" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" width="81" height="81" viewBox="-1.5 -1.5 27 27" role="img">
 <title>Motor monofásico</title>
-<rect x="-1.5" y="-1.5" width="21" height="27" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
-<path d="M0 0L0 6.31" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M5.99 0L5.99 6.31" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M18 12L11.7 12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M18 18L11.7 18" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24L12.01 24Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M4.5 18L4.48 17.9L4.45 17.81L4.39 17.71L4.3 17.62L4.19 17.54L4.07 17.47L3.91 17.4L3.74 17.35L3.58 17.3L3.38 17.28L3.2 17.26L3.01 17.26L2.81 17.26L2.61 17.28L2.43 17.3L2.25 17.35L2.09 17.4L1.94 17.47L1.82 17.54L1.69 17.62L1.62 17.71L1.55 17.81L1.51 17.9L1.49 18" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M4.5 18L4.52 18.1L4.55 18.19L4.61 18.29L4.7 18.38L4.81 18.46L4.93 18.53L5.09 18.6L5.26 18.65L5.42 18.7L5.62 18.72L5.8 18.74L5.99 18.74L6.19 18.74L6.39 18.72L6.57 18.7L6.75 18.65L6.91 18.6L7.06 18.53L7.18 18.46L7.31 18.38L7.38 18.29L7.45 18.19L7.49 18.1L7.51 18" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="-1.5" y="-1.5" width="27" height="27" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M1.92 12a10.08 10.08 0 1 0 20.16 0a10.08 10.08 0 1 0 -20.16 0Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 9.12L1.92 9.12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 15.84L1.92 15.84" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <circle cx="0" cy="9.12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
 <circle cx="0" cy="15.84" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<text x="9" y="12" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="6.12" fill="#37455a" text-anchor="middle" dominant-baseline="middle">M</text>
+<text x="12" y="12" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="8.16" fill="#37455a" text-anchor="middle" dominant-baseline="middle">M</text>
 </svg>

@@ -1,21 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="36" height="81" viewBox="-1.5 -1.5 12 27" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" width="45" height="81" viewBox="-1.5 -1.5 15 27" role="img">
 <title>Transformador</title>
-<rect x="-1.5" y="-1.5" width="12" height="27" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
-<path d="M1.5 0L1.5 4.51" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M1.5 19.51L1.5 24" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M0 3L3 1.51" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M0 2.26L3 0.74" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M0 22.51L3 21" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M0 23.26L3 21.74" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M1.5 10.51L1.5 9" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M1.5 9L9 9" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51L6 22.51Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="-1.5" y="-1.5" width="15" height="27" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M4.5 0L4.5 4.51" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.5 19.51L4.5 24" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M3 3L6 1.51" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M3 2.26L6 0.74" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M3 22.51L6 21" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M3 23.26L6 21.74" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.5 10.51L4.5 9" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.5 9L12 9" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M9 9L8.84 7.82L8.4 6.74L7.68 5.81L6.76 5.11L5.66 4.66L4.5 4.51L3.34 4.66L2.26 5.11L1.32 5.81L0.6 6.74L0.16 7.82L0 9L0.16 10.18L0.6 11.26L1.32 12.19L2.24 12.89L3.34 13.34L4.5 13.51L5.66 13.34L6.76 12.89L7.68 12.19L8.4 11.26L8.84 10.18L9 9Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M9 15L8.84 13.82L8.4 12.74L7.68 11.81L6.76 11.11L5.66 10.66L4.5 10.51L3.34 10.66L2.26 11.11L1.32 11.81L0.6 12.74L0.16 13.82L0 15L0.16 16.18L0.6 17.26L1.32 18.19L2.24 18.89L3.34 19.34L4.5 19.51L5.66 19.34L6.76 18.89L7.68 18.19L8.4 17.26L8.84 16.18L9 15Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <circle cx="0" cy="5.28" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
 <circle cx="0" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
 <circle cx="0" cy="18.72" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<circle cx="9" cy="5.28" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<circle cx="9" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<circle cx="9" cy="18.72" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<text x="4.5" y="12" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="3.06" fill="#37455a" text-anchor="middle" dominant-baseline="middle">T</text>
+<circle cx="12" cy="5.28" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="12" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="12" cy="18.72" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<text x="6" y="12" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="4.08" fill="#37455a" text-anchor="middle" dominant-baseline="middle">T</text>
 </svg>

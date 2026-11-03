@@ -39,15 +39,16 @@ const MAP: { code: number; path: string }[] = [
   { code: 3013, path: `${EN}/en_60617_06/en_60617_06_14/en_60617_06_14_03.elmt` }, // rectificador
 
   { code: 5000, path: `${EN}/en_60617_07/en_60617_07_21/en_60617_07_21_02.elmt` }, // fusible
-  { code: 9008, path: `${EN}/en_60617_08/en_60617_08_10/en_60617_08_10_01.elmt` }, // lámpara
   { code: 9010, path: `${EN}/en_60617_08/en_60617_08_10/en_60617_08_10_06.elmt` }, // timbre
   { code: 9012, path: `${EN}/en_60617_08/en_60617_08_10/en_60617_08_10_09.elmt` }, // sirena
   { code: 9011, path: `${EN}/en_60617_08/en_60617_08_10/en_60617_08_10_10.elmt` }, // zumbador
   { code: 9004, path: `${EN}/en_60617_11/en_60617_11_14/en_60617_11_14_13.elmt` }, // temporizador
-  { code: 1000, path: `${EN}/en_60617_06/en_60617_06_08/en_60617_06_08_01.elmt` }, // motor de inducción trifásico
-  { code: 1002, path: `${EN}/en_60617_06/en_60617_06_08/en_60617_06_08_02.elmt` }, // motor de inducción monofásico
   { code: 1004, path: `${EN}/en_60617_06/en_60617_06_08/en_60617_06_08_03.elmt` }, // motor trifásico de rotor bobinado (6 bornes)
   { code: 8004, path: `${EN}/en_60617_11/en_60617_11_14/en_60617_11_14_12.elmt` }, // pulsador protegido contra accionamiento involuntario
+
+  // Motores 1000 y 1002 quedan con el dibujo propio: el elemento normativo trae
+  // 3 y 0 bornes contra los 4 y 2 del código, así que los pines quedaban en un
+  // borde distinto del que dibuja el símbolo. El círculo propio ya es el de CADe_SIMU.
 
   // Contactores, disyuntores y mando: sólo los elementos cuyo número de bornes
   // coincide con el del código (si no coincide, el adaptador conserva los bornes
@@ -140,10 +141,16 @@ function parseElement(xml: string): { shapes: Shape[]; terminals: Terminal[] } {
 
   for (const m of xml.matchAll(/<(?:circle|ellipse)\b[^>]*>/g)) {
     const t = m[0];
-    const rx = t.startsWith('<ellipse') ? attr(t, 'rx') : attr(t, 'r');
-    const ry = t.startsWith('<ellipse') ? attr(t, 'ry') : attr(t, 'r');
-    const cx = t.startsWith('<ellipse') ? attr(t, 'cx') : attr(t, 'cx');
-    const cy = t.startsWith('<ellipse') ? attr(t, 'cy') : attr(t, 'cy');
+    // QElectroTech describe círculos y elipses con la caja (x, y, width, height),
+    // no con centro y radio. Leer sólo cx/cy/rx/ry dejaba un path degenerado
+    // (un punto) y el cuerpo del símbolo desaparecía del dibujo.
+    const w = attr(t, 'width');
+    const h = attr(t, 'height');
+    const fromBox = w > 0 || h > 0;
+    const rx = fromBox ? w / 2 : attr(t, 'rx') || attr(t, 'r');
+    const ry = fromBox ? h / 2 : attr(t, 'ry') || attr(t, 'r');
+    const cx = fromBox ? attr(t, 'x') + rx : attr(t, 'cx');
+    const cy = fromBox ? attr(t, 'y') + ry : attr(t, 'cy');
     shapes.push({
       pts: arcPoints(cx, cy, rx, ry, 0, 360),
       closed: true,
