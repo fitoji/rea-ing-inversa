@@ -46,7 +46,23 @@ const MAP: { code: number; path: string }[] = [
   { code: 9004, path: `${EN}/en_60617_11/en_60617_11_14/en_60617_11_14_13.elmt` }, // temporizador
   { code: 1000, path: `${EN}/en_60617_06/en_60617_06_08/en_60617_06_08_01.elmt` }, // motor de inducción trifásico
   { code: 1002, path: `${EN}/en_60617_06/en_60617_06_08/en_60617_06_08_02.elmt` }, // motor de inducción monofásico
+  { code: 1004, path: `${EN}/en_60617_06/en_60617_06_08/en_60617_06_08_03.elmt` }, // motor trifásico de rotor bobinado (6 bornes)
   { code: 8004, path: `${EN}/en_60617_11/en_60617_11_14/en_60617_11_14_12.elmt` }, // pulsador protegido contra accionamiento involuntario
+
+  // Contactores, disyuntores y mando: sólo los elementos cuyo número de bornes
+  // coincide con el del código (si no coincide, el adaptador conserva los bornes
+  // del catálogo y éstos quedan flotando fuera de las terminales dibujadas).
+  { code: 2006, path: `${EN}/en_60617_07/en_60617_07_13/en_60617_07_13_02.elmt` }, // contacto principal NA de contactor
+  { code: 6010, path: `${EN}/en_60617_07/en_60617_07_13/en_60617_07_13_05.elmt` }, // interruptor automático (disyuntor I)
+  { code: 6017, path: `${EN}/en_60617_07/en_60617_07_13/en_60617_07_13_03.elmt` }, // contactor con disparo automático
+  { code: 6019, path: `${EN}/en_60617_07/en_60617_07_07/en_60617_07_07_01.elmt` }, // interruptor de accionamiento manual
+  { code: 6020, path: `${EN}/en_60617_07/en_60617_07_07/en_60617_07_07_01.elmt` }, // interruptor de accionamiento manual
+  { code: 9000, path: `${EN}/en_60617_07/en_60617_07_15/en_60617_07_15_01.elmt` }, // bobina de relé / órgano de mando
+  { code: 7016, path: `${EN}/en_60617_07/en_60617_07_15/en_60617_07_15_01.elmt` }, // bobina de relé
+  { code: 7018, path: `${EN}/en_60617_07/en_60617_07_15/en_60617_07_15_01.elmt` }, // bobina de contactor
+  { code: 8000, path: `${EN}/en_60617_07/en_60617_07_07/en_60617_07_07_02.elmt` }, // pulsador con retorno automático
+  { code: 8100, path: `${EN}/en_60617_07/en_60617_07_07/en_60617_07_07_02.elmt` }, // pulsador con retorno automático
+  { code: 8008, path: `${EN}/en_60617_07/en_60617_07_07/en_60617_07_07_01.elmt` }, // interruptor de accionamiento manual
 ];
 
 type Pt = [number, number];
