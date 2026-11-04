@@ -69,7 +69,7 @@ const html = `<!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>simuElectro — spike de cables</title>
+<title>Electro-Simulador — spike de cables</title>
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
@@ -98,7 +98,7 @@ const html = `<!doctype html>
 </head>
 <body>
 <header>
-  <h1>simuElectro · spike de cables</h1>
+  <h1>Electro-Simulador · spike de cables</h1>
   <span class="hint">${scene.components.length} componentes · ${scene.wires.length} cables</span>
   <span class="hint">arrastrá un componente — los cables se re-rutean · <kbd>rueda</kbd> zoom · arrastrá el fondo para mover</span>
 </header>

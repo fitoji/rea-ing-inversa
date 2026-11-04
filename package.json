@@ -1,17 +1,17 @@
 {
-  "name": "simuelectro-workspace",
+  "name": "electro-simulador-workspace",
   "private": true,
   "packageManager": "pnpm@12.15.0",
   "scripts": {
-    "dev": "pnpm --filter simuelectro dev",
-    "build": "pnpm --filter simuelectro build",
-    "preview": "pnpm --filter simuelectro preview",
-    "test": "pnpm --filter simuelectro test",
-    "report": "pnpm --filter simuelectro report",
-    "spike": "pnpm --filter simuelectro spike",
-    "catalog": "pnpm --filter simuelectro catalog",
-    "componentes": "pnpm --filter simuelectro componentes",
-    "qet": "pnpm --filter simuelectro qet",
-    "qet:sheet": "pnpm --filter simuelectro qet:sheet"
+    "dev": "pnpm --filter electro-simulador dev",
+    "build": "pnpm --filter electro-simulador build",
+    "preview": "pnpm --filter electro-simulador preview",
+    "test": "pnpm --filter electro-simulador test",
+    "report": "pnpm --filter electro-simulador report",
+    "spike": "pnpm --filter electro-simulador spike",
+    "catalog": "pnpm --filter electro-simulador catalog",
+    "componentes": "pnpm --filter electro-simulador componentes",
+    "qet": "pnpm --filter electro-simulador qet",
+    "qet:sheet": "pnpm --filter electro-simulador qet:sheet"
   }
 }

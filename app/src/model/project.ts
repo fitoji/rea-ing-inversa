@@ -1,5 +1,5 @@
 /**
- * Modelo de dominio de simuElectro.
+ * Modelo de dominio de Electro-Simulador.
  *
  * Principio: el `Project` es una VISTA sobre los registros crudos del archivo,
  * no una reconstrucción. Cada registro conserva su texto original, y la

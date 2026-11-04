@@ -1,5 +1,5 @@
 /**
- * Librería de símbolos IEC 60617 de simuElectro.
+ * Librería de símbolos IEC 60617 de Electro-Simulador.
  *
  * Por qué existe: el formato `.cade` guarda los NOMBRES de los bornes
  * (`1 3 5 2 4 6`, `U1 V1 W1 PE`) pero no sus coordenadas. La geometría real

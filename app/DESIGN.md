@@ -1,5 +1,5 @@
 ---
-name: simuElectro
+name: Electro-Simulador
 description: Editor de esquemas eléctricos que abre y guarda archivos CADe_SIMU sin perder un byte.
 colors:
   plano-bg: "#0e1116"
@@ -149,7 +149,7 @@ components:
     rounded: "{rounded.lg}"
 ---
 
-# Design System: simuElectro
+# Design System: Electro-Simulador
 
 ## Overview
 
@@ -213,7 +213,7 @@ Paleta de plano nocturno: acero frío de base y señales vivas reservadas al dib
 
 ### Hierarchy
 
-- **Wordmark** (600, 13.5px, tracking -0.01em): sólo "simuElectro" en el header. No hay titulares más grandes en toda la aplicación.
+- **Wordmark** (600, 13.5px, tracking -0.01em): sólo "Electro-Simulador" en el header. No hay titulares más grandes en toda la aplicación.
 - **Menú** (500, 14px, 20px): disparadores del menubar y etiquetas de los ítems. Es el tamaño más grande de la interfaz y marca la jerarquía de navegación.
 - **Botón** (500, 12.8px, 18.5px): etiquetas de botones y filas de la paleta.
 - **Cuerpo** (400, 13px, 1.45): texto de interfaz, inspector y descripciones. Medida corta: los paneles tienen 232 y 268px de ancho, así que el texto se escribe para columnas de 40–50 caracteres.

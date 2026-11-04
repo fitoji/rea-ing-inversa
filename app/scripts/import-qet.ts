@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Importa símbolos normalizados de EN 60617 (los que trae QElectroTech) y los
- * convierte al formato de dibujo de simuElectro.
+ * convierte al formato de dibujo de Electro-Simulador.
  *
  * Por qué: los dibujos a mano alcanzan para reconocer un componente, pero no son
  * la norma. QElectroTech distribuye una colección de elementos vectoriales

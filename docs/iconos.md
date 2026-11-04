@@ -1,4 +1,4 @@
-# Iconos de simuElectro
+# Iconos de Electro-Simulador
 
 Inventario de todo lo que dibuja iconografía en la interfaz: qué ícono se usa, dónde vive y para qué está. Son **29 íconos distintos** en 8 archivos, todos de la misma librería.
 

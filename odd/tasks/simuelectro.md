@@ -1,4 +1,4 @@
-# simuElectro — plan de construcción
+# Electro-Simulador — plan de construcción
 
 Objetivo: simulador eléctrico con manejo de cables moderno, que abra y ejecute archivos `.cade` de CADe_SIMU.
 

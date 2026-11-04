@@ -17,7 +17,7 @@ El trabajo es el mismo en ambos casos: partir de un archivo `.cade`/`.cad` hered
 
 ## Product Purpose
 
-simuElectro es un simulador eléctrico que abre archivos de CADe_SIMU sin pérdida, los edita con una interacción de cables moderna y simula la lógica de contactores. Existe porque el incumbent es freeware cerrado escrito en MFC 4.2 sobre Visual C++ 6, solo Windows, y su edición de cables es arcaica.
+Electro-Simulador es un simulador eléctrico que abre archivos de CADe_SIMU sin pérdida, los edita con una interacción de cables moderna y simula la lógica de contactores. Existe porque el incumbent es freeware cerrado escrito en MFC 4.2 sobre Visual C++ 6, solo Windows, y su edición de cables es arcaica.
 
 El éxito de v1 es concreto: abrir, editar y simular `.cade`, e instalarse como app de escritorio en macOS y Windows.
 
@@ -49,7 +49,7 @@ Restricciones y límites declarados:
 
 ## Brand Commitments
 
-- Nombre del producto: **simuElectro**.
+- Nombre del producto: **Electro-Simulador**.
 - Interfaz en español, sin plan de i18n para v1.
 - CADe_SIMU es el anti-referente de interacción: se reimplementa, no se decompila ni se reconstruye. El repositorio no contiene código de CADe_SIMU.
 - Símbolos IEC 60617 tomados de la colección de QElectroTech, licencia CC-BY 3.0; el crédito vive en `NOTICE-qet.md` y debe conservarse.

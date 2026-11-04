@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Genera `src/symbols/dxf.ts`: extrae símbolos de una hoja DXF y los convierte
- * al formato de dibujo de simuElectro (polilíneas normalizadas 0..1).
+ * al formato de dibujo de Electro-Simulador (polilíneas normalizadas 0..1).
  *
  * Por qué existe: la hoja `SIMBOELE.dxf` es una biblioteca de símbolos de
  * instalación dibujada sin bloques — cada símbolo es un puñado de líneas,
