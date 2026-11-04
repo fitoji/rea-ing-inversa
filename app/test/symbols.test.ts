@@ -62,8 +62,19 @@ test('los símbolos declarados tienen bornes con posición dentro de la caja', (
   }
 });
 
-test('el fallback conserva los nombres de borne del archivo', () => {
-  const sym = fallbackSymbol(99999, ['A', 'B', 'C', 'D']);
+test('la lámpara marca su vidrio para pintarse con el color del archivo', () => {
+  // El color viene del registro (9008/9009); el símbolo sólo tiene que decir
+  // qué trazos son el vidrio, para que el tema resuelva el tono.
+  for (const code of [8016, 9008, 9009]) {
+    const sym = resolveSymbol(code, []);
+    const glass = sym.shapes(12, 15).filter((s) => s.lamp);
+    assert.ok(glass.length > 0, `${code}: sin vidrio marcado`);
+  }
+  const other = resolveSymbol(2001, []);
+  assert.equal(other.shapes(18, 15).some((s) => s.lamp), false, 'un contactor no tiene vidrio');
+});
+
+test('el fallback conserva los nombres de borne del archivo', () => {  const sym = fallbackSymbol(99999, ['A', 'B', 'C', 'D']);
   assert.equal(sym.code, 99999);
   assert.equal(sym.pins.length, 4);
   assert.deepEqual(sym.pins.map((p) => p.name), ['A', 'B', 'C', 'D']);

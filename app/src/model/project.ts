@@ -36,6 +36,21 @@ export const GEOMETRY = {
   height: 15,
 } as const;
 
+/**
+ * Color de la señalización óptica (códigos 9008 y 9009).
+ *
+ * El archivo guarda un índice, no un nombre: la cabecera del registro lleva un
+ * token numérico justo después de los bornes (`#X1#X2#2#####`). El mapeo se
+ * verificó sobre diez archivos de una sola lámpara guardados desde CADe_SIMU:
+ * cada valor coincide con el color elegido en la app, en las dos familias.
+ */
+export const LAMP_COLORS = ['verde', 'rojo', 'amarillo', 'azul', 'gris'] as const;
+
+export type LampColor = 0 | 1 | 2 | 3 | 4;
+
+/** Códigos que llevan el slot de color: lámpara fija e intermitente. */
+const LAMP_CODES = new Set([9008, 9009]);
+
 export interface CadeRecordModel {
   id: number;
   code: number;
@@ -44,6 +59,12 @@ export interface CadeRecordModel {
   designator: string;
   /** bornes en orden de aparición, sin vacíos. Puede estar vacío. */
   pins: string[];
+  /**
+   * Color guardado de una lámpara (9008/9009). `null` en todo lo demás, y
+   * también cuando el archivo trae un valor fuera de rango: preferimos no
+   * pintar antes que inventar un color.
+   */
+  lampColor: LampColor | null;
   /** 24 números de geometría; [] si el registro no tiene bloque de geometría */
   geometry: number[];
   /** texto libre de las etiquetas (código 8) */
@@ -107,6 +128,7 @@ export function modelOfRecord(rec: CadeRecord): CadeRecordModel {
     kind,
     designator: kind === 'text' ? '' : (fields[1] ?? ''),
     pins: [],
+    lampColor: null,
     geometry: [],
     text: '',
     raw: rec.raw,
@@ -121,7 +143,23 @@ export function modelOfRecord(rec: CadeRecord): CadeRecordModel {
   const geoIdx = fields.findIndex((f, i) => i > 0 && f.startsWith('*'));
   if (geoIdx === -1) return base;
 
-  base.pins = fields.slice(2, geoIdx).filter((p) => p !== '');
+  const header = fields.slice(2, geoIdx).filter((p) => p !== '');
+
+  // Las lámparas cierran su cabecera con el índice de color. Ese token no es un
+  // borne: si se deja en `pins`, el editor dibuja un pin fantasma al lado de X1
+  // y X2. El mínimo de tres tokens protege a un registro sin bornes.
+  if (LAMP_CODES.has(rec.code) && header.length >= 3) {
+    const last = header.at(-1)!.trim();
+    if (/^\d+$/.test(last)) {
+      const color = Number(last);
+      if (color >= 0 && color < LAMP_COLORS.length) {
+        base.lampColor = color as LampColor;
+        header.pop();
+      }
+    }
+  }
+
+  base.pins = header;
   base.geometry = splitNumbers(fields[geoIdx]);
   return base;
 }

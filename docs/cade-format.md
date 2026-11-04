@@ -106,7 +106,34 @@ Es la razón por la que un parser que divide por `#` falla: la frontera del regi
 
 ✅ Confirmado en este archivo: los designadores son **texto libre**. Aparece `KM1` sin guion y `-M` sin número, lo que rompe cualquier supuesto de etiqueta normalizada.
 
+## Color de la señalización óptica (códigos `9008` / `9009`)
+
+✅ **Resuelto.** El color por componente **sí se guarda**, y vive en la cabecera del registro: un token numérico inmediatamente después de los bornes.
+
+```
+*28*9008#-H##X1#X2#0#####*1*1*0*...
+                 └── color
+```
+
+| Valor | Color |
+|---|---|
+| `0` | verde |
+| `1` | rojo |
+| `2` | amarillo |
+| `3` | azul |
+| `4` | gris |
+
+Evidencia, doble y no redundante:
+
+1. **Diez archivos de una sola lámpara**, guardados desde CADe_SIMU con el color elegido en la app: `data/samples/luces/luz_{verde,roja,amarilla,azul,gris}.cad` (fija) y `luz_intermitente_{verde,rojo,amarillo,azul,gris}.cad`. Cada valor coincide con el color de su nombre, en las dos familias.
+2. **El nombre interno de hoja** refuerza la lectura: al guardar como, el bloque de título conserva el nombre anterior. La cadena de guardado fue `luz_roja` → `luz_amarilla` → `luz_azul` → `luz_gris`, con los índices 1 → 2 → 3 → 4; y desde `luz_amarilla` sale una rama a `luz_verde` con índice 0. La familia intermitente repite la misma cadena. Ningún salto contradice el mapeo.
+
+También aparece en archivos reales: en `pr1-rodolfo-giusti.cad`, `-H` = `0` (verde), `H1` = `2` (amarillo), `H2` = `1` (rojo).
+
+⚠️ El slot es **exclusivo de las lámparas**. `8016` (lámpara vieja) usa bornes `97/98` y no lo tiene; tampoco aparece en contactores ni en motores. El token **no es un borne**: si se lo cuenta como tal, el editor dibuja un pin fantasma junto a `X1` y `X2`. Se implementa en `app/src/model/project.ts` (`lampColor`).
+
 ## Bloque de hoja
+
 
 ✅ `20000#XXX` + campos de texto libre con fecha (`04-Feb-2024`) y nombre de hoja (`CADe_S1`), delimitados por marcadores `$$$` y `&&&`.
 
@@ -129,6 +156,7 @@ Una hoja nueva empieza recién después de un bloque de título **cuando hay otr
 | `CADe_S1` | 12,6 KB | 1829 | 161 | instalación local (inversión de giro con PLC) |
 | `arranque-paro-motor-3f.cad` | 3,5 KB | 474 | 43 | repositorio CURSO-CADE-SIMU (arranque-paro 3F) |
 | `ej0def.cad` | 2,5 KB | — | 31 | muestra aportada (primer id = 25) |
+| `luz_*.cad` (10) | 384–388 B | — | 2 | set de colores: una lámpara 9008/9009 por archivo |
 
 ## Nombres de componente en el binario
 

@@ -48,6 +48,35 @@
   stroke: var(--ink-soft);
 }
 
+/*
+ * Señalización óptica con color guardado (9008/9009). El índice del archivo
+ * entra como `data-lamp` y el tema resuelve el tono; sin dato, el vidrio queda
+ * con la tinta normal del dibujo y no se distingue de una lámpara sin color.
+ */
+.sym[data-lamp='verde'] {
+  --lamp: var(--lamp-verde);
+}
+
+.sym[data-lamp='rojo'] {
+  --lamp: var(--lamp-rojo);
+}
+
+.sym[data-lamp='amarillo'] {
+  --lamp: var(--lamp-amarillo);
+}
+
+.sym[data-lamp='azul'] {
+  --lamp: var(--lamp-azul);
+}
+
+.sym[data-lamp='gris'] {
+  --lamp: var(--lamp-gris);
+}
+
+.sym path.lamp {
+  stroke: var(--lamp, var(--ink));
+}
+
 .body {
   fill: var(--body-fill);
   stroke: var(--body-stroke);

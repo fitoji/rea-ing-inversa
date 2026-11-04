@@ -1,4 +1,5 @@
 import type { CSSProperties, JSX } from 'react';
+import { LAMP_COLORS, type LampColor } from '../model/project.ts';
 import { resolveSymbol } from '../symbols/library.ts';
 
 interface Props {
@@ -10,6 +11,8 @@ interface Props {
   selected?: boolean;
   /** Estado del contacto durante la simulación: cerrado o abierto. */
   closed?: boolean;
+  /** Color guardado de la lámpara (códigos 9008/9009). `null` = tinta normal. */
+  lampColor?: LampColor | null;
 }
 
 /**
@@ -35,7 +38,7 @@ function bladeStyle(d: string, blade: { px: number; py: number; deg: number }, c
 }
 
 /** Dibuja un símbolo en su caja local (0,0)–(w,h). */
-export function SymbolGlyph({ code, pinNames, w, h, rotation = 0, selected = false, closed = false }: Props): JSX.Element {
+export function SymbolGlyph({ code, pinNames, w, h, rotation = 0, selected = false, closed = false, lampColor = null }: Props): JSX.Element {
   const sym = resolveSymbol(code, pinNames);
   const shapes = sym.shapes(w, h);
   const labels = sym.labels?.(w, h) ?? [];
@@ -43,12 +46,16 @@ export function SymbolGlyph({ code, pinNames, w, h, rotation = 0, selected = fal
   const cy = h / 2;
 
   return (
-    <g className={selected ? 'sym sel' : 'sym'} transform={`rotate(${rotation} ${cx} ${cy})`}>
+    <g
+      className={selected ? 'sym sel' : 'sym'}
+      data-lamp={lampColor === null ? undefined : LAMP_COLORS[lampColor]}
+      transform={`rotate(${rotation} ${cx} ${cy})`}
+    >
       {shapes.map((s, i) => (
         <path
           key={`s${i}`}
           d={s.d}
-          className={s.fill ? 'fill' : s.thin ? 'thin' : undefined}
+          className={[s.fill ? 'fill' : '', s.thin ? 'thin' : '', s.lamp ? 'lamp' : ''].filter(Boolean).join(' ') || undefined}
           style={s.blade ? bladeStyle(s.d, s.blade, closed) : undefined}
         />
       ))}

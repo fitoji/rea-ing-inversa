@@ -47,6 +47,11 @@ export interface Shape {
   /** trazo fino para detalles (ejes, marcas) */
   thin?: boolean;
   /**
+   * Vidrio de una lámpara: se pinta con el color guardado en el archivo cuando
+   * el registro lo trae. Sin color queda con la tinta normal del dibujo.
+   */
+  lamp?: boolean;
+  /**
    * Hoja móvil de un contacto: gira sobre su pivote cuando el contacto cierra.
    * `deg` es el giro a aplicar en estado cerrado (el dibujo es el estado abierto).
    */
@@ -306,9 +311,9 @@ const lamp: SymbolDef = {
     return [
       { d: line(0, cy, cx - r, cy) },
       { d: line(cx + r, cy, w, cy) },
-      { d: circle(cx, cy, r) },
-      { d: line(cx - r * 0.7, cy - r * 0.7, cx + r * 0.7, cy + r * 0.7), thin: true },
-      { d: line(cx + r * 0.7, cy - r * 0.7, cx - r * 0.7, cy + r * 0.7), thin: true },
+      { d: circle(cx, cy, r), lamp: true },
+      { d: line(cx - r * 0.7, cy - r * 0.7, cx + r * 0.7, cy + r * 0.7), thin: true, lamp: true },
+      { d: line(cx + r * 0.7, cy - r * 0.7, cx - r * 0.7, cy + r * 0.7), thin: true, lamp: true },
     ];
   },
 };

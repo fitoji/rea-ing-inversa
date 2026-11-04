@@ -110,6 +110,17 @@
   --handle-hover: #dce7f7;
   --wire-alt: #0f8f86;
 
+  /*
+   * Color de la señalización óptica. El archivo guarda un índice 0..4; estos
+   * son los cinco valores con los que CADe_SIMU los dibuja, ajustados para
+   * leerse sobre el fondo de cada tema.
+   */
+  --lamp-verde: #128a4c;
+  --lamp-rojo: #c92a2a;
+  --lamp-amarillo: #b07606;
+  --lamp-azul: #1f6fd0;
+  --lamp-gris: #5d6a7a;
+
   /* Elevación: en día el chrome flota apenas sobre el lienzo. */
   --elev-down: 0 1px 2px rgb(22 32 44 / 0.06), 0 3px 8px rgb(22 32 44 / 0.05);
   --elev-up: 0 -1px 2px rgb(22 32 44 / 0.06), 0 -3px 8px rgb(22 32 44 / 0.05);
@@ -166,6 +177,12 @@
   --grid-major: #232a35;
   --handle-hover: #1b2a3d;
   --wire-alt: #35a89b;
+
+  --lamp-verde: #4ade80;
+  --lamp-rojo: #ff6b6b;
+  --lamp-amarillo: #f0b429;
+  --lamp-azul: #5b9dff;
+  --lamp-gris: #98a3b3;
 
   /*
    * En noche la sombra negra casi no se ve: se refuerza y se apoya en el borde

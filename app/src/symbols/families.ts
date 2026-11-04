@@ -130,10 +130,10 @@ const lampDevice = (code: number, group: SymbolGroup, pulsed = false): SymbolDef
     const cy = h / 2;
     const out: Shape[] = [
       { d: line(0, cy, cx - r, cy) },
-      { d: circle(cx, cy, r) },
+      { d: circle(cx, cy, r), lamp: true },
       { d: line(cx + r, cy, w, cy) },
     ];
-    if (pulsed) out.push({ d: line(cx - r * 0.6, cy - r * 0.6, cx + r * 0.6, cy + r * 0.6), thin: true });
+    if (pulsed) out.push({ d: line(cx - r * 0.6, cy - r * 0.6, cx + r * 0.6, cy + r * 0.6), thin: true, lamp: true });
     return out;
   }, { w: 12, h: 15 });
 
@@ -152,9 +152,9 @@ const signalLamp = (code: number, group: SymbolGroup): SymbolDef =>
     return [
       { d: line(0, cy, cx - r, cy) },
       { d: line(cx + r, cy, w, cy) },
-      { d: circle(cx, cy, r) },
-      { d: line(cx - d, cy - d, cx + d, cy + d) },
-      { d: line(cx - d, cy + d, cx + d, cy - d) },
+      { d: circle(cx, cy, r), lamp: true },
+      { d: line(cx - d, cy - d, cx + d, cy + d), lamp: true },
+      { d: line(cx - d, cy + d, cx + d, cy - d), lamp: true },
     ];
   }, { w: 15, h: 15 });
 

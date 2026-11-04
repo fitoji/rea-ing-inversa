@@ -551,7 +551,7 @@ function Component({
       <rect className="hitbox" x={0} y={0} width={box.width} height={box.height} />
       <rect className={selected ? 'body sel' : bad ? 'body bad' : live ? 'body live' : 'body'} x={0} y={0} width={box.width} height={box.height} rx={0.6} />
       <g transform={`translate(${inset} ${inset})`}>
-        <SymbolGlyph code={rec.code} pinNames={rec.pins} w={iw} h={ih} rotation={rotation} selected={selected} closed={closed} />
+        <SymbolGlyph code={rec.code} pinNames={rec.pins} w={iw} h={ih} rotation={rotation} selected={selected} closed={closed} lampColor={rec.lampColor} />
       </g>
 
       {pins.map((p, i) => (
