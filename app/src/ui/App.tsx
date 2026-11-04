@@ -53,6 +53,7 @@ import { SAMPLES, loadSample, loadFile, downloadCade } from './samples.ts';
 import { JUNCTION_TEMPLATE, WIRE_TEMPLATES } from '../symbols/templates.ts';
 import { templateForPlacement } from '../symbols/place.ts';
 import { blankDocument } from '../format/blank.ts';
+import { DEFAULT_FILE_NAME, cadFileName } from '../format/filename.ts';
 import { circuitFrom } from '../sim/circuit.ts';
 import { simulate } from '../sim/solver.ts';
 import { partKey } from '../sim/netlist.ts';
@@ -148,7 +149,7 @@ export function App(): JSX.Element {
   const newProject = useCallback(() => {
     if (!state) return;
     if (state.dirty && !window.confirm('Hay cambios sin guardar. ¿Empezar un proyecto nuevo igual?')) return;
-    openText(blankDocument(), 'sin título.cade');
+    openText(blankDocument(), DEFAULT_FILE_NAME);
     toast('proyecto nuevo');
   }, [state, openText]);
 
@@ -159,7 +160,11 @@ export function App(): JSX.Element {
       flash('no se guardó: el documento no re-parsea igual');
       return;
     }
-    downloadCade(state.text, fileName);
+    // Se guarda siempre `.cad`: abrir un `.cade` y guardarlo lo deja con la
+    // extensión del CAD. El nombre en pantalla acompaña al archivo escrito.
+    const name = cadFileName(fileName);
+    downloadCade(state.text, name);
+    setFileName(name);
   }, [state, fileName, flash]);
 
   useEffect(() => {
@@ -454,7 +459,7 @@ export function App(): JSX.Element {
                             }}
                           >
                             {s.label}
-                            {fileName === s.name && <MenubarShortcut>actual</MenubarShortcut>}
+                            {cadFileName(fileName) === cadFileName(s.name) && <MenubarShortcut>actual</MenubarShortcut>}
                           </MenubarItem>
                         ))}
                       </MenubarGroup>
@@ -465,7 +470,7 @@ export function App(): JSX.Element {
                 <MenubarGroup>
                   <MenubarItem onSelect={saveDocument}>
                     <SaveIcon />
-                    Guardar .cade
+                    Guardar .cad
                   </MenubarItem>
                 </MenubarGroup>
               </MenubarContent>
@@ -657,7 +662,7 @@ export function App(): JSX.Element {
 
           <Button size="sm" onClick={saveDocument}>
             <SaveIcon data-icon="inline-start" />
-            Guardar .cade
+            Guardar .cad
           </Button>
         </header>
 

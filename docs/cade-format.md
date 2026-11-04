@@ -6,6 +6,12 @@ Estado: **parcial**. Todo lo marcado ✅ está verificado sobre `data/CADe_SIMU 
 
 ✅ Texto plano, codificación Latin-1 (compatible ASCII). Sin compresión ni cifrado.
 
+## Extensión al guardar
+
+✅ `.cad` y `.cade` son **el mismo formato de texto**: la extensión no cambia un byte del contenido. La app abre las dos y **guarda siempre `.cad`**, que es la que escribe CADe_SIMU.
+
+Regla implementada en `app/src/format/filename.ts` (`cadFileName`): una extensión final `.cade`/`.cad` se reemplaza por `.cad`, y un nombre sin extensión la recibe. Un `.cade` abierto y guardado queda como `.cad`, con los mismos bytes.
+
 ## Cabecera
 
 ✅ `CADe_SIMU` seguido **inmediatamente del primer registro**, sin campo de versión.
