@@ -18,3 +18,9 @@ evidence/
 node_modules/
 dist/
 *.tsbuildinfo
+
+# Copia completa del store de Engram. Nunca se versiona: contiene memorias de
+# todos los proyectos de la máquina, incluida una credencial real de otro
+# proyecto. Lo que viaja con el repo es el export del proyecto (docs/engram).
+docs/engram/store/
+
