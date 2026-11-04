@@ -18,6 +18,7 @@ import { fileURLToPath } from 'node:url';
 import { parse } from '../src/format/cade.ts';
 import { buildProject, serializeProject } from '../src/model/project.ts';
 import { blankDocument } from '../src/format/blank.ts';
+import { createEditor, rotateSelection, select } from '../src/editor/state.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const FIXTURES = join(HERE, 'fixtures');
@@ -67,4 +68,21 @@ test('.cad y .cade son el mismo formato: la extensión no cambia el parseo', () 
 test('el documento nuevo también es estable al reabrir', () => {
   const text = blankDocument(new Date('2026-10-31T12:00:00'));
   assert.equal(serializeProject(buildProject(parse(text))), text);
+});
+
+/**
+ * Ley de oro: lo que CADe_SIMU no puede leer no se escribe. La rotación es
+ * visual (el formato no expone el campo de orientación), así que girar todos
+ * los componentes de un archivo tiene que dejarlo byte a byte igual: si algún
+ * día alguien "persiste" el giro moviendo geometría, este test lo frena.
+ */
+test('rotar componentes no cambia un byte del archivo', () => {
+  for (const { name, text } of realFiles) {
+    const ids = buildProject(parse(text))
+      .records.filter((r) => r.kind === 'component')
+      .map((r) => r.id);
+    let state = select(createEditor(text), ids, false);
+    for (let i = 0; i < 4; i++) state = rotateSelection(state);
+    assert.equal(state.text, text, `rotar cambió bytes en ${name}`);
+  }
 });
