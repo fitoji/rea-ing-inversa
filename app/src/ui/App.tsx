@@ -329,6 +329,16 @@ export function App(): JSX.Element {
     setState((s) => (s ? selectVertex(s, vertex) : s));
   }, []);
 
+  /**
+   * Cancelar lo que esté en curso: selección, vértice enfocado, cable a medio
+   * dibujar y componente a medio colocar. Lo usan Escape y el botón derecho.
+   */
+  const cancel = useCallback(() => {
+    setPlacing(null);
+    setWireStart(null);
+    setState((s) => (s ? selectVertex(select(s, [], false), null) : s));
+  }, []);
+
   const onPlace = useCallback(
     (x: number, y: number) => {
       if (placing === null) return;
@@ -363,9 +373,7 @@ export function App(): JSX.Element {
       const mod = e.metaKey || e.ctrlKey;
 
       if (e.key === 'Escape') {
-        setPlacing(null);
-        setWireStart(null);
-        setState((s) => (s ? selectVertex(select(s, [], false), null) : s));
+        cancel();
         return;
       }
       if (typing) return;
@@ -406,7 +414,7 @@ export function App(): JSX.Element {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [flash]);
+  }, [flash, cancel]);
 
   if (!state || !project) {
     return (
@@ -699,6 +707,7 @@ export function App(): JSX.Element {
             onZoom={setZoom}
             onInsertVertex={onInsertVertex}
             onVertexSelect={onVertexSelect}
+            onCancel={cancel}
           />
 
           <Inspector

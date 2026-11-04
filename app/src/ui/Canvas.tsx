@@ -39,6 +39,8 @@ interface Props {
   onZoom: (k: number) => void;
   onInsertVertex: (id: number, x: number, y: number) => void;
   onVertexSelect: (vertex: Point | null) => void;
+  /** Cancela lo que esté en curso: selección, vértice enfocado y colocación. */
+  onCancel: () => void;
 }
 
 const MIN_K = 0.25;
@@ -80,6 +82,7 @@ export function Canvas(props: Props): JSX.Element {
     onZoom,
     onInsertVertex,
     onVertexSelect,
+    onCancel,
   } = props;
 
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -392,6 +395,17 @@ export function Canvas(props: Props): JSX.Element {
     if (at) onInsertVertex(id, at.x, at.y);
   };
 
+  /**
+   * Botón derecho: cancela la selección, igual que Escape.
+   *
+   * `preventDefault` es parte del pedido: sin él, cancelar la selección abría
+   * además el menú del navegador encima del lienzo.
+   */
+  const onContextMenu = (e: React.MouseEvent): void => {
+    e.preventDefault();
+    onCancel();
+  };
+
   const cursorClass = placing !== null ? 'canvas placing' : pan ? 'canvas panning' : 'canvas';
 
   const selectedWires = records.filter((r) => r.kind === 'connection' && selection.has(r.id));
@@ -407,6 +421,7 @@ export function Canvas(props: Props): JSX.Element {
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
         onDoubleClick={onDoubleClick}
+        onContextMenu={onContextMenu}
       >
         <defs>
           <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
@@ -508,7 +523,7 @@ export function Canvas(props: Props): JSX.Element {
 
       <div className="pointer-events-none absolute bottom-3 left-3 rounded-md border border-border/70 bg-background/85 px-2 py-1 text-[11px] text-muted-foreground backdrop-blur-sm">
         arrastrá componentes · <b>arrastrá un cable</b> para doblarlo · <b>⌫</b> borra el vértice enfocado ·{' '}
-        <b>alt</b>+arrastrar para desplazar
+        <b>clic derecho</b> cancela · <b>alt</b>+arrastrar para desplazar
       </div>
       <div className="pointer-events-none absolute right-3 bottom-3 rounded-md border border-border/70 bg-background/85 px-2 py-0.5 font-mono text-[11px] text-muted-foreground backdrop-blur-sm">
         {Math.round(view.k * 100)}%
