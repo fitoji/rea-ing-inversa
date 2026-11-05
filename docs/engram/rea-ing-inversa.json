@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-05 17:56:53.877076700",
+    "exported_at":  "2026-11-05 19:31:56.633182500",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -756,6 +756,23 @@
                              "review_after":  "2027-05-05 17:56:39",
                              "created_at":  "2026-11-05 17:56:39",
                              "updated_at":  "2026-11-05 17:56:39",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  10,
+                             "sync_id":  "obs-30fcf9f12f3389a7",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "pattern",
+                             "title":  "Simulation is read-only: no move or edit while running",
+                             "content":  "What: La simulacion ahora es de solo lectura: no se puede mover ni editar el circuito mientras corre, como en CADe_SIMU.\nWhy: El usuario pidio que al simular no se pueda arrastrar/editar componentes ni cables.\nWhere: app/src/ui/Canvas.tsx (sin drag/vertex/bend/marquee/placing con simulating), app/src/ui/App.tsx (atajos bloqueados, paleta bloqueada, items Editar deshabilitados, Inspector readOnly), app/src/ui/Inspector.tsx (prop readOnly: inputs y botones deshabilitados, Findings).\nLearned: Verificado en vivo: con simulacion activa, arrastrar el motor deja transform igual (translate(30 150) antes y despues); los pulsadores siguen accionandose. 185/185 tests, tsc OK, build OK.",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-05 18:17:02",
+                             "review_after":  "2027-05-05 18:17:02",
+                             "created_at":  "2026-11-05 18:17:02",
+                             "updated_at":  "2026-11-05 18:17:02",
                              "pinned":  false
                          }
                      ],

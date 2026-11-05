@@ -33,10 +33,12 @@ interface Props {
   onFocusFinding: (finding: Finding) => void;
   vertex: Point | null;
   onDeleteVertex: () => void;
+  /** En simulación el circuito es de solo lectura. */
+  readOnly: boolean;
 }
 
 export function Inspector(props: Props): JSX.Element {
-  const { selected, findings, onAddJunction, onFocusFinding, vertex, onDeleteVertex } = props;
+  const { selected, findings, onAddJunction, onFocusFinding, vertex, onDeleteVertex, readOnly } = props;
 
   const vertexBlock = vertex ? (
     <div className="flex flex-col gap-2">
@@ -44,7 +46,7 @@ export function Inspector(props: Props): JSX.Element {
       <dl className={DL}>
         <Row label="Posición" value={`${vertex.x}, ${vertex.y}`} />
       </dl>
-      <Button variant="outline" size="sm" className="self-start" onClick={onDeleteVertex}>
+      <Button variant="outline" size="sm" className="self-start" onClick={onDeleteVertex} disabled={readOnly}>
         <Trash2Icon data-icon="inline-start" />
         Eliminar vértice (⌫)
       </Button>
@@ -68,7 +70,7 @@ export function Inspector(props: Props): JSX.Element {
             </EmptyDescription>
           </EmptyHeader>
         </Empty>
-        <Findings findings={findings} onAddJunction={onAddJunction} onFocusFinding={onFocusFinding} />
+        <Findings findings={findings} onAddJunction={onAddJunction} onFocusFinding={onFocusFinding} readOnly={readOnly} />
       </InspectorShell>
     );
   }
@@ -116,7 +118,7 @@ export function Inspector(props: Props): JSX.Element {
             Borrar
           </Button>
         </div>
-        <Findings findings={findings} onAddJunction={onAddJunction} onFocusFinding={onFocusFinding} />
+        <Findings findings={findings} onAddJunction={onAddJunction} onFocusFinding={onFocusFinding} readOnly={readOnly} />
       </InspectorShell>
     );
   }
@@ -155,10 +157,12 @@ function Findings({
   findings,
   onAddJunction,
   onFocusFinding,
+  readOnly,
 }: {
   findings: Finding[];
   onAddJunction: (x: number, y: number) => void;
   onFocusFinding: (finding: Finding) => void;
+  readOnly: boolean;
 }): JSX.Element | null {
   if (findings.length === 0) return null;
   return (
@@ -188,6 +192,7 @@ function Findings({
                 variant="secondary"
                 size="xs"
                 className="mt-1.5"
+                disabled={readOnly}
                 onClick={() => onAddJunction(f.at!.x, f.at!.y)}
               >
                 Crear unión
@@ -222,6 +227,7 @@ function Single({
   onCableNumber,
   onAddJunction,
   vertexBlock,
+  readOnly,
 }: Props & { rec: CadeRecordModel; vertexBlock: JSX.Element | null }): JSX.Element {
   const [draft, setDraft] = useState(rec.designator);
   const [cableDraft, setCableDraft] = useState(String(cableNumberOf(rec)));
@@ -245,6 +251,7 @@ function Single({
             <Input
               id="designator"
               className="h-7 font-mono text-xs"
+              disabled={readOnly}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               onBlur={() => {
@@ -279,11 +286,11 @@ function Single({
           </div>
 
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={onRotate}>
+            <Button variant="outline" size="sm" onClick={onRotate} disabled={readOnly}>
               <RotateCwIcon data-icon="inline-start" />
               Rotar 90° {deg > 0 && <span className="text-muted-foreground">({deg}°)</span>}
             </Button>
-            <Button variant="outline" size="sm" onClick={onDelete}>
+            <Button variant="outline" size="sm" onClick={onDelete} disabled={readOnly}>
               <Trash2Icon data-icon="inline-start" />
               Borrar
             </Button>
@@ -303,10 +310,11 @@ function Single({
           onCableNumber={onCableNumber}
           cableDraft={cableDraft}
           setCableDraft={setCableDraft}
+          readOnly={readOnly}
         />
       )}
 
-      <Findings findings={findings} onAddJunction={onAddJunction} onFocusFinding={onFocusFinding} />
+      <Findings findings={findings} onAddJunction={onAddJunction} onFocusFinding={onFocusFinding} readOnly={readOnly} />
     </InspectorShell>
   );
 }
@@ -318,6 +326,7 @@ function CablePanel({
   onCableNumber,
   cableDraft,
   setCableDraft,
+  readOnly,
 }: {
   rec: CadeRecordModel;
   network: Network;
@@ -325,6 +334,7 @@ function CablePanel({
   onCableNumber: (ids: number[], value: number) => void;
   cableDraft: string;
   setCableDraft: (v: string) => void;
+  readOnly: boolean;
 }): JSX.Element {
   const pts = wirePoints(rec);
   const segments = cableSegments(network, rec.id);
@@ -364,6 +374,7 @@ function CablePanel({
           <Input
             id="cable-number"
             className="h-7 font-mono text-xs"
+            disabled={readOnly}
             value={cableDraft}
             onChange={(e) => setCableDraft(e.target.value)}
             onBlur={commitNumber}
@@ -384,7 +395,7 @@ function CablePanel({
         Arrastrá un cuadrado azul para mover ese vértice. Un clic lo enfoca y <b>⌫</b> lo elimina sin borrar el cable.
       </Note>
 
-      <Button variant="outline" size="sm" className="self-start" onClick={onDelete}>
+      <Button variant="outline" size="sm" className="self-start" onClick={onDelete} disabled={readOnly}>
         <Trash2Icon data-icon="inline-start" />
         Borrar cable
       </Button>

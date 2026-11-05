@@ -390,6 +390,9 @@ export function App(): JSX.Element {
         return;
       }
       if (typing) return;
+      // Durante la simulación el circuito es de solo lectura: nada de
+      // deshacer, pegar, borrar ni rotar.
+      if (running) return;
 
       if (mod && e.key.toLowerCase() === 'z') {
         e.preventDefault();
@@ -427,7 +430,7 @@ export function App(): JSX.Element {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [flash, cancel]);
+  }, [flash, cancel, running]);
 
   if (!state || !project) {
     return (
@@ -501,12 +504,12 @@ export function App(): JSX.Element {
               <MenubarTrigger>Editar</MenubarTrigger>
               <MenubarContent>
                 <MenubarGroup>
-                  <MenubarItem disabled={state.past.length === 0} onSelect={() => setState(undo(state))}>
+                  <MenubarItem disabled={running || state.past.length === 0} onSelect={() => setState(undo(state))}>
                     <Undo2Icon />
                     Deshacer
                     <MenubarShortcut>⌘Z</MenubarShortcut>
                   </MenubarItem>
-                  <MenubarItem disabled={state.future.length === 0} onSelect={() => setState(redo(state))}>
+                  <MenubarItem disabled={running || state.future.length === 0} onSelect={() => setState(redo(state))}>
                     <Redo2Icon />
                     Rehacer
                     <MenubarShortcut>⇧⌘Z</MenubarShortcut>
@@ -515,7 +518,7 @@ export function App(): JSX.Element {
                 <MenubarSeparator />
                 <MenubarGroup>
                   <MenubarItem
-                    disabled={state.selection.length === 0}
+                    disabled={running || state.selection.length === 0}
                     onSelect={() => {
                       setState((s) => (s ? copySelection(s) : s));
                       flash('copiado');
@@ -525,7 +528,7 @@ export function App(): JSX.Element {
                     Copiar
                     <MenubarShortcut>⌘C</MenubarShortcut>
                   </MenubarItem>
-                  <MenubarItem onSelect={() => setState((s) => (s ? paste(s) : s))}>
+                  <MenubarItem disabled={running} onSelect={() => setState((s) => (s ? paste(s) : s))}>
                     <ClipboardPasteIcon />
                     Pegar
                     <MenubarShortcut>⌘V</MenubarShortcut>
@@ -533,12 +536,12 @@ export function App(): JSX.Element {
                 </MenubarGroup>
                 <MenubarSeparator />
                 <MenubarGroup>
-                  <MenubarItem onSelect={() => setState(rotateSelection(state))}>
+                  <MenubarItem disabled={running} onSelect={() => setState(rotateSelection(state))}>
                     <RotateCwIcon />
                     Rotar 90°
                     <MenubarShortcut>R</MenubarShortcut>
                   </MenubarItem>
-                  <MenubarItem variant="destructive" onSelect={() => setState(deleteSelection(state))}>
+                  <MenubarItem variant="destructive" disabled={running || state.selection.length === 0} onSelect={() => setState(deleteSelection(state))}>
                     <Trash2Icon />
                     Borrar selección
                     <MenubarShortcut>⌫</MenubarShortcut>
@@ -692,6 +695,10 @@ export function App(): JSX.Element {
           <Palette
             placing={placing}
             onPick={(code) => {
+              if (running) {
+                flash('detené la simulación para editar el circuito');
+                return;
+              }
               setWireStart(null);
               setPlacing(code);
             }}
@@ -736,6 +743,7 @@ export function App(): JSX.Element {
             onRotate={() => setState(rotateSelection(state))}
             onDelete={() => setState(deleteSelection(state))}
             onCableNumber={(ids, n) => setState(setCableNumber(state, ids, n))}
+            readOnly={running}
             onAddJunction={(x, y) => setState(addJunction(state, x, y, JUNCTION_TEMPLATE ?? undefined))}
             onFocusFinding={(f) => setHighlight({ ids: f.ids, at: f.at ?? null })}
           />

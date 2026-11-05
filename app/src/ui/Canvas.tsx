@@ -254,7 +254,8 @@ export function Canvas(props: Props): JSX.Element {
     const target = e.target as Element;
 
     if (placing !== null) {
-      onPlace(snapPoint(world).x, snapPoint(world).y);
+      // Durante la simulación no se insertan componentes.
+      if (!simulating) onPlace(snapPoint(world).x, snapPoint(world).y);
       return;
     }
 
@@ -262,6 +263,8 @@ export function Canvas(props: Props): JSX.Element {
 
     const handle = target.closest('[data-endpoint]') as HTMLElement | null;
     if (handle) {
+      // Los tiradores de vértice solo existen para editar: en simulación no.
+      if (simulating) return;
       e.stopPropagation();
       const id = Number(handle.dataset.wire);
       const end = Number(handle.dataset.endpoint) as 0 | 1;
@@ -290,7 +293,8 @@ export function Canvas(props: Props): JSX.Element {
       // En simulación el clic sobre un pulsador ya seleccionado tiene que
       // llegar igual: el aparato aprieta/suelta y la selección no cambia.
       else if (!already || simulating) onSelect(group, false);
-      if (!e.shiftKey) {
+      // En simulación se puede seleccionar y accionar, pero no arrastrar.
+      if (!e.shiftKey && !simulating) {
         const at = isWire && rec ? bendPoint(rec, world) : null;
         setDrag(
           at
@@ -303,8 +307,10 @@ export function Canvas(props: Props): JSX.Element {
     }
 
     if (!e.shiftKey) onSelect([], false);
-    setMarquee({ x1: world.x, y1: world.y, x2: world.x, y2: world.y });
-    svgRef.current!.setPointerCapture(e.pointerId);
+    if (!simulating) {
+      setMarquee({ x1: world.x, y1: world.y, x2: world.x, y2: world.y });
+      svgRef.current!.setPointerCapture(e.pointerId);
+    }
   };
 
   const onPointerMove = (e: React.PointerEvent): void => {
