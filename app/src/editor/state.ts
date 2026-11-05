@@ -48,11 +48,6 @@ export interface EditorState {
   clipboard: string[];
   /** vértice enfocado para borrar, independiente de la selección de cables */
   vertex: Point | null;
-  /**
-   * Cables marcados como fase y neutro. Se guardan como id de registro, no como
-   * net: los nets se recalculan y cambian con cada edición.
-   */
-  supply: { phase: number | null; neutral: number | null };
   dirty: boolean;
 }
 
@@ -67,7 +62,6 @@ export function createEditor(text: string): EditorState {
     rotation: {},
     clipboard: [],
     vertex: null,
-    supply: { phase: null, neutral: null },
     dirty: false,
   };
 }
@@ -128,13 +122,6 @@ export function select(state: EditorState, ids: number[], additive = false): Edi
     else set.add(id);
   }
   return { ...state, selection: [...set] };
-}
-
-/** Marca un cable como fase o neutro, o lo desmarca si se repite. */
-export function setSupply(state: EditorState, which: 'phase' | 'neutral', recordId: number | null): EditorState {
-  const current = state.supply[which];
-  const next = current === recordId ? null : recordId;
-  return { ...state, supply: { ...state.supply, [which]: next } };
 }
 
 /** Enfoca un vértice (o lo suelta con `null`) sin tocar la selección de cables. */

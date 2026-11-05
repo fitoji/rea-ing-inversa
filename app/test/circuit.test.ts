@@ -6,19 +6,11 @@ import { fileURLToPath } from 'node:url';
 import { parse } from '../src/format/cade.ts';
 import { buildProject } from '../src/model/project.ts';
 import { circuitFrom, cableTypeOf, simKindOf } from '../src/sim/circuit.ts';
-import { buildNetlist, type Device } from '../src/sim/netlist.ts';
+import { type Device } from '../src/sim/netlist.ts';
 import { simulate } from '../src/sim/solver.ts';
 
 const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
 const ARRANQUE = buildProject(parse(readFileSync(join(FIXTURES, 'arranque-paro-motor-3f.cad'), 'latin1'))).records;
-
-/** Cables que tocan la red 13 y la 14 del arranque (fase y neutro del mando). */
-function supplyRecords(records = ARRANQUE) {
-  const netlist = buildNetlist(records);
-  const onNet = (net: number): number[] =>
-    [...netlist.recordNets.entries()].filter(([, nets]) => nets.includes(net)).map(([id]) => id);
-  return { phase: onNet(13)[0]!, neutral: onNet(14)[0]! };
-}
 
 test('los tipos de cable son códigos distintos, no colores', () => {
   assert.equal(cableTypeOf(4000), 'phase');
@@ -43,16 +35,14 @@ test('cada aparato mapea a un comportamiento del solver', () => {
   assert.equal(simKindOf(fake(6003, 'unknown')), null);
 });
 
-test('sin alimentación indicada el circuito no se arma', () => {
-  // El respaldo por código elige una red plausible, pero sin marcar el usuario
-  // la simulación no tiene por qué ser la correcta.
+test('la alimentación se infiere del dibujo (sin marcas manuales)', () => {
   const built = circuitFrom(ARRANQUE);
-  assert.equal(built === null || built.circuit.devices.length > 0, true);
+  assert.ok(built, 'el arranque tiene símbolos de alimentación y cables de fase/neutro');
+  assert.notEqual(built.supply[0], built.supply[1]);
 });
 
-test('con fase y neutro indicados, el arranque directo simula de verdad', () => {
-  const supply = supplyRecords();
-  const built = circuitFrom(ARRANQUE, { phaseRecord: supply.phase, neutralRecord: supply.neutral });
+test('el arranque directo simula de verdad', () => {
+  const built = circuitFrom(ARRANQUE);
   assert.ok(built, 'el circuito debe armarse');
 
   const idle = simulate(built.circuit);
@@ -74,8 +64,7 @@ test('con fase y neutro indicados, el arranque directo simula de verdad', () => 
 });
 
 test('el pulsador de paro corta la maniobra', () => {
-  const supply = supplyRecords();
-  const built = circuitFrom(ARRANQUE, { phaseRecord: supply.phase, neutralRecord: supply.neutral })!;
+  const built = circuitFrom(ARRANQUE)!;
   const star = built.circuit.devices.find((d) => d.kind === 'buttonNO')!;
   const stop = built.circuit.devices.find((d) => d.kind === 'buttonNC')!;
 
@@ -89,7 +78,6 @@ test('el pulsador de paro corta la maniobra', () => {
   assert.equal(stopped.energized.has('KM1'), false, 'PARO debe abrir la maniobra');
 });
 
-test('marcar como fase un cable que no existe deja el circuito sin armar', () => {
-  const built = circuitFrom(ARRANQUE, { phaseRecord: 999999, neutralRecord: 999998 });
-  assert.equal(built === null || built.supply[0] !== built.supply[1], true);
+test('un dibujo sin cables de alimentación no arma circuito', () => {
+  assert.equal(circuitFrom([]), null);
 });

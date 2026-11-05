@@ -14,7 +14,6 @@ import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 const DL = 'grid grid-cols-[88px_1fr] gap-x-2 gap-y-1 text-xs';
 const DT = 'text-muted-foreground';
@@ -34,8 +33,6 @@ interface Props {
   onFocusFinding: (finding: Finding) => void;
   vertex: Point | null;
   onDeleteVertex: () => void;
-  supply: { phase: number | null; neutral: number | null };
-  onSetSupply: (which: 'phase' | 'neutral', recordId: number) => void;
 }
 
 export function Inspector(props: Props): JSX.Element {
@@ -224,8 +221,6 @@ function Single({
   onDelete,
   onCableNumber,
   onAddJunction,
-  supply,
-  onSetSupply,
   vertexBlock,
 }: Props & { rec: CadeRecordModel; vertexBlock: JSX.Element | null }): JSX.Element {
   const [draft, setDraft] = useState(rec.designator);
@@ -308,8 +303,6 @@ function Single({
           onCableNumber={onCableNumber}
           cableDraft={cableDraft}
           setCableDraft={setCableDraft}
-          supply={supply}
-          onSetSupply={onSetSupply}
         />
       )}
 
@@ -325,8 +318,6 @@ function CablePanel({
   onCableNumber,
   cableDraft,
   setCableDraft,
-  supply,
-  onSetSupply,
 }: {
   rec: CadeRecordModel;
   network: Network;
@@ -334,8 +325,6 @@ function CablePanel({
   onCableNumber: (ids: number[], value: number) => void;
   cableDraft: string;
   setCableDraft: (v: string) => void;
-  supply: { phase: number | null; neutral: number | null };
-  onSetSupply: (which: 'phase' | 'neutral', recordId: number) => void;
 }): JSX.Element {
   const pts = wirePoints(rec);
   const segments = cableSegments(network, rec.id);
@@ -350,11 +339,6 @@ function CablePanel({
     }
     if (n !== cable) onCableNumber(segments, n);
   };
-
-  const supplyValue = [
-    ...(supply.phase === rec.id ? ['phase'] : []),
-    ...(supply.neutral === rec.id ? ['neutral'] : []),
-  ];
 
   return (
     <>
@@ -399,30 +383,6 @@ function CablePanel({
       <Note>
         Arrastrá un cuadrado azul para mover ese vértice. Un clic lo enfoca y <b>⌫</b> lo elimina sin borrar el cable.
       </Note>
-
-      {!isJunction && (
-        <div className="flex flex-col gap-2">
-          <SectionLabel>Alimentación</SectionLabel>
-          <ToggleGroup
-            type="multiple"
-            variant="outline"
-            size="sm"
-            spacing={2}
-            value={supplyValue}
-            onValueChange={(values) => {
-              if (values.includes('phase') !== (supply.phase === rec.id)) onSetSupply('phase', rec.id);
-              if (values.includes('neutral') !== (supply.neutral === rec.id)) onSetSupply('neutral', rec.id);
-            }}
-          >
-            <ToggleGroupItem value="phase" title="La red de este cable es la fase">
-              Fase
-            </ToggleGroupItem>
-            <ToggleGroupItem value="neutral" title="La red de este cable es el neutro">
-              Neutro
-            </ToggleGroupItem>
-          </ToggleGroup>
-        </div>
-      )}
 
       <Button variant="outline" size="sm" className="self-start" onClick={onDelete}>
         <Trash2Icon data-icon="inline-start" />

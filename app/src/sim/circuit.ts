@@ -72,12 +72,9 @@ export function simKindOf(device: Device): SimDevice['kind'] | null {
 }
 
 export interface CircuitOptions {
-  /** cable marcado como fase por el usuario; su red es la alimentación */
-  phaseRecord?: number | null;
-  /** cable marcado como neutro por el usuario */
-  neutralRecord?: number | null;
-  /** códigos de respaldo cuando el usuario no marcó nada */
+  /** código de cable que representa la fase en el dibujo */
   liveCode?: number;
+  /** código de cable que representa el neutro en el dibujo */
   returnCode?: number;
 }
 
@@ -102,22 +99,9 @@ export function circuitFrom(records: CadeRecordModel[], options: CircuitOptions 
   const returnCode = options.returnCode ?? 4010;
   const netlist = buildNetlist(records);
 
-  const netOfRecord = (id: number | null | undefined): number | null => {
-    if (id === null || id === undefined) return null;
-    const nets = netlist.recordNets.get(id);
-    return nets && nets.length > 0 ? nets[0]! : null;
-  };
-  const live = netOfRecord(options.phaseRecord) ?? supplyNetOf(records, netlist, liveCode);
-  const ret = netOfRecord(options.neutralRecord) ?? supplyNetOf(records, netlist, returnCode);
-  if (live === null || ret === null || live === ret) return null;
-
-  // Los símbolos de alimentación son el mismo nodo aunque estén dibujados en
-  // lugares distintos: en un plano la fase es una sola y el neutro también.
-  // Sin esto, una bobina que cierra contra el símbolo de neutro queda aislada
-  // de la fase marcada y el aparato no energiza.
+  // Un símbolo de alimentación no tiene tramos propios: sus redes se leen de
+  // `members`, que es donde el netlist anota qué componente toca cada red.
   const netsOfSymbols = (codes: number[]): Set<number> => {
-    // Un símbolo de alimentación no tiene tramos propios: sus redes se leen de
-    // `members`, que es donde el netlist anota qué componente toca cada red.
     const ids = new Set(
       records.filter((rec) => rec.kind === 'component' && codes.includes(rec.code)).map((rec) => rec.id),
     );
@@ -127,10 +111,24 @@ export function circuitFrom(records: CadeRecordModel[], options: CircuitOptions 
     }
     return set;
   };
-  // 3000 L, 3003 L+N, 3004 L1L2L3, 3005 L1L2L3+PE, 3006 L1L2L3N, 3007 con PE:
-  // todos son el mismo nodo de fase del plano.
+  const first = (set: Set<number>): number | null => {
+    for (const net of set) return net;
+    return null;
+  };
+
+  // Como en CADe_SIMU, la alimentación sale del dibujo: el símbolo de fase (L)
+  // y el de neutro (N) definen las redes. Los códigos de cable son el respaldo
+  // cuando el plano no trae símbolos de alimentación.
+  // 3000 L, 3003 L+N, 3006 L1L2L3N, 3007 con PE; 3004/3005 son trifásicos.
   const liveGroup = netsOfSymbols([3000, 3003, 3004, 3005, 3006, 3007]);
   const returnGroup = netsOfSymbols([3001]);
+  const singlePhase = netsOfSymbols([3000, 3006, 3007]);
+  const threePhase = netsOfSymbols([3004, 3005]);
+
+  const live = first(singlePhase) ?? first(threePhase) ?? supplyNetOf(records, netlist, liveCode);
+  const ret = first(returnGroup) ?? supplyNetOf(records, netlist, returnCode);
+  if (live === null || ret === null || live === ret) return null;
+
   const remap = (net: number): number => (liveGroup.has(net) ? live : returnGroup.has(net) ? ret : net);
 
   const devices: SimDevice[] = [];

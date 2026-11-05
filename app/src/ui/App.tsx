@@ -31,7 +31,6 @@ import {
   rotateSelection,
   setDesignator,
   setCableNumber,
-  setSupply,
   insertVertex,
   deleteVertex,
   selectVertex,
@@ -189,14 +188,15 @@ export function App(): JSX.Element {
   const network = useMemo(() => buildNetwork(project?.records ?? []), [project]);
   const findings = useMemo(() => validate(project?.records ?? []), [project]);
 
-  /** Circuito armado con la alimentación indicada; null si no hay fase/neutro. */
+  /**
+   * Circuito armado desde el dibujo: la alimentación sale de los símbolos de
+   * alimentación (3000/3001/…) y de los tipos de cable, como en CADe_SIMU.
+   * No hay marcas manuales de fase/neutro.
+   */
   const built = useMemo(() => {
     if (!project) return null;
-    return circuitFrom(project.records, {
-      phaseRecord: state?.supply.phase ?? null,
-      neutralRecord: state?.supply.neutral ?? null,
-    });
-  }, [project, state?.supply.phase, state?.supply.neutral]);
+    return circuitFrom(project.records);
+  }, [project]);
 
   const pressed = useMemo(() => {
     const out = new Set<string>();
@@ -283,7 +283,7 @@ export function App(): JSX.Element {
       return;
     }
     if (!built) {
-      flash('marcá un cable como Fase y otro como Neutro para simular');
+      flash('el dibujo no tiene alimentación: agregá un símbolo de fase y otro de neutro');
       return;
     }
     setRunning(true);
@@ -721,8 +721,6 @@ export function App(): JSX.Element {
             onRotate={() => setState(rotateSelection(state))}
             onDelete={() => setState(deleteSelection(state))}
             onCableNumber={(ids, n) => setState(setCableNumber(state, ids, n))}
-            supply={state.supply}
-            onSetSupply={(which, id) => setState((s) => (s ? setSupply(s, which, id) : s))}
             onAddJunction={(x, y) => setState(addJunction(state, x, y, JUNCTION_TEMPLATE ?? undefined))}
             onFocusFinding={(f) => setHighlight({ ids: f.ids, at: f.at ?? null })}
           />
@@ -741,10 +739,10 @@ export function App(): JSX.Element {
             {project.sheets.length} hoja{project.sheets.length === 1 ? '' : 's'}
           </span>
           <span className="flex-1" />
-          {state.supply.phase !== null && state.supply.neutral !== null ? (
-            <span>alimentación indicada</span>
+          {built ? (
+            <span>alimentación detectada</span>
           ) : (
-            <span>marcá un cable como fase y otro como neutro para simular</span>
+            <span>sin alimentación en el dibujo</span>
           )}
           {simulation && (
             <Badge variant={simulation.stable ? 'secondary' : 'destructive'} className="h-4 px-1.5 text-[10px]">
