@@ -4,6 +4,7 @@ import { BoxesIcon, StarIcon } from 'lucide-react';
 import { lineList, symbolList, type SymbolDef, type SymbolGroup } from '../symbols/library.ts';
 import { CATALOG } from '../symbols/catalog.ts';
 import { getScope, subscribeScope } from '../symbols/scope.ts';
+import { getPack, subscribePack } from '../symbols/pack.ts';
 import { SymbolGlyph } from './SymbolGlyph.tsx';
 import { PanelHead } from './PanelHead.tsx';
 import type { Sheet } from '../model/project.ts';
@@ -67,6 +68,8 @@ interface Props {
 
 export function Palette({ placing, onPick, sheets, activeSheet, onSheet }: Props): JSX.Element {
   const scope = useSyncExternalStore(subscribeScope, getScope, getScope);
+  const pack = useSyncExternalStore(subscribePack, getPack, getPack);
+  const horizontal = pack === 'cadesimu';
   const available = [...symbolList(), ...lineList()].filter(
     (sym) => scope === 'all' || CATALOG[sym.code] !== undefined,
   );
@@ -88,6 +91,59 @@ export function Palette({ placing, onPick, sheets, activeSheet, onSheet }: Props
   const favSymbols = favorites
     .map((code) => available.find((sym) => sym.code === code))
     .filter((sym): sym is (typeof available)[number] => sym !== undefined);
+
+  const groups = GROUP_ORDER.filter((g) => byGroup.has(g));
+
+  // Estilo CADe_SIMU: barra horizontal con los grupos en su orden clásico.
+  if (horizontal) {
+    return (
+      <aside className="relative z-10 flex w-full shrink-0 items-stretch gap-2 border-b border-border bg-card px-2 py-1.5 shadow-chrome-down">
+        <div className="flex min-w-0 flex-1 items-stretch gap-3 overflow-x-auto">
+          {favSymbols.length > 0 && (
+            <section className="flex shrink-0 flex-col gap-1 border-r border-border pr-3">
+              <div className="flex items-center gap-1 text-[9px] font-semibold tracking-[0.5px] text-muted-foreground uppercase">
+                <StarIcon className="size-2.5 fill-current text-[var(--tone-senalizacion)]" />
+                Favoritos
+              </div>
+              <div className="flex gap-1">
+                {favSymbols.map((sym) => (
+                  <SymbolTile key={sym.code} sym={sym} group={sym.group} active={placing === sym.code} onPick={onPick} />
+                ))}
+              </div>
+            </section>
+          )}
+          {groups.map((group) => (
+            <section key={group} className="flex shrink-0 flex-col gap-1 border-r border-border pr-3 last:border-r-0">
+              <div className="flex items-center gap-1 text-[9px] font-semibold tracking-[0.5px] text-muted-foreground uppercase">
+                <span className="size-1.5 shrink-0 rounded-full" style={{ background: GROUP_TONE[group] }} />
+                {GROUP_LABEL[group]}
+              </div>
+              <div className="flex gap-1">
+                {byGroup.get(group)!.map((sym) => (
+                  <SymbolTile key={sym.code} sym={sym} group={group} active={placing === sym.code} onPick={onPick} />
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+        <div className="flex shrink-0 items-center gap-1 border-l border-border pl-2">
+          {sheets.map((sheet, i) => (
+            <Button
+              key={sheet.index}
+              variant={i === activeSheet ? 'secondary' : 'ghost'}
+              size="icon-xs"
+              className="font-mono text-[10px]"
+              title={`Hoja ${i + 1}`}
+              aria-current={i === activeSheet ? 'true' : undefined}
+              onClick={() => onSheet(i)}
+            >
+              {String(i + 1).padStart(2, '0')}
+            </Button>
+          ))}
+        </div>
+      </aside>
+    );
+  }
 
   return (
     <aside className="relative z-10 flex min-h-0 w-[232px] shrink-0 flex-col border-r border-border bg-card shadow-chrome-right">
@@ -195,6 +251,39 @@ interface RowProps {
   favorite: boolean;
   onPick: (code: number | null) => void;
   onToggleFavorite: (code: number) => void;
+}
+
+/** Ícono compacto para la barra horizontal del estilo CADe_SIMU. */
+function SymbolTile({
+  sym,
+  group,
+  active,
+  onPick,
+}: {
+  sym: SymbolDef;
+  group: SymbolGroup;
+  active: boolean;
+  onPick: (code: number | null) => void;
+}): JSX.Element {
+  return (
+    <Button
+      variant={active ? 'secondary' : 'ghost'}
+      className="flex h-auto w-[56px] flex-col items-center gap-0.5 px-0.5 py-1"
+      title={`${sym.name} — código ${sym.code}`}
+      aria-pressed={active}
+      onClick={() => onPick(active ? null : sym.code)}
+    >
+      <span
+        className="pal-tone grid size-[28px] shrink-0 place-items-center rounded-md border"
+        style={{ '--ink': GROUP_TONE[group] } as CSSProperties}
+      >
+        <svg className="size-[24px]" viewBox="-4 -6 26 24" aria-hidden="true">
+          <SymbolGlyph code={sym.code} pinNames={sym.pins.map((p) => p.name)} w={18} h={15} />
+        </svg>
+      </span>
+      <span className="w-full truncate text-center text-[8px] leading-tight">{sym.name}</span>
+    </Button>
+  );
 }
 
 /** Una fila de la paleta: elegir el componente y marcarlo como favorito. */

@@ -712,7 +712,7 @@ export function App(): JSX.Element {
           </Button>
         </header>
 
-        <div className="flex min-h-0 flex-1">
+        <div className={pack === 'cadesimu' ? 'flex min-h-0 flex-1 flex-col' : 'flex min-h-0 flex-1'}>
           <Palette
             placing={placing}
             onPick={(code) => {
