@@ -44,9 +44,6 @@ interface Box {
 const insideBox = (b: Box, x: number, y: number): boolean =>
   x >= b.x - TOL && x <= b.x + b.w + TOL && y >= b.y - TOL && y <= b.y + b.h + TOL;
 
-const centerDistance = (b: Box, x: number, y: number): number =>
-  Math.hypot(x - (b.x + b.w / 2), y - (b.y + b.h / 2));
-
 /**
  * Devuelve, por id de componente, los puntos donde sus cables lo tocan.
  *
@@ -78,11 +75,9 @@ export function attachPoints(records: CadeRecordModel[]): Map<number, Point[]> {
   for (const wire of wires) {
     for (const p of [wire.a, wire.b]) {
       const candidates = boxes.filter((b) => insideBox(b, p.x, p.y));
-      if (candidates.length === 0) continue;
-      const nearest = candidates.reduce((best, b) =>
-        centerDistance(b, p.x, p.y) < centerDistance(best, p.x, p.y) ? b : best,
-      );
-      push(nearest.id, p);
+      // Un extremo puede tocar dos cajas apiladas (alimentación + protección).
+      // Asignarlo a todas conecta la serie; el netlist las une por coordenada.
+      for (const b of candidates) push(b.id, p);
     }
   }
 

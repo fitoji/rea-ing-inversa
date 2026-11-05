@@ -13,6 +13,7 @@ const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
 const ARRANQUE = buildProject(parse(readFileSync(join(FIXTURES, 'arranque-paro-motor-3f.cad'), 'latin1'))).records;
 const INVERSION = buildProject(parse(readFileSync(join(FIXTURES, 'inversion-giro-cej.cade'), 'latin1')));
 const INVERSION_MINI = buildProject(parse(readFileSync(join(FIXTURES, 'inversion-giro-mini.cade'), 'latin1')));
+const PR1 = buildProject(parse(readFileSync(join(FIXTURES, 'pr1-rodolfo-giusti.cad'), 'latin1')));
 
 test('los tipos de cable son códigos distintos, no colores', () => {
   assert.equal(cableTypeOf(4000), 'phase');
@@ -90,6 +91,18 @@ test('el pulsador de paro corta la maniobra', () => {
 
 test('un dibujo sin cables de alimentación no arma circuito', () => {
   assert.equal(circuitFrom([]), null);
+});
+
+test('pr1: los pulsadores, el automático y el disyuntor conducen', () => {
+  const built = circuitFrom(PR1.records);
+  assert.ok(built, 'el plano debe armar circuito');
+  const s1 = built.circuit.devices.find((d) => d.part === 'S1');
+  assert.ok(s1, 'falta el pulsador S1');
+
+  const pressed = simulate(built.circuit, { pressed: new Set([s1.id]) });
+  assert.equal(pressed.energized.has('K1M'), true);
+  assert.ok(pressed.loads.size > 0, 'el motor y las lámparas deben quedar como cargas');
+  assert.ok(built.circuit.devices.some((d) => d.kind === 'fuse'), 'el automático/diyuntor debe estar en el circuito');
 });
 
 test('inversión de giro completa: enclavamiento propio y NC cruzado', () => {

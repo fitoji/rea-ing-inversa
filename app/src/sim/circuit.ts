@@ -59,9 +59,9 @@ export function simKindOf(device: Device): SimDevice['kind'] | null {
     case 'thermal':
       return device.code === 6007 ? 'thermal' : 'contactNC';
     case 'contact':
-      // El estado lo manda la bobina del mismo designador. 7001 es el auxiliar
-      // NC; 2001 y 7000 son NA.
-      return device.code === 7001 ? 'contactNC' : 'contactNO';
+      // El estado lo manda la bobina del mismo designador. 7001 y 8018 son
+      // NC; 2001, 2006 y 7000 son NA.
+      return device.code === 7001 || device.code === 8018 ? 'contactNC' : 'contactNO';
     case 'pushbutton':
       return device.code === 8000 ? 'buttonNO' : 'buttonNC';
     case 'selector':
