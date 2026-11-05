@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-05 20:54:44.905667000",
+    "exported_at":  "2026-11-05 21:20:04.763665300",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -858,6 +858,23 @@
                              "review_after":  "2027-11-05 20:54:30",
                              "created_at":  "2026-11-05 20:54:30",
                              "updated_at":  "2026-11-05 20:54:30",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  16,
+                             "sync_id":  "obs-bfcd12865915a543",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "pattern",
+                             "title":  "Toggleable breakers and thermal protections in simulation",
+                             "content":  "What: Las protecciones (automaticos, disyuntores, termicas) ahora se pueden abrir/disparar y rearmar con clic durante la simulacion.\nWhy: Se modelaban siempre conductoras; el usuario pidio que actuaran como CADe_SIMU.\nWhere: app/src/sim/circuit.ts (openRecords saca el dispositivo del circuito), app/src/sim/netlist.ts (isProtectionCode), app/src/ui/App.tsx (openProtections, toggle en onSelect, tripped en visualStates), app/src/ui/Canvas.tsx (en simulacion el componente tiene prioridad sobre el cable), app/test/circuit.test.ts.\nLearned: Abrir el automatico 6000 de pr1 corta la maniobra; abrir el disyuntor 6009 deja el motor sin carga. Verificado en vivo: breaker68 pasa a tripped y energia 0, al rearmar vuelve a idle y energia 1. 200/200 tests, tsc OK, build OK. Commit 5b6cc5e.",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-05 21:19:34",
+                             "review_after":  "2027-05-05 21:19:34",
+                             "created_at":  "2026-11-05 21:19:34",
+                             "updated_at":  "2026-11-05 21:19:34",
                              "pinned":  false
                          }
                      ],
