@@ -13,6 +13,7 @@ import {
   componentsByCode,
   wirePoints,
   boxOf,
+  modelOfRecord,
   GEOMETRY,
 } from '../src/model/project.ts';
 
@@ -153,6 +154,23 @@ test('layout extendido: el registro 10501 expone su geometría', () => {
   assert.equal(rec.geometry[0], 1);
   assert.ok(rec.pins.includes('-S3'));
   assert.ok(rec.pins.includes('-S4'));
+});
+
+test('layout extendido: componente 10500 con 11 textos y 24 números', () => {
+  const numbers = Array.from({ length: 24 }, (_, i) => i + 1).join('*');
+  const raw = `*10*10500#-A1#T2#T3#T4#T5#T6#T7#T8#T9#T10#T11*${numbers}#cola`;
+  const doc = parse(`CADe_SIMU${raw}`);
+  assert.equal(doc.records.length, 1);
+  const rec = doc.records[0]!;
+  assert.equal(rec.code, 10500);
+
+  const model = modelOfRecord(rec);
+  assert.equal(model.kind, 'component');
+  assert.equal(model.designator, '-A1');
+  assert.equal(model.geometry.length, 24);
+  assert.equal(model.geometry[0], 1);
+  assert.ok(model.pins.includes('T2'));
+  assert.ok(model.pins.includes('T11'));
 });
 
 test('registros desconocidos se preservan como opacos', () => {

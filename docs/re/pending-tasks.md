@@ -15,11 +15,12 @@
 
 | ID | Tarea | Evidencia REA |
 |---|---|---|
-| P0.1 | Probar un componente extendido real (`1052`, `10500`, `10502..10509`, `10550`) además del `10501` (config). | Layout extendido confirmado en el serializer; hoy solo hay fixture de `10501`. |
+| P0.1 | ✅ Probar un componente extendido real: test sintético de `10500` con 11 textos y 24 números. Pendiente: fixture real de `1052`/`10502..10509`/`10550`. | Layout extendido confirmado en el serializer. |
 | P0.2 | Resolver `1073` (`0x431`): aparece en el layout extendido pero no está en el catálogo ni en `classify`. | Cadena de formato extendido del binario. |
 | P0.3 | Investigar por qué `10501` tiene 22 números de geometría y no 24; confirmar índices `GEOMETRY` para el layout extendido. | Registro `*3*10501#...` de `inversion-giro-cej.cade`. |
-| P0.4 | Tests de alimentación trifásica (`3004`/`3005`) y `L+N` (`3003`): evitar que el neutro/PE se remapee a fase y cortocircuite el motor. | `3005` tiene nets 0,1,2,12; el motor usa 9,10,11,12. |
-| P0.5 | Integración de inversión de giro: STAR1/STAR2, enclavamiento cruzado y motor, usando alimentación inferida. | Fixture real y observación en CADe_SIMU. |
+| P0.4 | ✅ Alimentación por símbolos: `3000`, `3001`, `3003` (L+N), `3004`, `3005`, `3006`, `3007` (con N/PE). Tests de inferencia y remapeo. | `3005` tiene nets 0,1,2,12; el motor usa 9,10,11,12. |
+| P0.5 | 🟡 Integración de inversión de giro: el circuito se arma con supply inferida, pero el fixture tiene cables sueltos y no energiza. | Fixture real y observación en CADe_SIMU. |
+| P0.7 | Reparar las conexiones sueltas de `inversion-giro-cej.cade` para probar STAR1/STAR2 end-to-end. | Avisos de “extremo de cable suelto” del fixture. |
 | P0.6 | Actualizar `odd/tasks/simuelectro.md`: T4.3 cerrada y decisión de alimentación reemplazada. | Este análisis. |
 
 ## P1 — Simulación que CADe_SIMU sí tiene

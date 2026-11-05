@@ -11,6 +11,7 @@ import { simulate } from '../src/sim/solver.ts';
 
 const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
 const ARRANQUE = buildProject(parse(readFileSync(join(FIXTURES, 'arranque-paro-motor-3f.cad'), 'latin1'))).records;
+const INVERSION = buildProject(parse(readFileSync(join(FIXTURES, 'inversion-giro-cej.cade'), 'latin1')));
 
 test('los tipos de cable son códigos distintos, no colores', () => {
   assert.equal(cableTypeOf(4000), 'phase');
@@ -39,6 +40,14 @@ test('la alimentación se infiere del dibujo (sin marcas manuales)', () => {
   const built = circuitFrom(ARRANQUE);
   assert.ok(built, 'el arranque tiene símbolos de alimentación y cables de fase/neutro');
   assert.notEqual(built.supply[0], built.supply[1]);
+});
+
+test('inversión de giro: la alimentación 3005+3003 también se infiere', () => {
+  const sheet = INVERSION.sheets[0]!;
+  const built = circuitFrom(INVERSION.records.slice(sheet.startRecord, sheet.endRecord));
+  assert.ok(built, 'la hoja de potencia/control debe armar circuito');
+  assert.notEqual(built.supply[0], built.supply[1]);
+  assert.ok(built.circuit.devices.some((d) => d.kind === 'motor'));
 });
 
 test('el arranque directo simula de verdad', () => {

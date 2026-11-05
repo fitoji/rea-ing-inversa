@@ -99,37 +99,57 @@ export function circuitFrom(records: CadeRecordModel[], options: CircuitOptions 
   const returnCode = options.returnCode ?? 4010;
   const netlist = buildNetlist(records);
 
-  // Un símbolo de alimentación no tiene tramos propios: sus redes se leen de
-  // `members`, que es donde el netlist anota qué componente toca cada red.
-  const netsOfSymbols = (codes: number[]): Set<number> => {
-    const ids = new Set(
-      records.filter((rec) => rec.kind === 'component' && codes.includes(rec.code)).map((rec) => rec.id),
-    );
-    const set = new Set<number>();
-    for (const [net, touching] of netlist.members) {
-      for (const id of touching) if (ids.has(id)) set.add(net);
-    }
-    return set;
+  // Como en CADe_SIMU, la alimentación sale de los símbolos de alimentación del
+  // dibujo. Cada símbolo declara sus bornes en orden: L, N, L1L2L3, etc. Los
+  // códigos de cable son solo el respaldo cuando el plano no trae símbolos.
+  const liveGroup = new Set<number>();
+  const returnGroup = new Set<number>();
+  const add = (set: Set<number>, net: number | undefined): void => {
+    if (net !== undefined) set.add(net);
   };
+
+  for (const device of netlist.devices) {
+    // `nets` puede repetir una red por los polos del símbolo.
+    const nets = [...new Set(device.nets)];
+    switch (device.code) {
+      case 3000: // L
+        add(liveGroup, nets[0]);
+        break;
+      case 3001: // N
+        add(returnGroup, nets[0]);
+        break;
+      case 3003: // L + N
+        add(liveGroup, nets[0]);
+        add(returnGroup, nets[1]);
+        break;
+      case 3004: // L1 L2 L3
+        nets.slice(0, 3).forEach((net) => liveGroup.add(net));
+        break;
+      case 3005: // L1 L2 L3 + PE
+      case 3006: // L1 L2 L3 + N
+        nets.slice(0, 3).forEach((net) => liveGroup.add(net));
+        add(returnGroup, nets[3]);
+        break;
+      case 3007: // L1 L2 L3 + N + PE
+        nets.slice(0, 3).forEach((net) => liveGroup.add(net));
+        add(returnGroup, nets[3]);
+        add(returnGroup, nets[4]);
+        break;
+      default:
+        break;
+    }
+  }
+
   const first = (set: Set<number>): number | null => {
     for (const net of set) return net;
     return null;
   };
-
-  // Como en CADe_SIMU, la alimentación sale del dibujo: el símbolo de fase (L)
-  // y el de neutro (N) definen las redes. Los códigos de cable son el respaldo
-  // cuando el plano no trae símbolos de alimentación.
-  // 3000 L, 3003 L+N, 3006 L1L2L3N, 3007 con PE; 3004/3005 son trifásicos.
-  const liveGroup = netsOfSymbols([3000, 3003, 3004, 3005, 3006, 3007]);
-  const returnGroup = netsOfSymbols([3001]);
-  const singlePhase = netsOfSymbols([3000, 3006, 3007]);
-  const threePhase = netsOfSymbols([3004, 3005]);
-
-  const live = first(singlePhase) ?? first(threePhase) ?? supplyNetOf(records, netlist, liveCode);
+  const live = first(liveGroup) ?? supplyNetOf(records, netlist, liveCode);
   const ret = first(returnGroup) ?? supplyNetOf(records, netlist, returnCode);
   if (live === null || ret === null || live === ret) return null;
 
-  const remap = (net: number): number => (liveGroup.has(net) ? live : returnGroup.has(net) ? ret : net);
+  // El retorno gana si una red quedó clasificada en ambos grupos.
+  const remap = (net: number): number => (returnGroup.has(net) ? ret : liveGroup.has(net) ? live : net);
 
   const devices: SimDevice[] = [];
   for (const device of netlist.devices) {
