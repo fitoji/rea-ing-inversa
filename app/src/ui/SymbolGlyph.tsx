@@ -13,6 +13,8 @@ interface Props {
   closed?: boolean;
   /** Color guardado de la lámpara (códigos 9008/9009). `null` = tinta normal. */
   lampColor?: LampColor | null;
+  /** Componente energizado por la simulación (pinta el rotor del motor). */
+  live?: boolean;
 }
 
 /**
@@ -38,12 +40,16 @@ function bladeStyle(d: string, blade: { px: number; py: number; deg: number }, c
 }
 
 /** Dibuja un símbolo en su caja local (0,0)–(w,h). */
-export function SymbolGlyph({ code, pinNames, w, h, rotation = 0, selected = false, closed = false, lampColor = null }: Props): JSX.Element {
+export function SymbolGlyph({ code, pinNames, w, h, rotation = 0, selected = false, closed = false, lampColor = null, live = false }: Props): JSX.Element {
   const sym = resolveSymbol(code, pinNames);
   const shapes = sym.shapes(w, h);
   const labels = sym.labels?.(w, h) ?? [];
   const cx = w / 2;
   const cy = h / 2;
+  const rotor = live && sym.group === 'motor';
+  const r = Math.min(w, h) * 0.42;
+  const arrow = `M ${cx - r * 0.55} ${cy - r * 1.12} A ${r * 0.92} ${r * 0.92} 0 0 1 ${cx + r * 0.55} ${cy - r * 1.12}`;
+  const head = `M ${cx + r * 0.55} ${cy - r * 1.12} l ${-r * 0.22} ${-r * 0.14} M ${cx + r * 0.55} ${cy - r * 1.12} l ${-r * 0.02} ${r * 0.28}`;
 
   return (
     <g
@@ -59,6 +65,12 @@ export function SymbolGlyph({ code, pinNames, w, h, rotation = 0, selected = fal
           style={s.blade ? bladeStyle(s.d, s.blade, closed) : undefined}
         />
       ))}
+      {rotor && (
+        <g className="motor-rotor" style={{ transformOrigin: `${cx}px ${cy}px` }}>
+          <path className="motor-arrow" d={arrow} />
+          <path className="motor-arrow" d={head} />
+        </g>
+      )}
       {sym.pins.map((p) => (
         <circle key={`p-${p.name}`} className="pin" cx={p.nx * w} cy={p.ny * h} r={1.4}>
           <title>{p.name}</title>
