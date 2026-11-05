@@ -76,6 +76,8 @@ export interface CircuitOptions {
   liveCode?: number;
   /** código de cable que representa el neutro en el dibujo */
   returnCode?: number;
+  /** protecciones abiertas/disparadas: no conducen */
+  openRecords?: ReadonlySet<number>;
 }
 
 export interface BuiltCircuit {
@@ -155,6 +157,8 @@ export function circuitFrom(records: CadeRecordModel[], options: CircuitOptions 
   for (const device of netlist.devices) {
     const kind = simKindOf(device);
     if (!kind) continue;
+    // Una protección abierta/disparada no conduce: se saca del circuito.
+    if (options.openRecords?.has(device.recordId)) continue;
     for (const [a, b] of device.poles) {
       devices.push({
         id: `${device.recordId}:${a}-${b}`,

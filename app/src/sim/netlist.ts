@@ -80,6 +80,12 @@ export function kindOf(code: number): DeviceKind {
   return 'unknown';
 }
 
+/** Protecciones que el usuario puede abrir/disparar en simulación. */
+export function isProtectionCode(code: number): boolean {
+  const kind = kindOf(code);
+  return kind === 'fuse' || kind === 'thermal';
+}
+
 /** Agrupa bornes en polos: la primera mitad contra la segunda. */
 function pairPins(count: number): [number, number][] {
   if (count < 2) return [];

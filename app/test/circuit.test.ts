@@ -105,6 +105,30 @@ test('pr1: los pulsadores, el automático y el disyuntor conducen', () => {
   assert.ok(built.circuit.devices.some((d) => d.kind === 'fuse'), 'el automático/diyuntor debe estar en el circuito');
 });
 
+test('pr1: abrir el automático corta la maniobra', () => {
+  const breaker = PR1.records.find((r) => r.code === 6000)!;
+  const built = circuitFrom(PR1.records, { openRecords: new Set([breaker.id]) });
+  assert.ok(built);
+  const s1 = built.circuit.devices.find((d) => d.part === 'S1');
+  assert.ok(s1);
+  const pressed = simulate(built.circuit, { pressed: new Set([s1.id]) });
+  assert.equal(pressed.energized.has('K1M'), false);
+});
+
+test('pr1: abrir el disyuntor deja el motor sin alimentación', () => {
+  const breaker = PR1.records.find((r) => r.code === 6009)!;
+  const built = circuitFrom(PR1.records, { openRecords: new Set([breaker.id]) });
+  assert.ok(built);
+  const s1 = built.circuit.devices.find((d) => d.part === 'S1');
+  assert.ok(s1);
+  const pressed = simulate(built.circuit, { pressed: new Set([s1.id]) });
+  assert.equal(
+    [...pressed.loads].some((id) => id.startsWith('44:')),
+    false,
+    'el motor no debe quedar como carga',
+  );
+});
+
 test('inversión de giro completa: enclavamiento propio y NC cruzado', () => {
   const built = circuitFrom(INVERSION_MINI.records);
   assert.ok(built, 'el fixture mini debe armar circuito');

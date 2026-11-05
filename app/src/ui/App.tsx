@@ -56,7 +56,7 @@ import { DEFAULT_FILE_NAME, cadFileName } from '../format/filename.ts';
 import { circuitFrom } from '../sim/circuit.ts';
 import { simulate } from '../sim/solver.ts';
 import { visualStatesOf } from '../sim/visual.ts';
-import { partKey } from '../sim/netlist.ts';
+import { isProtectionCode, partKey } from '../sim/netlist.ts';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -119,6 +119,8 @@ export function App(): JSX.Element {
   const [running, setRunning] = useState(false);
   /** Pulsadores apretados durante la simulación (ids de registro). */
   const [pressedRecords, setPressedRecords] = useState<number[]>([]);
+  /** Protecciones abiertas/disparadas durante la simulación. */
+  const [openProtections, setOpenProtections] = useState<number[]>([]);
   /** Aviso enfocado: se resalta en rojo en el lienzo. */
   const [highlight, setHighlight] = useState<{ ids: number[]; at: Point | null } | null>(null);
   /** Estado retenido: un contactor no olvida entre pasos (enclavamientos). */
@@ -198,8 +200,8 @@ export function App(): JSX.Element {
    */
   const built = useMemo(() => {
     if (!project) return null;
-    return circuitFrom(project.records);
-  }, [project]);
+    return circuitFrom(project.records, { openRecords: new Set(openProtections) });
+  }, [project, openProtections]);
 
   const pressed = useMemo(() => {
     const out = new Set<string>();
@@ -286,14 +288,16 @@ export function App(): JSX.Element {
         live,
         closed: closedContacts,
         pressed: new Set(pressedRecords),
+        tripped: new Set(openProtections),
       }),
-    [project, running, live, closedContacts, pressedRecords],
+    [project, running, live, closedContacts, pressedRecords, openProtections],
   );
 
   const toggleSimulation = (): void => {
     if (running) {
       setRunning(false);
       setPressedRecords([]);
+      setOpenProtections([]);
       lastEnergized.current = new Set();
       return;
     }
@@ -317,11 +321,19 @@ export function App(): JSX.Element {
   }, [project, state]);
 
   const onSelect = useCallback((ids: number[], additive: boolean) => {
-    // Con la simulación activa, un clic sobre un pulsador lo aprieta/suelta.
-    if (running && ids.length === 1 && PUSH_CODES.has(projectOf(state!).records.find((r) => r.id === ids[0])?.code ?? -1)) {
+    // Con la simulación activa, un clic sobre un pulsador lo aprieta/suelta y
+    // sobre una protección la abre/dispara (o la rearma).
+    if (running && ids.length === 1) {
       const id = ids[0]!;
-      setPressedRecords((prev) => (prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]));
-      return;
+      const code = projectOf(state!).records.find((r) => r.id === id)?.code ?? -1;
+      if (PUSH_CODES.has(code)) {
+        setPressedRecords((prev) => (prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]));
+        return;
+      }
+      if (isProtectionCode(code)) {
+        setOpenProtections((prev) => (prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]));
+        return;
+      }
     }
     setState((s) => (s ? select(s, ids, additive) : s));
     setPlacing(null);

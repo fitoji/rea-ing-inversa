@@ -279,10 +279,13 @@ export function Canvas(props: Props): JSX.Element {
       return;
     }
 
-    // Un cable manda sobre la caja del componente que lo tapa.
+    // En edición un cable manda sobre la caja que tapa. En simulación el
+    // componente tiene prioridad: si no, los pulsadores y protecciones no se
+    // pueden accionar cuando un cable pasa cerca.
     const wireHit = hitWire(world, 4 / view.k);
     const domHit = target.closest('[data-id]') as HTMLElement | null;
-    const hitId = wireHit ?? (domHit ? Number(domHit.dataset.id) : null);
+    const domId = domHit ? Number(domHit.dataset.id) : null;
+    const hitId = simulating && domId !== null ? domId : (wireHit ?? domId);
     if (hitId !== null) {
       const id = hitId;
       const rec = records.find((r) => r.id === id);
