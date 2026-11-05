@@ -20,7 +20,8 @@
 | P0.3 | Investigar por qué `10501` tiene 22 números de geometría y no 24; confirmar índices `GEOMETRY` para el layout extendido. | Registro `*3*10501#...` de `inversion-giro-cej.cade`. |
 | P0.4 | ✅ Alimentación por símbolos: `3000`, `3001`, `3003` (L+N), `3004`, `3005`, `3006`, `3007` (con N/PE). Tests de inferencia y remapeo. | `3005` tiene nets 0,1,2,12; el motor usa 9,10,11,12. |
 | P0.5 | 🟡 Integración de inversión de giro: el circuito se arma con supply inferida, pero el fixture tiene cables sueltos y no energiza. | Fixture real y observación en CADe_SIMU. |
-| P0.7 | Reparar las conexiones sueltas de `inversion-giro-cej.cade` para probar STAR1/STAR2 end-to-end. | Avisos de “extremo de cable suelto” del fixture. |
+| P0.7 | 🟡 Reparar `inversion-giro-cej.cade`: el parser ya recupera el registro KM2 que una cola de geometría tapaba (`*6*5#`), pero quedan 28 extremos sueltos y el control no cierra. El dibujo está incompleto (falta cableado entre 3003 y la maniobra); el snap automático no alcanza. | Diagnóstico con `app/scripts/fixture-orphans.ts`. |
+| P0.8 | Redibujar la inversión de giro o usar un `.cade` completo de CADe_SIMU para la prueba end-to-end. | P0.7 bloqueado por datos, no por el solver. |
 | P0.6 | Actualizar `odd/tasks/simuelectro.md`: T4.3 cerrada y decisión de alimentación reemplazada. | Este análisis. |
 
 ## P1 — Simulación que CADe_SIMU sí tiene

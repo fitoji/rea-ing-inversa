@@ -173,6 +173,17 @@ test('layout extendido: componente 10500 con 11 textos y 24 números', () => {
   assert.ok(model.pins.includes('T11'));
 });
 
+test('una cola de geometría que imita cabecera no tapa al registro real', () => {
+  const text =
+    'CADe_SIMU*6*2001#-KM2##1#3#5#2#4#6##*1*1*1*1*1*1*0*0*78*108*0*0*-12*-3*18*15*0*0*0*1*0*6*5#*7*6009#-F1##1#3#5#2#4#6##*1*1*1*1*1*1*0*0*39*63*0*0*-21*-3*18*24*0*0*0*1*0*1*2#';
+  const doc = parse(text);
+  assert.equal(doc.records.length, 2);
+  assert.equal(doc.records[0]!.id, 6);
+  assert.equal(doc.records[0]!.code, 2001);
+  assert.equal(doc.records[0]!.designator, '-KM2');
+  assert.equal(doc.records[1]!.code, 6009);
+});
+
 test('registros desconocidos se preservan como opacos', () => {
   const project = load('ej0def.cad');
   for (const rec of project.records) {
