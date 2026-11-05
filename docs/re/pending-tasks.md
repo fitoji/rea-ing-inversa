@@ -9,7 +9,7 @@
 - [x] **Alimentación desde el dibujo**: se eliminaron las marcas manuales Fase/Neutro; ahora salen de los símbolos `3000/3001/3003/3004/3005/3006/3007` y, como respaldo, de los cables `4000`/`4010`.
 - [x] **Animación del motor**: rotor girando cuando el motor está energizado.
 - [x] **Cables con tensión**: `wire.live` animado y contactos que conmutan.
-- [x] **Bitmaps y strings del catálogo**: 280 PNG y 1.248 cadenas en `docs/re/`.
+- [x] **Bitmaps y strings**: 280 PNG (12 primitivas D/U + UI: toolbars/splash) y 1.248 cadenas en `docs/re/`. Los bitmaps **no** son íconos de componentes: CADe_SIMU dibuja los símbolos con GDI.
 
 ## P0 — Correctitud del parser y del solver
 
@@ -56,3 +56,4 @@
 - La alimentación ya no se “indica” en la UI: CADe_SIMU usa **símbolos de alimentación** y **tipos de cable** (`4000` fase, `4010` neutro/PE, `4009`/`4019` mando, `4001` unión).
 - El motor se sigue modelando como carga de dos terminales; P1.3/P0.4 son los que habilitan trifásico real.
 - Los códigos `10500..10550` son componentes neumáticos/eléctricos reales del catálogo; `10501` está documentado como configuración de hoja.
+- **Los bitmaps extraídos no sirven como modo de render de componentes**: son 12 primitivas D/U más tiras de iconos de toolbar y el splash. Un “modo CADe_SIMU” tendría que ser un **tema visual SVG** (colores, grosores, tipografía), no el uso de esos PNG.

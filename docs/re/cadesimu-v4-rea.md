@@ -33,7 +33,7 @@ Confirmaciones útiles para la app:
 
 | Tipo PE | Cantidad | Contenido |
 |---|---|---|
-| 2 — Bitmap | 316 | Iconos/símbolos de componentes (304 con ID 128–552, 12 con nombre) |
+| 2 — Bitmap | 316 | **UI**: 12 primitivas de dibujo con nombre + ~304 bitmaps de barras de herramientas/splash (IDs 128–552). **No son íconos de componentes.** |
 | 5 — Dialog | 160 | Diálogos de la UI |
 | 6 — String Table | 153 | 1.473 cadenas (1.248 únicas), en EN/IT/ES |
 | 241 — Custom | 65 | Metadatos/tablas propias de CADe_SIMU |
@@ -46,7 +46,7 @@ Confirmaciones útiles para la app:
 
 `ARCOD`, `ARCOU`, `ELIPSED`, `ELIPSEU`, `LINEAD`, `LINEAU`, `NUMEROD`, `NUMEROU`, `RELLENOD`, `RELLENOU`, `TEXTOD`, `TEXTOU`
 
-Sufijos `D`/`U` = *down* / *up*: los símbolos son **pares de estado** (normal / activado). Esto valida el modelo de animación de estados de la app.
+Sufijos `D`/`U` = *down* / *up*: son las **primitivas de dibujo** (arco, elipse, línea, número, relleno, texto) en sus dos estados. Los componentes del esquema **no** usan estos bitmaps: CADe_SIMU los dibuja con GDI a partir de geometría y texto. El resto de los bitmaps son **recursos de la UI** (tiras de iconos de toolbar y el splash `id_207`, "CADe_SIMU Versión 4.0").
 
 ## Catálogo del menú (barras de componentes)
 
@@ -89,7 +89,7 @@ UI / edición:
 
 ## Cómo aplicarlo a Electro-Simulador
 
-1. **Pares de estado D/U**: modelar cada símbolo con dos variantes (reposo/activado) para la animación de simulación. El par ya existe en los recursos.
+1. **Primitivas D/U**: las 12 primitivas de dibujo (arco, elipse, línea, número, relleno, texto) tienen variante down/up. Sirven para las herramientas de dibujo, no para los símbolos de componentes (esos son GDI/SVG).
 2. **Categorías como paleta**: agrupar la paleta de componentes por las barras detectadas (motores, bobinas, contactos, potencia, fusibles, automáticos, E/S, Grafcet, Ladder, lógica).
 3. **Nombres ES**: usar los literales en español de las string tables para etiquetas de la paleta e inspector.
 4. **E/S PLC**: la app no necesita `libnodave`, pero el concepto de bloque E/S (Entrada/Salida) está en el catálogo y puede mapearse a un modelo de señales externas.
@@ -175,7 +175,7 @@ Esto da el mapa para futuras pasadas: la lógica de simulación vive en `Pilotos
 ## Evidencia
 
 - `docs/re/cade-resource-strings.txt` — cadenas únicas de las string tables.
-- `docs/re/bitmaps/` — 280 PNG de símbolos (pares D/U).
+- `docs/re/bitmaps/` — 280 PNG: 12 primitivas D/U + recursos de UI (toolbars/splash). **No son íconos de componentes.**
 - Evidencia REA (imports): `ev_2e30610ed6df2f56996cec9c865e85aa4de0d924e3a351dcbf080f7acc1b90e5`.
 
 ## Conclusiones y próximos pasos
@@ -186,7 +186,7 @@ Lo confirmado y aplicable ya:
 2. **Serializer**: replicar la estructura `CADe_SIMU` + registros + `$$$` + bloques finales + `***$$$&&&`, y la sección de `config.cfg` con posiciones fijas.
 3. **Compatibilidad validada**: nuestro `.cad` abre en CADe_SIMU V4 vía *Archivo → Abrir* (no por argumento CLI).
 4. **Simulación**: el modo cambia a `Simulación/Run`, la energía se pinta en rojo y el motor se anima; usar eso como referencia visual de la app.
-5. **Catálogo**: los pares D/U ya están extraídos y los nombres ES están en `cade-resource-strings.txt`.
+5. **Catálogo**: los nombres ES están en `cade-resource-strings.txt`. Las primitivas D/U son solo para herramientas de dibujo; los componentes se dibujan con GDI (en la app, SVG).
 
 Pendiente para una próxima pasada:
 
