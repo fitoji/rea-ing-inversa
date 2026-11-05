@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-05 13:37:57.904096800",
+    "exported_at":  "2026-11-05 13:56:27.434752400",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -638,6 +638,23 @@
                              "review_after":  "2027-05-05 13:37:21",
                              "created_at":  "2026-11-05 13:37:21",
                              "updated_at":  "2026-11-05 13:37:21",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  3,
+                             "sync_id":  "obs-7645db30ca560c0d",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "config",
+                             "title":  "OpenCode environment setup: gentle-ai, REA, Ghidra, CodeGraph",
+                             "content":  "What: Configuracion del entorno de agentes en Windows para este proyecto.\nWhy: Preparar OpenCode con gentle-ai, REA (reverse engineering) y CodeGraph.\nWhere: C:\\Users\\fitoj\\go\\bin\\gentle-ai.exe; C:\\Users\\fitoj\\AppData\\Local\\engram\\bin\\engram.exe; C:\\Users\\fitoj\\bin\\gga; C:\\Users\\fitoj\\AppData\\Local\\Programs\\jdk-21.0.13+9; C:\\Users\\fitoj\\AppData\\Local\\Programs\\ghidra_12.1.4_PUBLIC; C:\\Users\\fitoj\\.config\\opencode\\opencode.json.\nLearned: (1) gentle-ai 4.3.1 instalado con Go; requiere opencode.cmd shim y @opencode/plugin@2.0.4 en ~/.config/opencode. (2) doctor healthy tras agregar engram/gga al PATH. (3) REA rea-agents@6.8.0 con MCP opencode; requiere Node \u003e=22.19. (4) Ghidra 12.1.4 + Temurin JDK 21; GHIDRA_INSTALL_DIR y JAVA_HOME como variables de usuario y en environment del MCP rea. NO poner PATH con %PATH% en el environment MCP (rompe cmd.exe). (5) Ghidra solo admite targets NTFS; E: es FAT32, copiar a C:. (6) CodeGraph 1.6.2 via npm global + codegraph install -t opencode -l global -y. (7) Engram MCP degradado; usar CLI engram save/export.",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "global",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-05 13:56:14",
+                             "review_after":  "2027-02-05 13:56:14",
+                             "created_at":  "2026-11-05 13:56:14",
+                             "updated_at":  "2026-11-05 13:56:14",
                              "pinned":  false
                          }
                      ],
