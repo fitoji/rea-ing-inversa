@@ -194,6 +194,10 @@
   .motor-rotor {
     animation: none;
   }
+  [data-state='flashing'] .sym,
+  [data-state='timing'] .sym {
+    animation: none;
+  }
 }
 
 .wire.live.alt {
@@ -237,6 +241,40 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* Estados de simulación: el color lo pone .body.live; acá va el movimiento. */
+[data-state='active'] .sym {
+  filter: drop-shadow(0 0 1.1px var(--warn));
+}
+
+[data-state='pressed'] .sym {
+  opacity: 0.7;
+}
+
+[data-state='flashing'] .sym {
+  animation: state-blink 0.9s steps(2, end) infinite;
+}
+
+[data-state='timing'] .sym {
+  animation: state-timing 1.1s ease-in-out infinite;
+}
+
+[data-state='tripped'] .body {
+  fill: var(--destructive);
+  stroke: var(--destructive);
+}
+
+@keyframes state-blink {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes state-timing {
+  50% {
+    opacity: 0.55;
   }
 }
 

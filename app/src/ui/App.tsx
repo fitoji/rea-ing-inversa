@@ -55,6 +55,7 @@ import { blankDocument } from '../format/blank.ts';
 import { DEFAULT_FILE_NAME, cadFileName } from '../format/filename.ts';
 import { circuitFrom } from '../sim/circuit.ts';
 import { simulate } from '../sim/solver.ts';
+import { visualStatesOf } from '../sim/visual.ts';
 import { partKey } from '../sim/netlist.ts';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -274,6 +275,18 @@ export function App(): JSX.Element {
     }
     return out;
   }, [simulation, built]);
+
+  /** Estado visual por componente para animar el lienzo. */
+  const visualStates = useMemo(
+    () =>
+      visualStatesOf(project?.records ?? [], {
+        simulating: running,
+        live,
+        closed: closedContacts,
+        pressed: new Set(pressedRecords),
+      }),
+    [project, running, live, closedContacts, pressedRecords],
+  );
 
   const toggleSimulation = (): void => {
     if (running) {
@@ -701,6 +714,7 @@ export function App(): JSX.Element {
             onPlace={onPlace}
             wireStart={wireStart}
             live={live}
+            states={visualStates}
             liveWires={liveWires}
             closedContacts={closedContacts}
             simulating={running}

@@ -5,6 +5,7 @@ import type { DragOp, Rotation } from '../editor/state.ts';
 import { attachPoints, type Point } from '../editor/pins.ts';
 import { buildNetwork, cableSegments } from '../editor/network.ts';
 import { SymbolGlyph } from './SymbolGlyph.tsx';
+import type { VisualState } from '../sim/visual.ts';
 
 export interface View {
   x: number;
@@ -28,6 +29,8 @@ interface Props {
   wireStart: Point | null;
   /** Componentes energizados por la simulación. */
   live: Set<number>;
+  /** Estado visual por registro de componente. */
+  states: Map<number, VisualState>;
   /** ids de registro de cable con tensión durante la simulación */
   liveWires: Set<number>;
   /** ids de componentes cuyo contacto está cerrado durante la simulación */
@@ -75,6 +78,7 @@ export function Canvas(props: Props): JSX.Element {
     onPlace,
     wireStart,
     live,
+    states,
     liveWires,
     closedContacts,
     simulating,
@@ -450,6 +454,7 @@ export function Canvas(props: Props): JSX.Element {
                 rec={rec}
                 selected={selection.has(rec.id)}
                 live={live.has(rec.id)}
+                state={states.get(rec.id) ?? 'idle'}
                 closed={closedContacts.has(rec.id)}
                 bad={highlight?.ids.includes(rec.id) ?? false}
                 rotation={rotation[rec.id] ?? 0}
@@ -536,6 +541,7 @@ function Component({
   rec,
   selected,
   live,
+  state,
   closed,
   bad,
   rotation,
@@ -544,6 +550,7 @@ function Component({
   rec: CadeRecordModel;
   selected: boolean;
   live: boolean;
+  state: VisualState;
   closed: boolean;
   bad: boolean;
   rotation: Rotation;
@@ -562,7 +569,7 @@ function Component({
   const ih = Math.max(0.1, box.height - inset * 2);
 
   return (
-    <g data-id={rec.id} transform={`translate(${x} ${y})`} style={{ cursor: 'move' }}>
+    <g data-id={rec.id} data-state={state} transform={`translate(${x} ${y})`} style={{ cursor: 'move' }}>
       <rect className="hitbox" x={0} y={0} width={box.width} height={box.height} />
       <rect className={selected ? 'body sel' : bad ? 'body bad' : live ? 'body live' : 'body'} x={0} y={0} width={box.width} height={box.height} rx={0.6} />
       <g transform={`translate(${inset} ${inset})`}>
