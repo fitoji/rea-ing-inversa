@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-05 20:30:34.323035600",
+    "exported_at":  "2026-11-05 20:42:21.913897300",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -824,6 +824,23 @@
                              "review_after":  "2027-11-05 20:30:21",
                              "created_at":  "2026-11-05 20:30:21",
                              "updated_at":  "2026-11-05 20:30:21",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  14,
+                             "sync_id":  "obs-6a5727bcc00ae171",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "pattern",
+                             "title":  "End-to-end inversion fixture (mini)",
+                             "content":  "What: Creado un fixture limpio de inversion de giro y su test end-to-end.\nWhy: El fixture original inversion-giro-cej.cade tiene 28 extremos sueltos y no cierra; P0.8 pedia redibujar o usar un .cade completo.\nWhere: app/scripts/make-inversion-demo.ts (genera con blankDocument/addComponent/addWire), app/test/fixtures/inversion-giro-mini.cade, app/test/circuit.test.ts, docs/re/pending-tasks.md.\nLearned: La inversion mini tiene L/N 3000/3001, PARO -S0, S1/S2, auxiliares KM1/KM2 y NC cruzados, dos bobinas. Verifica: S1 energiza KM1 y no KM2; S2 energiza KM2 y no KM1; con KM1 enclavado, S2 no arranca KM2. 197/197 tests, tsc OK, build OK. El fixture original sigue pendiente (P0.7). Commit 7cbb12f.",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-05 20:42:05",
+                             "review_after":  "2027-05-05 20:42:05",
+                             "created_at":  "2026-11-05 20:42:05",
+                             "updated_at":  "2026-11-05 20:42:05",
                              "pinned":  false
                          }
                      ],
