@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-05 21:20:04.763665300",
+    "exported_at":  "2026-11-05 21:38:17.315149300",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -875,6 +875,23 @@
                              "review_after":  "2027-05-05 21:19:34",
                              "created_at":  "2026-11-05 21:19:34",
                              "updated_at":  "2026-11-05 21:19:34",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  17,
+                             "sync_id":  "obs-60e83cef0ae3abcd",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "pattern",
+                             "title":  "Horizontal CADe_SIMU palette for classic pack",
+                             "content":  "What: El estilo de dibujo CADe_SIMU (clasico) ahora muestra la paleta como una barra horizontal con los grupos en el orden de CADe_SIMU.\nWhy: El usuario pidio que en estilo clasico los componentes se vean horizontalmente y acomodados como CADe_SIMU.\nWhere: app/src/ui/Palette.tsx (modo horizontal con SymbolTile compacto, favoritos, grupos y hojas), app/src/ui/App.tsx (layout en columna cuando pack=cadesimu).\nLearned: La barra mide ~89px de alto y 213 tiles; orden: Alimentacion, Motores, Potencia, Proteccion, Mando, Senalizacion, Sensores, Lineas y cables, Borneras. El lienzo queda debajo. 200/200 tests, tsc OK, build OK. Commit 93a3eb0.",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-05 21:38:01",
+                             "review_after":  "2027-05-05 21:38:01",
+                             "created_at":  "2026-11-05 21:38:01",
+                             "updated_at":  "2026-11-05 21:38:01",
                              "pinned":  false
                          }
                      ],
