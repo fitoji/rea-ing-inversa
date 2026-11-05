@@ -161,6 +161,10 @@ Los strings `E:\C++\CADe_SIMU\*.cpp` revelan la arquitectura del binario:
 
 Esto da el mapa para futuras pasadas: la lógica de simulación vive en `Pilotos`, `Temporiza`, `Simbolo` y los `Editar_*`; el parser/serialización en `CADe_SIMUDoc`.
 
+### Motor de presentación de componentes
+
+`FUN_0087aef0` (36 KB, 8.269 instrucciones, 1.129 bloques básicos, 8 callees) referencia **373 strings** y **3.182 nombres**. Contiene los literales `"Contactor I..IIII"`, `"Bobina monoestable/biestable"`, `"Motor Dahalander"`, `"Motor rotor bobinado"`, `"Piloto verde/rojo/ambar"`, `"LED verde/rojo/ambar"`, `"Temporizador intermitente"`. Es la función que **presenta/etiqueta el catálogo de componentes**, no el solver eléctrico.
+
 ## Limitaciones de este análisis
 
 - Ghidra 12.1.4 se usó para decompilar las funciones de guardado, configuración y documento. La lista completa de procedimientos es `FUN_xxxxxxxx` (sin PDB); los nombres de módulo provienen de `__FILE__`.
