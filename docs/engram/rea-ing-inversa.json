@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-05 16:55:22.184860300",
+    "exported_at":  "2026-11-05 17:56:53.877076700",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -739,6 +739,23 @@
                              "review_after":  "2027-05-05 16:55:04",
                              "created_at":  "2026-11-05 16:55:04",
                              "updated_at":  "2026-11-05 16:55:04",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  9,
+                             "sync_id":  "obs-748b7c2c8648f908",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "pattern",
+                             "title":  "Per-component visual states and animations",
+                             "content":  "What: Agregado modelo de estado visual por componente y animaciones data-state en el lienzo.\nWhy: Unificar live/closed/pressed en estados claros y animar bobinas, lamparas, pulsadores, protecciones y motor.\nWhere: app/src/sim/visual.ts (nuevo), app/test/visual.test.ts, app/src/ui/App.tsx (visualStatesOf), app/src/ui/Canvas.tsx (data-state), app/src/ui/diagram.css (glow, blink, timing, tripped).\nLearned: visualStateOf devuelve idle/active/closed/open/pressed/flashing/timing/tripped. Verificado en vivo: al simular arranque y pulsar STAR, motor y bobina quedan active, auxiliar closed, STAR pressed (footer: simulacion estable - 1). 185/185 tests, tsc OK, build OK. Commit bbe01b6.",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-05 17:56:39",
+                             "review_after":  "2027-05-05 17:56:39",
+                             "created_at":  "2026-11-05 17:56:39",
+                             "updated_at":  "2026-11-05 17:56:39",
                              "pinned":  false
                          }
                      ],
