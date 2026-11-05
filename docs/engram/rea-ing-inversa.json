@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-05 20:42:21.913897300",
+    "exported_at":  "2026-11-05 20:54:44.905667000",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -841,6 +841,23 @@
                              "review_after":  "2027-05-05 20:42:05",
                              "created_at":  "2026-11-05 20:42:05",
                              "updated_at":  "2026-11-05 20:42:05",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  15,
+                             "sync_id":  "obs-9ab19988be7faf6c",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "bugfix",
+                             "title":  "Fixed pr1 fixture: buttons, breaker and disyuntor conduct",
+                             "content":  "What: Corregido pr1-rodolfo-giusti.cad: los pulsadores, el automatico y el disyuntor ya conducen.\nWhy: El usuario reporto que S1/S2 no funcionaban y las protecciones tampoco.\nWhere: app/src/editor/pins.ts (un extremo de cable se asigna a todas las cajas que toca, no solo a la mas cercana), app/src/sim/netlist.ts (2006 Contactor I y 8018 aux NC doble como contactos), app/src/sim/circuit.ts (8018 como contactNC), app/test/circuit.test.ts (test pr1).\nLearned: La alimentacion 3000 y el automatico 6000 estan apilados; el endpoint compartido se asignaba solo a la alimentacion y dejaba el automatico desconectado. 2006/8018 no estaban mapeados y cortaban la maniobra. Verificado: pressing S1/S2 energiza K1M y deja motor + lamparas como cargas. 198/198 tests, tsc OK, build OK. Commit 54ff6ce.",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-05 20:54:30",
+                             "review_after":  "2027-11-05 20:54:30",
+                             "created_at":  "2026-11-05 20:54:30",
+                             "updated_at":  "2026-11-05 20:54:30",
                              "pinned":  false
                          }
                      ],
