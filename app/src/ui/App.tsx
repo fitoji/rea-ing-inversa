@@ -432,7 +432,7 @@ export function App(): JSX.Element {
 
   return (
     <TooltipProvider delayDuration={400}>
-      <div className="flex h-full flex-col">
+      <div className="flex h-full flex-col" data-pack={pack}>
         <header className="relative z-10 flex h-[46px] shrink-0 items-center gap-2 border-b border-border bg-card px-3 shadow-chrome-down">
           <div className="mr-0.5 flex shrink-0 items-baseline gap-1.5">
             <strong className="text-[13.5px] font-semibold tracking-tight">Electro-Simulador</strong>
@@ -569,6 +569,7 @@ export function App(): JSX.Element {
                 <MenubarRadioGroup value={pack} onValueChange={(value) => setPack(value as SymbolPack)}>
                   <MenubarRadioItem value="base">Base (propio + EN 60617)</MenubarRadioItem>
                   <MenubarRadioItem value="dxf">Hoja DXF</MenubarRadioItem>
+                  <MenubarRadioItem value="cadesimu">CADe_SIMU (clásico)</MenubarRadioItem>
                 </MenubarRadioGroup>
               </MenubarContent>
             </MenubarMenu>

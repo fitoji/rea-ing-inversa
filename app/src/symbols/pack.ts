@@ -9,14 +9,15 @@
  * Vive fuera de React para que `resolveSymbol()` pueda consultarlo sin contexto;
  * la UI se suscribe con `useSyncExternalStore`.
  */
-export type SymbolPack = 'base' | 'dxf';
+export type SymbolPack = 'base' | 'dxf' | 'cadesimu';
 
 const KEY = 'simuelectro:dibujos';
 const listeners = new Set<() => void>();
 
 function read(): SymbolPack {
   try {
-    return localStorage.getItem(KEY) === 'dxf' ? 'dxf' : 'base';
+    const stored = localStorage.getItem(KEY);
+    return stored === 'dxf' || stored === 'cadesimu' ? stored : 'base';
   } catch {
     // Sin storage (SSR, modo privado, tests): el paquete base.
     return 'base';
