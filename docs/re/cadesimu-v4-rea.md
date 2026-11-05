@@ -95,6 +95,19 @@ UI / edición:
 4. **E/S PLC**: la app no necesita `libnodave`, pero el concepto de bloque E/S (Entrada/Salida) está en el catálogo y puede mapearse a un modelo de señales externas.
 5. **Temporizados**: el catálogo distingue ON-delay / OFF-delay / ON-OFF-delay con variantes NA/NC/NA+NC/CON; útil para extender el solver.
 
+## Observación en ejecución (CADe_SIMU V4)
+
+Ejecutado con la clave de acceso `4962` (shareware). Ventana MDI: documento `CADe_S1` por defecto.
+
+- **Abrir archivos**: la app **no acepta un archivo como argumento de línea de comandos**; responde *"No se puede abrir el archivo"*. Hay que usar **Archivo → Abrir**. Con ese flujo, tanto `inversion-giro-cej.cade` como `arranque-paro-motor-3f.cad` **abren correctamente** (esto confirma compatibilidad de nuestro `.cad`).
+- **Menú Modo**: `Edición`, `Simulación`, `Pausa`, `Paso a Paso`, `Simular Documento`, `Simular todos los documentos`, `Intercambio E/S (PLC)`.
+- **Al entrar en Simulación** la barra de estado pasa de `Edición/Stop` a `Simulación/Run`.
+- **Feedback visual**: los componentes energizados se redibujan en **rojo** y el motor muestra una **flecha de giro animada**. Los contactos conmutan su trazo; el estado se actualiza en el lienzo.
+- **Zoom**: `Ver → Zoom Todo` ajusta la vista al circuito completo (necesario porque el encuadre inicial muestra solo una esquina de la hoja).
+- **Clave de acceso**: el diálogo `CLAVE DE ACCESO` acepta `4962` y desbloquea guardado/opciones completas; sin ella el programa queda limitado.
+
+Implicación para Electro-Simulador: el pipeline de simulación debe (1) cambiar de modo edición→simulación, (2) propagar estados por contactos/bobinas, y (3) pintar energía (rojo) y animar el motor. El `.cad` propio es aceptado por el CADe_SIMU original, así que el parser actual es un buen punto de partida.
+
 ## Decompilación con Ghidra (REA)
 
 Target copiado a NTFS (`C:\...\Temp\opencode\CADe_SIMU.exe`, mismo SHA-256) porque E: es FAT32 y Ghidra solo admite NTFS.
