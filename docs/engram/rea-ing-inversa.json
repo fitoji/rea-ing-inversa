@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-05 14:05:06.825804400",
+    "exported_at":  "2026-11-05 15:18:04.426734500",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -671,6 +671,23 @@
                              "last_seen_at":  "2026-11-05 14:04:50",
                              "created_at":  "2026-11-05 14:04:50",
                              "updated_at":  "2026-11-05 14:04:50",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  5,
+                             "sync_id":  "obs-cf80407a12fee08c",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "bugfix",
+                             "title":  "Fixed extended-layout geometry parsing in Electro-Simulador",
+                             "content":  "What: Corregido el parser para modelar la geometria del layout extendido de CADe_SIMU.\nWhy: En los codigos extendidos (1052/10500..10550) el ultimo texto queda pegado al primer numero (...#EV1*1*1*...), por lo que modelOfRecord no encontraba el bloque de geometria (geo=0) y el registro no se podia dibujar/editar.\nWhere: app/src/model/project.ts (modelOfRecord, geometryFieldIndex, withGeometry); app/test/project.test.ts (test del registro 10501).\nLearned: Se busca el primer \u0027*\u0027 dentro del campo (no solo al inicio) y se preserva el prefijo de texto al reescribir geometria. RED-\u003eGREEN observado; suite completa 177/177. El registro 10501 sigue clasificado como config; los codigos 10500/10502..10509/10550/1052 son componentes del catalogo y ahora exponen geometria.",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-05 15:17:49",
+                             "review_after":  "2027-11-05 15:17:49",
+                             "created_at":  "2026-11-05 15:17:49",
+                             "updated_at":  "2026-11-05 15:17:49",
                              "pinned":  false
                          }
                      ],
