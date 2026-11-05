@@ -95,11 +95,64 @@ UI / edición:
 4. **E/S PLC**: la app no necesita `libnodave`, pero el concepto de bloque E/S (Entrada/Salida) está en el catálogo y puede mapearse a un modelo de señales externas.
 5. **Temporizados**: el catálogo distingue ON-delay / OFF-delay / ON-OFF-delay con variantes NA/NC/NA+NC/CON; útil para extender el solver.
 
+## Decompilación con Ghidra (REA)
+
+Target copiado a NTFS (`C:\...\Temp\opencode\CADe_SIMU.exe`, mismo SHA-256) porque E: es FAT32 y Ghidra solo admite NTFS.
+Inventario: **4.961 funciones**, **7.079 strings**, image base `0x400000`.
+
+### Serialización del archivo (confirmada en pseudocódigo)
+
+Dos funciones de guardado (Save y Save As) en `FUN_004315f0` / `FUN_00432710`.
+
+Estructura del archivo:
+
+1. Cabecera literal: `CADe_SIMU`
+2. Hasta **2000 registros** (array de códigos en documento `+0x2024`, flags en `+0x158a4`, conteo en `+0xbc`). Se omiten los de código `<= 0` salvo `-1`, y los que tienen flag `!= 0`.
+3. Cadena `$$$`
+4. Bloque de metadatos: `*%d*%d*%d*%d*%d*%d*%d*%d*%d*%3d*%3d&&&`
+5. Bloque de textos: `*%-11s*%-11s*%-11s*%-11s*%-25s*%-25s*%-11s*%-11s*%-11s*%-21s`
+6. Bloque de flags: `*%1d` × 14
+7. Cierre: `***$$$&&&`
+
+### Dos layouts de registro (clave para el parser)
+
+| Layout | Códigos | Textos | Numéricos |
+|---|---|---|---|
+| Estándar | cualquiera salvo los de abajo | 10 | 23 |
+| Extendido | `0x41c` (1052), `0x431` (1073), y rango `0x2904..0x2936` (10500..10550) | **11** | **24** |
+
+Formato estándar:
+```
+*%d*%d#%s#%s#%s#%s#%s#%s#%s#%s#%s#%s*%d*...*%d#%s
+```
+Formato extendido:
+```
+*%d*%d#%s#%s#%s#%s#%s#%s#%s#%s#%s#%s#%s*%d*...*%d#%s
+```
+
+Esto explica por qué algunos registros no encajan en el layout de 11 campos: los códigos especiales llevan 11 textos y 24 numéricos. El proyecto ya documentaba la excepción; aquí queda el **conjunto exacto de códigos** que la disparan.
+
+### `config.cfg`
+
+`FUN_008782d0` escribe y `FUN_00408ef0` lee la configuración global:
+```
+CADe_SIMU*%1d*%1d*%1d*%1d*%1d*%1d*%1d*%1d*%3d*%3d*%0.4f*%1d*%1d*%3d*%3d*%1d*%1d*%4d$$$
+```
+El lector (`FUN_00408ef0`) parsea por **posiciones fijas de carácter** (`[0x0a]`, `[0x0c]`, `[0x0e]`, …) y valida que el prefijo sea literalmente `CADe_SIMU`. Conviene replicar ese contrato si la app lee `config.cfg`.
+
+### Mapa de módulos (filtrado por `__FILE__` en aserciones MFC)
+
+Los strings `E:\C++\CADe_SIMU\*.cpp` revelan la arquitectura del binario:
+
+`CADe_SIMUDoc`, `CADe_SIMUView`, `Dibujo`, `Presenta`, `Simbolo`, `SIMBOLOS`, `Temporiza`, `Temporiza1`, `Pilotos`, `Editar_NA_NC`, `Editar_Cable`, `Editar_contador`, `Editar_DI_DO`, `Editar_IN`, `Editar_OUT`, `Editar_Neuma`, `Editar_MPP1`, `Editar_var1`, `Editar_var2`, `EDITAR_PLC`, `EDITAR_ARDUINO`, `Interruptor_horario`, `Numerico`, `Sim_Texto`, `Texto`, `Cajetin`, `Librerias`, `Clave`, `Configuracion`, `ACCION_GRAFCET`, `TRANSICION_GRAFCET`, `ARR_ELE`.
+
+Esto da el mapa para futuras pasadas: la lógica de simulación vive en `Pilotos`, `Temporiza`, `Simbolo` y los `Editar_*`; el parser/serialización en `CADe_SIMUDoc`.
+
 ## Limitaciones de este análisis
 
-- No hay Ghidra/IDA/Hopper configurado: **no se decompiló** el parser ni el solver. Los hallazgos son de tablas PE, strings y recursos.
-- Las firmas de funciones internas y la lógica de simulación quedan como *desconocidas*.
-- Los bitmaps no se extrajeron a archivos; se documentó su inventario e IDs.
+- Ghidra 12.1.4 se usó para decompilar las funciones de guardado, configuración y documento. La lista completa de procedimientos es `FUN_xxxxxxxx` (sin PDB); los nombres de módulo provienen de `__FILE__`.
+- **No se localizó todavía la función de carga/parseo** ni el solver de simulación; la sección de decompilación documenta lo confirmado.
+- Los bitmaps sí se extrajeron a `docs/re/bitmaps/` (280 PNG).
 - Las strings se guardaron completas en `docs/re/cade-resource-strings.txt` (1.248 únicas).
 
 ## Evidencia
