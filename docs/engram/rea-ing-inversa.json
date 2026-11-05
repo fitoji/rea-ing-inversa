@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-05 19:55:03.639028000",
+    "exported_at":  "2026-11-05 20:16:15.254350700",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -790,6 +790,23 @@
                              "review_after":  "2027-05-05 19:54:45",
                              "created_at":  "2026-11-05 19:54:45",
                              "updated_at":  "2026-11-05 19:54:45",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  12,
+                             "sync_id":  "obs-a1250f2e6cea996a",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "bugfix",
+                             "title":  "Supply inferred per symbol pin order (L/N, three-phase)",
+                             "content":  "What: La alimentacion ahora se infiere de cada simbolo por el orden de sus bornes, no por color de cable.\nWhy: La inferencia anterior elegia mal el neutro/PE de 3005 y no manejaba 3003 (L+N), dejando circuitos trifasicos sin armar.\nWhere: app/src/sim/circuit.ts (switch por codigo: 3000 L, 3001 N, 3003 L+N, 3004 L1L2L3, 3005/3006 con N/PE, 3007 N+PE), app/test/circuit.test.ts, app/test/project.test.ts, docs/re/pending-tasks.md.\nLearned: Arranque queda supply [0,12] y STAR energiza KM1. Inversion-giro-cej arma [0,9] con 3005+3003 pero no energiza por cables sueltos del fixture (P0.7). Test sintetico de 10500 confirma 11 textos + 24 numeros. 187/187 tests, tsc OK, build OK. Commit 9feafdf.",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-05 20:16:02",
+                             "review_after":  "2027-11-05 20:16:02",
+                             "created_at":  "2026-11-05 20:16:02",
+                             "updated_at":  "2026-11-05 20:16:02",
                              "pinned":  false
                          }
                      ],
