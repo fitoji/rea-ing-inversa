@@ -1,8 +1,8 @@
-# CADe_SIMU V4 — Análisis estático con REA
+# CADe_SIMU V4 — Análisis con REA (estático, Ghidra y ejecución)
 
 > Target: `E:\FP SISTEMAS\CADe_SIMU V4\CADe_SIMU.exe`
-> Herramienta: `rea-agents@6.8.0` (comandos target-free `inspect-pe-*`).
-> Fecha: 2026-11-04.
+> Herramientas: `rea-agents@6.8.0` (PE target-free), Ghidra 12.1.4 vía REA MCP, observación en ejecución.
+> Fecha: 2026-11-04/05. Clave shareware usada: `4962`.
 
 ## Identidad del artefacto
 
@@ -175,4 +175,27 @@ Esto da el mapa para futuras pasadas: la lógica de simulación vive en `Pilotos
 ## Evidencia
 
 - `docs/re/cade-resource-strings.txt` — cadenas únicas de las string tables.
+- `docs/re/bitmaps/` — 280 PNG de símbolos (pares D/U).
 - Evidencia REA (imports): `ev_2e30610ed6df2f56996cec9c865e85aa4de0d924e3a351dcbf080f7acc1b90e5`.
+
+## Conclusiones y próximos pasos
+
+Lo confirmado y aplicable ya:
+
+1. **Parser**: añadir el layout extendido para los códigos `1052`, `1073` y `10500..10550` (11 textos + 24 numéricos). El resto usa 10 textos + 23 numéricos.
+2. **Serializer**: replicar la estructura `CADe_SIMU` + registros + `$$$` + bloques finales + `***$$$&&&`, y la sección de `config.cfg` con posiciones fijas.
+3. **Compatibilidad validada**: nuestro `.cad` abre en CADe_SIMU V4 vía *Archivo → Abrir* (no por argumento CLI).
+4. **Simulación**: el modo cambia a `Simulación/Run`, la energía se pinta en rojo y el motor se anima; usar eso como referencia visual de la app.
+5. **Catálogo**: los pares D/U ya están extraídos y los nombres ES están en `cade-resource-strings.txt`.
+
+Pendiente para una próxima pasada:
+
+- Localizar la función de **carga/parseo** (probablemente en `CADe_SIMUDoc`/`Presenta`) y el **solver** (`Pilotos`, `Temporiza`, `Simbolo`).
+- Mapear el array de estado por registro (código, flags, energizado) para replicar la animación exacta.
+
+## Estado del repositorio
+
+- `docs/re/cadesimu-v4-rea.md` — este informe.
+- `docs/re/cade-resource-strings.txt` — cadenas del binario.
+- `docs/re/bitmaps/*.png` — símbolos extraídos.
+- Commits: `e69c649` (análisis + bitmaps), `af6b41b` (decompilación), `477c8f9` (runtime), `5e2e99c` (presentador).
