@@ -1,0 +1,1248 @@
+﻿
+ Display BCD
+ Enlace de salida
+ I-0-II switch
+ Motor paso a paso unipolar
+ Prueba
+ Uscita Link
+"0"
+"Y"
+1 channel relay
+2 Borne round
+2 Bornes redondos
+2 Terminale rotondo
+3 Borne round
+3 Bornes redondos
+3 Terminale rotondo
+3Terminale rotondo
+A proposito di CADe_SIMU
+About CADe_SIMU
+Abre este documento
+Abrir
+Acción
+Accionamientos
+Acerca de CADe_SIMU
+Action
+Action Bar
+Activa esta ventana
+Activa la lista de tareas
+Actuador doble efecto
+Actuador giro
+Actuador lineal eléctrico
+Actuador simple efecto
+Actuador sin vástago
+Actuador sin vástago magnético
+Actuadores neumáticos
+Actuator without magnetic stem
+Ad incastro
+Afficher le composant 2D
+Afficher le composant 3D
+Afficher le symbole du composant
+Agranda la ventana al tamaño completo
+Air Motor
+Alimenataiones
+Alimentación -
+Alimentación +
+Alimentación +-
+Alimentación F+N
+Alimentación F+N+PE
+Alimentación Fase
+Alimentación Fase + Neutro
+Alimentación Fase + Neutro + Protección
+Alimentación I/O digital PLC
+Alimentación L1 + L2 + L3
+Alimentación L1 + L2 + L3 + N
+Alimentación L1 + L2 + L3 + N + PE
+Alimentación L1 + L2 + L3 + PE
+Alimentación L1+L2+L3
+Alimentación L1+L2+L3+N
+Alimentación L1+L2+L3+N+PE
+Alimentación L1+L2+L3+PE
+Alimentación Negativo
+Alimentación Neutro
+Alimentación Positivo
+Alimentación Protección
+Alimentatori
+Alimentazione
+Alimentazione -
+Alimentazione +
+Alimentazione +-
+Alimentazione cavo fase
+Alimentazione F+N
+Alimentazione F+N+PE
+Alimentazione Fase
+Alimentazione Fase + Neutro
+Alimentazione Fase + Neutro + Protezione
+Alimentazione III
+Alimentazione L1 + L2 + L3
+Alimentazione L1 + L2 + L3 + N
+Alimentazione L1 + L2 + L3 + N + PE
+Alimentazione L1 + L2 + L3 + PE
+Alimentazione L1+L2+L3
+Alimentazione L1+L2+L3+N
+Alimentazione L1+L2+L3+N+PE
+Alimentazione L1+L2+L3+PE
+Alimentazione Negativo
+Alimentazione Neutro
+Alimentazione Positivo
+Alimentazione Protezione
+AlimentazioneNeutro
+All documents simulation
+Amarillo
+AND
+Annulare
+Anteprima
+Aparatos de medida
+Aprire
+Archivo reciente
+Arduino I/0
+Arduino Mega
+Arduino one
+Arduino one 
+Arduino uno
+Arduino uno 
+Arrancador electónico c.a.
+Arrancador electrónico c.a.
+Arrange Icons
+Asignar
+Assegnare
+Assegnarer
+Assign
+Assignr
+Attuatore a doppio effetto
+Attuatore lineare elettrico
+Attuatore semplice effetto
+Attuatore senza stelo magnetico
+Attuatore turno
+Attuatori pneumatici\Attuatori pneumatici
+Automatic Bar
+Automatic switch
+Automatic switch I
+Automatic switch II
+Automatic switch III
+Automatic switch IIIN
+Automatic switch IN
+Automatic, differenziali, relé termici, interruttore magnetotermico
+Automatic, Magnetothermic
+Automático I
+Automático II
+Automático III
+Automático IIIN
+Automático IN
+Automáticos, Diferenciales, Relés Térmicos, Disyuntores
+Automáticos, Disyuntores
+Autotransformador III
+Autotransformatore III
+Autotransformer III
+Auxiliary contacts, timed Contacts
+Azionamenti
+Azione
+Azul claro
+Barra de accionamientos
+Barra de actuadores neumáticos
+Barra de alimentaciones
+Barra de automáticos
+Barra de bobinas
+Barra de conexiones
+Barra de Contactores
+Barra de Contactos
+Barra de detectores
+Barra de estado
+Barra de fusibles
+Barra de herramientas
+Barra de motores
+Barra de potencia
+Barra Entrada/Salida
+Barra Grafcet
+Barra Ladder
+Barra Lógica
+Barre di alimentatori
+Barre di automatici
+Barre di azionamenti
+Barre di bobine
+Barre di contatti
+Barre di contattori
+Barre di detector
+Barre di fusibili
+Barre di Grafcet
+Barre di In/out
+Barre di logiche
+Barre di motori
+Barre di potenza
+Barre di stato
+Barre di strumenti
+Barre Ladder
+Barre rele eletronico
+Barreattuatori pneumatic
+Barrera emisor
+Barrera fotoeléctica
+Barrera fotoeléctrica
+Barrera receptor NA
+Barrera receptor NC
+Bateria
+Batteria
+Battery
+Biestable
+Binary divider
+Bipolar stepper motor
+bistabile
+Bistabile bobina contattore, relè
+Bistable contactor coil, relay
+Black
+Blanco
+Blue-green
+Bobina
+Bobina biestable
+Bobina biestable contactor, relé
+Bobina contactor, relé
+Bobina electroválvula
+Bobina elettrovalvola
+Bobinas, Señalizaciones
+Bobine contattori, relè
+Bobine e segnali
+Bocina
+Bookstore
+Borna
+Borne cuadrado
+Borne redondo
+Borne round
+Borne square
+Borra la selección
+Borra todo
+Borrar
+Borrar todo
+Botão
+Botón pulsador
+Botonera
+Bouton
+Box Facility
+Brake
+Brown
+Buscaa el texto especificado
+Buscar
+Button\button
+Buzzer
+Cable color
+Cable fase
+Cable III
+Cable III horizontal
+Cable III vertical
+Cable negativo
+Cable neutro
+Cable positivo
+Cable protección
+Cables and Connections
+Cables and Connectionss
+Cables y Conexiones
+CADe_S
+CADe_S Document
+CADe_SIMU
+CADeSIMU.Document
+Cajetín
+Cambia a la siguiente sección de ventana
+Cambia a la ventana del documento anterior
+Cambia a la ventana del siguiente documento
+Cambia el tamaño de la ventana
+Cambia la posición de la ventana
+Cambia las opciones de impresión
+Cancelar presentación preliminar
+Cascada
+Cavi e connessioni
+Cavo fase
+Cavo negativo
+Cavo neutro
+Cavo positivo
+Cavo protezione
+Cerar
+Cerrar
+Chuludere
+Cierra el modo de presentación preliminar
+Cierra la ventana activa y le pide que guarde los documentos
+Clacson
+Clavier
+Close
+Coil contactor, relay
+Coils and Signals
+Collegamento
+Collegamento di uscita
+Collegamento di uscita 
+Collegamento dìngresso
+Color
+Colore
+Colore di riempimento
+Colored Ellipse
+Colored ellisse
+Colored Rectangle
+colored wire
+COM Auxiliary heat relay
+COM limit
+COM switch
+Commutateur différentiel\Commutateur différentiel
+Commutatore I-0-II
+Commutatore I-II-III
+Componente de grande tamanho
+Componente de tamanho médio\Componente de tamanho médio
+Componente de tamanho pequeno
+Componente di grandi dimensioni
+Componente di medie dimensioni
+Componente di piccole dimensioni
+Componente tamaño grande
+Componente tamaño medio
+Componente tamaño pequeño
+Composant de grande taille
+Composant de petite taille
+Composant de taille moyenne
+CON button
+CON button mushroom
+CON contact
+CON Contact timed to disconnection
+CON contact with the connection disconnection timed
+CON contact with the connection timed
+Con. Conexión CON
+Con. Conexión NA
+Con. Conexión NA+NC
+Con. Conexión NC
+Con. Desconexión CON
+Con. Desconexión NA
+Con. Desconexión NA+NC
+Con. Desconexión NC
+Conexión
+Conexión de entrada
+Conexión de salida
+Conexión Desconexión CON
+Conexión Desconexión NA
+Conexión Desconexión NA+NC
+Conexión Desconexión NC
+Configurar impresora
+Configuraración
+Configurarción
+Configurare stampante
+Configurazione
+Conmutador cruce
+Conmutador di giunzione
+Conmutador I-0-II
+Conmutador I-II-III
+Connection
+Connection Bar
+Connection timer
+Connessioni Bar
+Contacteur
+Contacto auxiliar relé térmico CON
+Contacto auxiliar relé térmico NA
+Contacto auxiliar relé térmico NA-NC
+Contacto auxiliar relé térmico NC
+Contacto CON
+Contacto NA
+Contacto NA+NC
+Contacto NC
+Contacto temporizado a la conexión CON
+Contacto temporizado a la conexión deconexión CON
+Contacto temporizado a la conexión deconexión NA
+Contacto temporizado a la conexión deconexión NA+NC
+Contacto temporizado a la conexión deconexión NC
+Contacto temporizado a la conexión NA
+Contacto temporizado a la conexión NA+NC
+Contacto temporizado a la conexión NC
+Contacto temporizado a la deconexión CON
+Contacto temporizado a la deconexión NA
+Contacto temporizado a la deconexión NA+NC
+Contacto temporizado a la deconexión NC
+Contactor
+Contactor de estado sólido
+Contactor I
+Contactor II
+Contactor III
+Contactor IIII
+Contactor inversor de estado sólido
+Contactores, Interruptores
+Contactors, Switches
+Contactos
+Contactos auxiliares
+Contactos auxiliares OFF delay
+Contactos auxiliares ON delay
+Contactos auxiliares, Contactos temporizados
+Contacts Bar
+Contador
+Contador 4 bits
+Contador 4 bits 
+Contador 4 bits ASC/DES
+Contador 4 bits ASC/DES 
+Contador 4 bits decadas
+Contador 4 bits decadas 
+Contador ascendente-descendente
+Contador de pulsos
+Contatore
+Contatore a 4 bit
+Contatore a 4 bit  ASC/DES
+Contatore decadi 4 bit
+Contatore di impulsi
+Contatorer
+Contatti ausiliari, contatti a tempo
+Contatto ausiliario relè termico CON
+Contatto ausiliario relè termico NC
+Contatto ausiliario relè termico NO
+Contatto ausiliario relè termico NO-NC
+Contatto CON
+Contatto NC
+Contatto NO
+Contatto NO+NC
+Contatto temporizzato ritardato alla diseccitazione CON
+Contatto temporizzato ritardato alla diseccitazione NC
+Contatto temporizzato ritardato alla diseccitazione NO
+Contatto temporizzato ritardato alla diseccitazione NO+NC
+Contatto temporizzato ritardato alla eccitazione CON
+Contatto temporizzato ritardato alla eccitazione NC
+Contatto temporizzato ritardato alla eccitazione NO
+Contatto temporizzato ritardato alla eccitazione NO+NC
+Contatto temporizzato ritardato alla eccitaziones diseccitazione CON
+Contatto temporizzato ritardato alla eccitaziones diseccitazione NC
+Contatto temporizzato ritardato alla eccitaziones diseccitazione NO
+Contatto temporizzato ritardato alla eccitaziones diseccitazione NO+NC
+Contattore
+Contattore I
+Contattore II
+Contattore III
+Contattore IIII
+Contattori, interruttori
+Control arrancador electrónico c.a.
+Control arrancador electrónico c.a..
+Control inversor electrónico c.a.
+Control inversor electrónico c.a..
+Control Variador velocidad c.a.
+Control Variador velocidad c.c.
+Control variatore velocità c.a.
+Control variatore velocità c.c.
+Control variatore velocità. c.c.
+Controlador motor paso a paso
+Controlador motor paso a paso 2 CLK
+Controlador motor paso a paso CLK/DIR
+Controller del motore passo-passo
+Controller del motore passo-passo 2 CLK
+Controller del motore passo-passo CLK/DIR
+Controllo starter elettronico c.a.
+Convergence in "O"
+Convergence in "Y"
+Convergencia en "O"
+Convergencia en "Y"
+Convergenza in "O"
+Convergenza in "Y"
+Copia
+Copiar
+Copy
+Cortar
+Counter
+Counter 4 bits
+Counter 4 bits ASC/DES
+Counter 4 bits decades
+Counter ascending-descending
+Counterr
+CPU PLC
+Crossover switch
+Cut
+DC motor. Iman P.
+DC motor. Indep.
+DC Motore Iman P.
+DC Motore Indep.
+Decoder BCD 7 Seg
+Decodificador 7 segmentos
+Deshacer
+DESP
+Det. capacitivo NA
+Det. capacitivo NC
+Det. inductivo NA
+Det. inductivo NC
+Det. magnético NA
+Det. magnético NC
+Detectores
+Detectors
+Detectorss
+Detektor Bar
+Diferencial IIIN
+Diferencial IN
+Diferential switch
+Differential switch IIIN
+Differential switch IN
+Diode
+Diode LED
+Diodo
+Diodo LED
+Disconnect connection timer
+Disjoncteur
+Disjuntor
+Display 7 Seg.
+Display 7 Segmentos
+Display BCD
+Display BCD\Display BCD
+Display component 2D
+Display component 3D
+Display component symbol
+Disyuntor
+Disyuntor I
+Disyuntor II
+Disyuntor III
+Disyuntor IIIN
+Disyuntor IN
+Divergence in "O"
+Divergence in "Y"
+Divergencia en "O"
+Divergencia en "Y"
+Divergenza in "O"
+Divergenza in "Y"
+Divide la ventana activa en secciones
+Dividir
+Divisor Binario
+Document simulation
+Double acting actuator
+Double clamp
+Drive button
+Drive speed control a.c.
+Drive speed control d.c.
+Electric Linear Actuator
+Electrical outlet
+Electronic relay
+Electronic starter a.c.
+Electronic starter control a.c.
+Elipse
+Elipse coloreada
+Ellipse
+Ellisse
+Emitter barrier
+Empty pressure NC
+Empty pressure NO
+Enclavamiento
+Enlace de entrada
+Enlace de salida
+Entrada digital PLC
+Entrada manguera
+Entrada mangueral
+Entrada/Salida
+Entry tube
+Espedor 1
+Espedor 2
+Espedor 3
+Espedor 4
+espejo horizontal
+Espejo vertical
+Espesor 1
+Espesor 2
+Espesor 3
+Espesor 4
+Esportare immagine
+ET 200 DI
+ET-200
+ET-200 8DI
+ET-200 8DO
+ET-200 CPU
+ET200 DI
+Etapa
+Etapa inicial
+Exchange E / S (PLC)\Exchange E / S (PLC)
+Exchange PC_SIMU entries
+Exchanging departures PC_SIMU
+Exibir componente 2D
+Exibir componente 3D
+Exibir símbolo de componente
+EXOR
+Export Image
+Exportar imagen
+EXT
+Fase di relè mancanza + N
+File recenti
+Fill color
+Filo colorato
+Filo III orizzontale
+Filo III orizzontalel
+Filo III verticale
+Filo III verticalel
+Final de carrera COM
+Final de carrera NA
+Final de carrera NA-NC
+Final de carrera NC
+Finecorsa COM
+Finecorsa NA-NC
+Finecorsa NC
+Finecorsa NO
+Finecorsa NO-NC
+First Scan
+Flanco ascendente
+Flanco descendente
+Flasher relay
+Fotodellula
+Fotodellula emettitore
+Fotodellula recevitore NC
+Fotodellula recevitore NO
+Freno
+Fronte in discesa
+Fronte positivo
+Fuente de alimentación
+Fuente de alimentación III
+Fuse Bar
+Fuse disconnector I
+Fuse disconnector II
+Fuse disconnector III
+Fuse disconnector IIIN
+Fuse disconnector IN
+Fuse I
+Fuse II
+Fuse III
+Fuse IIIN
+Fuse IN
+Fuses, Disconnects
+Fusibile I
+Fusibile II
+Fusibile III
+Fusibile IIIN
+Fusibile IN
+Fusibile, Sezionatori
+Fusible I
+Fusible II
+Fusible III
+Fusible IIIN
+Fusible IN
+Fusible seccionable I
+Fusible seccionable II
+Fusible seccionable III
+Fusible seccionable IIIN
+Fusible seccionable IN
+Fusibles, Seccionadores
+Generador de pulsos
+Generatore di impulsi
+Girar a la derecha
+Girar a la izquierda
+Girare a destra
+Girare a sinistra
+GRAFCET
+Grafcet Bar
+Granate\Granate
+Gray
+GRB
+Green
+Grid
+Gris
+Gris claro
+Guardar
+Guardar como
+Guardar comos
+Horizontal mirror
+Horizontal wire III
+Horizontal wire IIIl
+Horn
+I-0-II switch
+I-II-III switch
+Iintermittent pilot
+Import Image
+Importar imagen
+Importare immagine
+Imprimir
+In/Out Bar
+Incolla
+Ingresso digitale PLC
+Ingresso tubo
+Ingresso tubol
+Initial stage
+Input / Output
+Input Connection
+Input Link
+Intercambio di biglietti PC_SIMU
+Intercambio E/S (PLC)
+Intercambio entradas PC_SIMU
+Intercambio salidas PC_SIMU
+Interlocking
+Intermittent pilot
+Intermittent timer
+Interrptor diferencial
+Interrupteur automatique
+Interruptor
+Interruptor automático
+Interruptor automático I
+Interruptor automático II
+Interruptor automático III
+Interruptor automático IIIN
+Interruptor automático IN
+Interruptor CON
+Interruptor diferencial
+Interruptor diferencial IIIN
+Interruptor diferencial IN
+Interruptor horario
+Interruptor I
+Interruptor II
+Interruptor III
+Interruptor IIII
+Interruptor NA
+Interruptor NA-NC
+Interruptor NC
+Interruttore automatico
+Interruttore automatico I
+Interruttore automatico II
+Interruttore automatico III
+Interruttore automatico IIIN
+Interruttore automatico IN
+Interruttore CON
+Interruttore diferenziale
+Interruttore differenziale IIIN
+Interruttore differenziale IN
+Interruttore magnetotermico
+Interruttore magnetotermico I
+Interruttore magnetotermico II
+Interruttore magnetotermico III
+Interruttore magnetotermico IIIN
+Interruttore magnetotermico IN
+Interruttore NC
+Interruttore NO
+Interruttore NO-NC
+Interruttore orario
+Interrutture I
+Interrutture II
+Interrutture III
+Interrutture IIII
+INV
+Keypad
+Ladder
+Ladder Bar
+Lampadina
+Lampadina intermitente
+Large size component
+LED diode
+Librerías
+Light barrie
+Light barrier
+Light blue
+Light gray
+Light green
+Limitador sobretensiones IIIN
+Limitador sobretensiones IN
+Limitatore di sovratensione IIIN
+Limitatore di sovratensioneIN
+Line
+Line link
+Linea
+Línea enlace
+Linea Grafcet
+Link in entrata
+Llimitatore di sovratensione IN
+Logic
+Logic Bar
+Logica
+Lógica
+Logical module
+LOGO  4DI/4DO
+LOGO 4DI/4DO
+Macro etapa
+Macro stage
+Macro tappa
+Magnetothermic switch
+Magnetothermic switch 
+Magnetothermic switch I
+Magnetothermic switch II
+Magnetothermic switch III
+Magnetothermic switch IIIN
+Magnetothermic switch IN
+Mancanza di fase relè
+Manguera
+Maroon
+Marron
+MAY
+Medium size component
+Modulo logico
+Módulo lógico
+Morsetto semplice effetto
+Mosaic
+Mosaico
+Moteur triphasé
+Motor cc. de imán permanente
+Motor cc. de independiente
+Motor cc. Iman P.
+Motor cc. Indep.
+Motor Dahalander
+Motor Dos velocidades
+Motor II Veloc
+Motor monofásico
+Motor neumático
+Motor neumático reversible
+Motor paso a paso bipolar
+Motor paso a paso unipolar
+Motor rotor bobinado
+Motor trifase as motor monofase\Motor trifase as motor monofase
+Motor trifásico
+Motor trifásico como monofásico
+Motor trifásico rotor bobinado
+Motor trifásico YD
+Motore a due velocità
+Motore a rotore anelli
+Motore Dahalander
+Motore monofase
+Motore passo-passo bipolare
+Motore passo-passo unipolare
+Motore trifase
+Motore trifase como motore monofase
+Motore trifase YD
+Motores
+Motori
+Motors
+Motors Bar
+N0
+NA
+NAND
+NC
+NC Auxiliary heat relay
+NC button
+NC button mushroom
+NC Capacitive detector
+NC contact
+NC Contact timed to disconnection
+NC contact with the connection disconnection timed
+NC contact with the connection timed
+NC Inductive detector
+NC limit
+NC Magnetic detector
+NC receptor barrier
+NC switch
+NCInductive detector
+Negative edge
+Negative power
+Negative wire
+Negro
+Neutral wire
+New
+New Window
+NO
+NO Auxiliary heat relay
+NO button mushroom
+NO Capacitive detector
+NO contact
+NO Contact timed to disconnection
+NO contact with the connection disconnection timed
+NO contact with the connection timed
+NO Inductive detector
+NO limit
+NO Magnetic detector
+NO receptor barrier
+NO switch
+NO+NC contact
+NO+NC Contact timed to disconnection
+NO+NC contact with the connection disconnection timed
+NO+NC contact with the connection timed
+NO-NC Auxiliary heat relay
+NO-NC button
+NO-NC button mushroom
+NO-NC limit
+NO-NC switch
+NOR
+Normal Zoom 
+Nueva ventana
+Nuevo
+NUM
+Nuovo
+Open
+OR
+Organiza las ventanas como mosaicos que no se superponen
+Organizar iconos
+Output connection
+Output link
+Overvoltage limiter IIIN
+Overvoltage limiter IN
+Paso a Paso
+Passo a Passo
+Past
+Pausa
+Pause
+Pegar
+Phase + N fault relay
+Phase + N sequence relay
+Phase loss relay
+Phase power
+Phase sequence relay
+Phase wire
+Pilot signal
+Piloto
+Piloto intermitente
+Piloto señalización
+Piloto señalización intermitente
+Pinza a doppio effetto
+Pinza doble efecto
+Pinza simple efecto
+PLC CPU S7-1500
+PLC CPU S7-1500 DI/DO
+PLC digital input
+PLC digital output
+PLC S7-1200
+PLC S7-1500 DI/DO
+Pneumatic actuators
+Pneumatic actuators Bar
+Pneumatic motor
+Pneumatici motore reversibile
+Positive edge
+Positive power
+Positive wire
+Potencia
+Potenza
+Potenza digitali PLC I/O
+Power
+Power  F+N+PE
+Power  in Bar
+Power  L1 + L2 + L3
+Power  L1 + L2 + L3 + N
+Power  L1 + L2 + L3 + PE
+Power  L1+L2+L3
+Power  L1+L2+L3+N
+Power  L1+L2+L3+PE
+Power +-
+Power Bar
+Power F+N
+Power feedings
+Power L1 + L2 + L3 + N + PE
+Power L1+L2+L3+N+PE
+Power Neutro
+Power Phase + Neutro
+Power Phase + Neutro + Protection
+Power Protection
+Power supply
+Power supply Digital I / O PLC
+Power supply III
+Preparado
+Preparar página
+Presa elettrica
+Preselctor
+Preselector
+Preselector BCD
+Pre-selettore
+Presentación preliminar
+Presostato NA
+Presostato NA\Presostato NA
+Pressione di vuoto NC\Pressione di vuoto NC
+Pressione di vuoto NO
+Pressostato NC
+Pressostato NO
+Pressure switch NC\Pressure switch NC
+Pressure switch NO\Pressure switch NO
+Preview
+Print
+Printer Setup
+Proteccion contra sobretensiones permanentes
+Protection against permanent overvoltages
+Protection wire
+Protezione contro le sovratensioni permanenti
+Prova
+Prueba
+Pulsador
+Pulsador CON
+Pulsador NA
+Pulsador NA-NC
+Pulsador NC
+Pulsador seta CON
+Pulsador seta NA
+Pulsador seta NA-NC
+Pulsador seta NC
+Pulsante
+Pulsante CON
+Pulsante fungo CON
+Pulsante fungo NC
+Pulsante fungo NO
+Pulsante fungo NO-NC
+Pulsante NC
+Pulsante NO
+Pulsante NO-NC
+Pulse connection timer
+Pulse counter
+Pulse Generator
+Pulse timer on
+Pulse timer onr
+Pureba nivel lógico
+Push button
+Quit
+Recent File
+Rectangle
+Rectángulo
+Rectángulo cóloreado
+Rectificador
+Rectifier
+Red
+Redibujar
+Redo
+Redraw
+Reduce la ventana a un icono
+Reemplaza texto específico por otro texto
+Reemplazar
+Rehacer
+Rejilla
+Relais
+Relais 1 canal
+Relais 1 canall
+Relais de minuterie
+Relais thermique
+Relay
+Relay Bar
+Relay SPDT
+Relay SPST
+Relé
+Relè
+Relé 1 canal
+Relé 1 canal\Relé 1 canal
+Relè a 1 canale
+Relé de 1 canal
+Relé de falta  y secuencia de fase
+Relé de falta de fase
+Relé de falta de fase + N
+Relé de falta y secuencia de fase
+Relé de secuencia de fase
+Relé de secuencia de fase + N
+Relé estado sólido SSR AC
+Relé estado sólido SSR DC
+Relé intermitente
+Relè intermitente
+Relé SPDT\Relé SPDT
+Relè SPDT\Relè SPDT
+Relé SPST\Relé SPST
+Relè SPST\Relè SPST
+Rele temporizado zócalo
+Relé temporizador
+Relé térmico
+Relè termico
+Relè timer
+Rele zócalo
+Relés electrónicos
+Rellenar color
+Repetir
+Repite la última acción
+Reset
+Resistence I
+Resistence III
+Resistencia I
+Resistencia III
+Resistenza I
+Resistenza III
+Restaura la ventana a su tamaño normal
+Rettangolo
+Rettangolo colorato
+Reversible pneumatic motor
+Ridisegna
+Rifare
+Ring
+Rojo
+Rotating actuator
+S7-1200 8DI/8DO
+S7-1500 DI/DO
+Salida digital PLC
+Salir
+Salva come
+Salva comes
+Salvare
+Salvarer
+Save
+Save as
+Sección anterior
+Seccionador
+Segnalazione
+Selecciona todo el documento
+Seleccionar todo
+Selecionar todo
+Select all
+Sensori  magnetico NC
+Sensori  magnetico NO
+Sensori capacitivo NC
+Sensori capacitivo NO
+Sensori induttivo NC
+Sensori induttivo NO
+Senza stelo
+Sequenza delle fasi Relè
+Sequenza delle fasi relè + N
+Set
+Setting
+Sezionatore con fusibile I
+Sezionatore con fusibile II
+Sezionatore con fusibile III
+Sezionatore con fusibile IIIN
+Sezionatore con fusibile IN
+Signaling
+Signalisation
+Siguiente sección
+Símbolos 2D
+Símbolos 3D
+Simple clamp effect
+Simula tutti i documenti
+Simulacion
+Simulacione
+Simular documento
+Simular todos los documentos
+Simulare paper
+Simulation
+Sinalização
+Single acting actuator
+Single-phase motor
+Siren
+Sirena
+Size 1
+Size 2
+Size 3
+Size 4
+Small size component
+SOB
+Solenoid coil
+Solid state contactor
+Solid state contattore
+Solid state inverter contactor
+Solid State Relay SSR AC
+Solid State Relay SSR DC
+Solid State Relay SSRAC
+Specchio orizzontale
+Specchio verticale
+Spessore 1
+Spessore 1\Spessore 1
+Spessore 2
+Spessore 2\Spessore 2
+Spessore 3
+Spessore 3\Spessore 3
+Spessore 4
+Spessore 4\Spessore 4
+SSR relè a stato solido AC
+SSR relè a stato solido DC
+Stage
+Stampante
+Starter elettronico c.a.
+Stato solido contattore di inversione
+Status Bar
+Stemless actuator
+Step by step
+Step relay
+Stepper motor driver
+Stepper motor driver 2 CLK
+Stepper motor driver CLK/DIR
+Stop
+Sucker
+Switch Bar
+Switch I
+Switch II
+Switch III
+Switch IIII
+Symbolos 2D
+Symbolos 3D
+Taglia
+Tappa
+Tappa iniciale
+Tastiera
+Teclado
+Telerruptor
+Teleruttore
+Temp. conexión
+Temp. conexión desconexión
+Temp. desconexión
+Temporizador a la conexión
+Temporizador a la conexión desconexión
+Temporizador a la desconexión
+Temporizador conexión
+Temporizador desconexión
+Temporizador intermitente
+Temporizador pulso conexión
+Temporizzatore con ritardo alla diseccitazione
+Temporizzatore con ritardo alla eccitazione diseccitazione
+Temporizzatore ritardato alla eccitazione
+Térmico CON
+Térmico NA
+Térmico NA-NC
+Térmico NC
+Terminais
+Terminal
+Terminale
+Terminale quadrato
+Terminale rotondo
+terminaux
+Termostato NA
+Termostato NC
+Termostato NO
+Test
+Testo
+Text
+Texto
+Thermal Relay
+Thermostat NC\Thermostat NC
+Thermostat NO\Thermostat NO
+Three-phase motor
+Three-phase motor YD
+Timbre
+Time switch
+Timer intermittente
+Timer off
+Timer on
+Timer onr
+Timer relay
+Timer to disconnect
+Toma de corriente
+Toolbar
+Transformador
+Transformador III
+Transformer
+Transformer III
+Transición
+Transicione
+Transition
+Trasformatore
+trasformatore III
+Tube
+Tubo flessibile
+Turn left
+Turn right
+Two speed motor
+Undo
+Unipolar stepper motor
+Up-down contatore
+Uscita
+Uscita digitale PLC
+Uscita Link
+Uscite di Exchange PC_SIMU
+Vacuostato NA
+Vacuostato NC
+Variable speed a.c. III
+Variable speed c.a. II
+Variable speed d.c. II
+Variable speed d.c. III
+Variable speed. a.c. II
+Variador velocidad c.a. II
+Variador velocidad c.a. III
+Variador velocidad c.c. II
+Variador velocidad c.c. III
+Variatore velocità c.a. III
+Variatore velocità c.c. II
+Variatore velocità c.c. IIII
+Variatore velocità. c.a. II
+Ventanas en mosaico
+Ventosa
+Verde
+Verde azul
+Verde claro
+Vertical mirror
+Vertical wire III
+Vertical wire IIIl
+Vibratore
+Visualiza
+Visualiza 2D 3D anterior
+Visualiza componente
+Visualiza componente 2D
+Visualiza componente 3D
+Visualiza nivel lógico
+Visualiza símbolo componente
+Visualize
+Visualizza
+Visualizza componente 2D
+Visualizza componente 3D
+Visualizza il simbolo del componente
+Vuelve a la sección de ventana anterior
+White
+Width 1
+Width 2
+Width 3
+Width 4
+Wound rotor induction motor
+Yellow
+Zoom -
+Zoom +
+Zoom All
+Zoom anterior
+Zoom anteriore
+Zoom finestra
+Zoom Normal
+Zoom Previous
+Zoom todo
+Zoom tutto
+Zoom ventana
+Zoom Windows
+Zumbador
