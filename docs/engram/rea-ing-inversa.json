@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-05 19:31:56.633182500",
+    "exported_at":  "2026-11-05 19:55:03.639028000",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -773,6 +773,23 @@
                              "review_after":  "2027-05-05 18:17:02",
                              "created_at":  "2026-11-05 18:17:02",
                              "updated_at":  "2026-11-05 18:17:02",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  11,
+                             "sync_id":  "obs-e962cea4ff1bf6e8",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "decision",
+                             "title":  "Palette defaults to CADe_SIMU-only components",
+                             "content":  "What: La paleta ahora muestra por defecto solo los componentes del catalogo CADe_SIMU; los extras quedan guardados en docs/re/componentes-completo.md y accesibles con el toggle.\nWhy: El usuario pidio guardar todos los componentes pero mostrar solo los que tiene CADe_SIMU.\nWhere: app/src/symbols/scope.ts (PaletteScope persistido, default cadesimu), app/src/ui/Palette.tsx (filtra por CATALOG), app/src/ui/App.tsx (checkbox en Ver \u003e Dibujos), app/scripts/make-inventory.ts, docs/re/componentes-completo.md.\nLearned: Inventario: 212 simbolos CADe_SIMU, 3 extras (8016 Lampara de senalizacion, 8017 Contacto del termico, 8018 Contacto auxiliar NC doble), 0 QET extra. Verificado: Mando pasa de 38 a 35 por defecto; al desmarcar vuelve a 38. 185/185 tests, tsc OK, build OK.",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-05 19:54:45",
+                             "review_after":  "2027-05-05 19:54:45",
+                             "created_at":  "2026-11-05 19:54:45",
+                             "updated_at":  "2026-11-05 19:54:45",
                              "pinned":  false
                          }
                      ],
