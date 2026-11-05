@@ -460,6 +460,23 @@ export function App(): JSX.Element {
   const componentCount = project.records.filter((r) => r.kind === 'component').length;
   const wireCount = project.records.filter((r) => r.kind === 'connection').length;
 
+  const palette = (
+    <Palette
+      placing={placing}
+      onPick={(code) => {
+        if (running) {
+          flash('detené la simulación para editar el circuito');
+          return;
+        }
+        setWireStart(null);
+        setPlacing(code);
+      }}
+      sheets={project.sheets}
+      activeSheet={activeSheet}
+      onSheet={setActiveSheet}
+    />
+  );
+
   return (
     <TooltipProvider delayDuration={400}>
       <div className="flex h-full flex-col" data-pack={pack}>
@@ -712,23 +729,12 @@ export function App(): JSX.Element {
           </Button>
         </header>
 
-        <div className={pack === 'cadesimu' ? 'flex min-h-0 flex-1 flex-col' : 'flex min-h-0 flex-1'}>
-          <Palette
-            placing={placing}
-            onPick={(code) => {
-              if (running) {
-                flash('detené la simulación para editar el circuito');
-                return;
-              }
-              setWireStart(null);
-              setPlacing(code);
-            }}
-            sheets={project.sheets}
-            activeSheet={activeSheet}
-            onSheet={setActiveSheet}
-          />
+        <div className="flex min-h-0 flex-1 flex-col">
+          {pack === 'cadesimu' && palette}
+          <div className="flex min-h-0 flex-1">
+            {pack !== 'cadesimu' && palette}
 
-          <Canvas
+            <Canvas
             records={records}
             selection={selection}
             rotation={state.rotation}
@@ -768,6 +774,7 @@ export function App(): JSX.Element {
             onAddJunction={(x, y) => setState(addJunction(state, x, y, JUNCTION_TEMPLATE ?? undefined))}
             onFocusFinding={(f) => setHighlight({ ids: f.ids, at: f.at ?? null })}
           />
+          </div>
         </div>
 
         <footer className="relative z-10 flex h-[26px] shrink-0 items-center gap-3.5 border-t border-border bg-card px-3 font-mono text-[11px] tabular-nums text-muted-foreground shadow-chrome-up">
