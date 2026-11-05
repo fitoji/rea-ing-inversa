@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-05 21:38:17.315149300",
+    "exported_at":  "2026-11-05 21:53:44.555747000",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -892,6 +892,23 @@
                              "review_after":  "2027-05-05 21:38:01",
                              "created_at":  "2026-11-05 21:38:01",
                              "updated_at":  "2026-11-05 21:38:01",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  18,
+                             "sync_id":  "obs-5add2919d441d40a",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "bugfix",
+                             "title":  "Properties panel stays on the right in classic layout",
+                             "content":  "What: En el layout clasico de CADe_SIMU, el panel de propiedades queda a la derecha del lienzo.\nWhy: Al pasar la paleta a barra superior, el flex-col apilaba tambien el Inspector debajo del canvas y se veia mal.\nWhere: app/src/ui/App.tsx (paleta como const; contenedor exterior flex-col con la barra arriba y un row interno Canvas + Inspector).\nLearned: Verificado: en pack cadesimu, aside superior 415x89 en y=46, canvas x=0 w=147 y inspector x=147 w=268 h=461. En packs no clasicos sigue la paleta lateral. 200/200 tests, tsc OK, build OK. Commit d892c42.",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-05 21:53:19",
+                             "review_after":  "2027-11-05 21:53:19",
+                             "created_at":  "2026-11-05 21:53:19",
+                             "updated_at":  "2026-11-05 21:53:19",
                              "pinned":  false
                          }
                      ],
