@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-05 13:56:27.434752400",
+    "exported_at":  "2026-11-05 14:05:06.825804400",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -655,6 +655,22 @@
                              "review_after":  "2027-02-05 13:56:14",
                              "created_at":  "2026-11-05 13:56:14",
                              "updated_at":  "2026-11-05 13:56:14",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  4,
+                             "sync_id":  "obs-818d23d98128108c",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "manual",
+                             "title":  "Session summary 2026-11-05: CADe_SIMU RE and OpenCode setup",
+                             "content":  "## Goal\nConfigurar OpenCode con gentle-ai/REA/Ghidra/CodeGraph y hacer ingenieria inversa de CADe_SIMU V4 para aplicar hallazgos a Electro-Simulador (repo rea-ing-inversa).\n\n## Instructions\n- Respuestas en espanol (voseo), corto y directo.\n- Commits convencionales, sin atribucion AI.\n- Documentar en docs/re y versionar la memoria Engram en docs/engram.\n- Antes de aplicar cambios de herramientas, mostrar el plan y esperar aprobacion.\n\n## Discoveries\n- CADe_SIMU V4: PE32 x86, MFC 4.2 debug, GDI, libnodave (PLC S7).\n- Layout de registro estandar: 10 textos + 23 numericos; extendido: 11 + 24 para codigos 0x41c/0x431/0x2904..0x2936.\n- Archivo: CADe_SIMU + hasta 2000 registros + $ + bloques metadata/textos/flags + ***$\u0026\u0026\u0026.\n- config.cfg se parsea por posiciones fijas.\n- La app no acepta archivo por CLI; .cade/.cad abren por Archivo\u003eAbrir. Nuestro .cad es compatible.\n- Simulacion: barra Simulacion/Run, energia en rojo, motor animado. Clave shareware 4962.\n- FUN_0087aef0 = presentacion de catalogo (373 strings); solver/carga aun sin localizar.\n- E: es FAT32: Ghidra exige copia en NTFS.\n- Engram MCP degradado; usar CLI engram save/export.\n\n## Accomplished\n- gentle-ai 4.3.1 + OpenCode configurado (26 checks OK, doctor healthy).\n- REA 6.8.0 + skill reverse-engineer-anything; doctor aligned.\n- Ghidra 12.1.4 + JDK 21, provider disponible en REA MCP.\n- CodeGraph 1.6.2 instalado y MCP en OpenCode.\n- 280 bitmaps PNG y 1248 strings extraidos.\n- Informe docs/re/cadesimu-v4-rea.md completo (estatico, Ghidra, runtime).\n- Memoria Engram #2 y #3 guardadas; export con 34 observaciones.\n- 7 commits locales en main.\n\n## Next Steps\n- PENDIENTE: git push origin main requiere autenticacion (PAT/SSH/GCM).\n- Localizar la funcion de carga/parseo y el solver (Pilotos/Temporiza/Simbolo).\n- Implementar el layout extendido en el parser de la app.\n\n## Relevant Files\n- docs/re/cadesimu-v4-rea.md\n- docs/re/cade-resource-strings.txt\n- docs/re/bitmaps/*.png\n- docs/engram/rea-ing-inversa.json",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-05 14:04:50",
+                             "created_at":  "2026-11-05 14:04:50",
+                             "updated_at":  "2026-11-05 14:04:50",
                              "pinned":  false
                          }
                      ],
