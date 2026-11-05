@@ -12,6 +12,7 @@ import { simulate } from '../src/sim/solver.ts';
 const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
 const ARRANQUE = buildProject(parse(readFileSync(join(FIXTURES, 'arranque-paro-motor-3f.cad'), 'latin1'))).records;
 const INVERSION = buildProject(parse(readFileSync(join(FIXTURES, 'inversion-giro-cej.cade'), 'latin1')));
+const INVERSION_MINI = buildProject(parse(readFileSync(join(FIXTURES, 'inversion-giro-mini.cade'), 'latin1')));
 
 test('los tipos de cable son códigos distintos, no colores', () => {
   assert.equal(cableTypeOf(4000), 'phase');
@@ -89,4 +90,26 @@ test('el pulsador de paro corta la maniobra', () => {
 
 test('un dibujo sin cables de alimentación no arma circuito', () => {
   assert.equal(circuitFrom([]), null);
+});
+
+test('inversión de giro completa: enclavamiento propio y NC cruzado', () => {
+  const built = circuitFrom(INVERSION_MINI.records);
+  assert.ok(built, 'el fixture mini debe armar circuito');
+
+  const s1 = built.circuit.devices.find((d) => d.part === 'S1')!;
+  const s2 = built.circuit.devices.find((d) => d.part === 'S2')!;
+  assert.ok(s1 && s2, 'faltan los pulsadores');
+
+  const km1 = simulate(built.circuit, { pressed: new Set([s1.id]) });
+  assert.equal(km1.energized.has('KM1'), true);
+  assert.equal(km1.energized.has('KM2'), false);
+
+  const km2 = simulate(built.circuit, { pressed: new Set([s2.id]) });
+  assert.equal(km2.energized.has('KM2'), true);
+  assert.equal(km2.energized.has('KM1'), false);
+
+  // Con KM1 enclavado, el NC cruzado impide arrancar el otro sentido.
+  const cross = simulate(built.circuit, { pressed: new Set([s2.id]), initialEnergized: km1.energized });
+  assert.equal(cross.energized.has('KM1'), true);
+  assert.equal(cross.energized.has('KM2'), false);
 });
