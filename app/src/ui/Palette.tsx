@@ -1,7 +1,9 @@
 import type { CSSProperties, JSX } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { BoxesIcon, StarIcon } from 'lucide-react';
 import { lineList, symbolList, type SymbolDef, type SymbolGroup } from '../symbols/library.ts';
+import { CATALOG } from '../symbols/catalog.ts';
+import { getScope, subscribeScope } from '../symbols/scope.ts';
 import { SymbolGlyph } from './SymbolGlyph.tsx';
 import { PanelHead } from './PanelHead.tsx';
 import type { Sheet } from '../model/project.ts';
@@ -64,7 +66,10 @@ interface Props {
 }
 
 export function Palette({ placing, onPick, sheets, activeSheet, onSheet }: Props): JSX.Element {
-  const available = [...symbolList(), ...lineList()];
+  const scope = useSyncExternalStore(subscribeScope, getScope, getScope);
+  const available = [...symbolList(), ...lineList()].filter(
+    (sym) => scope === 'all' || CATALOG[sym.code] !== undefined,
+  );
   const byGroup = new Map<SymbolGroup, typeof available>();
   for (const sym of available) {
     const list = byGroup.get(sym.group) ?? [];

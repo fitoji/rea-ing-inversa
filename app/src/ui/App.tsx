@@ -80,6 +80,7 @@ import { Separator } from '@/components/ui/separator';
 import { Spinner } from '@/components/ui/spinner';
 import { Toaster } from '@/components/ui/sonner';
 import { getPack, setPack, subscribePack, type SymbolPack } from '../symbols/pack.ts';
+import { getScope, setScope, subscribeScope } from '../symbols/scope.ts';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
@@ -112,6 +113,7 @@ export function App(): JSX.Element {
   const [mode, setMode] = useState<Mode>(readMode);
   /** Paquete de dibujos: base (propio + EN 60617) o la hoja DXF. */
   const pack = useSyncExternalStore(subscribePack, getPack, getPack);
+  const scope = useSyncExternalStore(subscribeScope, getScope, getScope);
   /** Primer clic de un cable: origen. El segundo clic lo cierra. */
   const [wireStart, setWireStart] = useState<{ x: number; y: number } | null>(null);
   const [running, setRunning] = useState(false);
@@ -587,6 +589,13 @@ export function App(): JSX.Element {
                   <MenubarRadioItem value="dxf">Hoja DXF</MenubarRadioItem>
                   <MenubarRadioItem value="cadesimu">CADe_SIMU (clásico)</MenubarRadioItem>
                 </MenubarRadioGroup>
+                <MenubarSeparator />
+                <MenubarCheckboxItem
+                  checked={scope === 'cadesimu'}
+                  onCheckedChange={(checked) => setScope(checked === true ? 'cadesimu' : 'all')}
+                >
+                  Solo componentes CADe_SIMU
+                </MenubarCheckboxItem>
               </MenubarContent>
             </MenubarMenu>
 
