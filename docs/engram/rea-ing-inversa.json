@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-05 15:18:04.426734500",
+    "exported_at":  "2026-11-05 15:30:13.684126800",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -688,6 +688,23 @@
                              "review_after":  "2027-11-05 15:17:49",
                              "created_at":  "2026-11-05 15:17:49",
                              "updated_at":  "2026-11-05 15:17:49",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  6,
+                             "sync_id":  "obs-ab2a240e3fd21a4e",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "pattern",
+                             "title":  "Motor rotor spin animation while energized",
+                             "content":  "What: Agregada animacion de rotor para motores energizados en la simulacion.\nWhy: CADe_SIMU muestra una flecha de giro animada en el motor cuando esta energizado; faltaba en la app.\nWhere: app/src/ui/SymbolGlyph.tsx (prop live, rotor), app/src/ui/Canvas.tsx (pasa live), app/src/ui/diagram.css (.motor-rotor/.motor-arrow + keyframes, respeta reduced-motion).\nLearned: Se resuelve el grupo con resolveSymbol().group === \u0027motor\u0027; la flecha gira con transform-origin al centro. Tests core 177/177; no se pudo correr tsc/build por falta de node_modules. Riesgo item 6 (animacion visual sin test automatizado).",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-05 15:29:57",
+                             "review_after":  "2027-05-05 15:29:57",
+                             "created_at":  "2026-11-05 15:29:57",
+                             "updated_at":  "2026-11-05 15:29:57",
                              "pinned":  false
                          }
                      ],
