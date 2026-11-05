@@ -140,10 +140,25 @@ export function modelOfRecord(rec: CadeRecord): CadeRecordModel {
     return base;
   }
 
-  const geoIdx = fields.findIndex((f, i) => i > 0 && f.startsWith('*'));
+  // El bloque de geometría empieza con '*', pero en los códigos con layout
+  // extendido (11 textos, p. ej. 1052/10500..10550) el último texto queda
+  // pegado al primer número: `...#EV1*1*1*...`. Buscamos el primer '*' dentro
+  // del campo, no solo al inicio.
+  let geoIdx = -1;
+  let geoPrefix = '';
+  for (let i = 1; i < fields.length; i++) {
+    const star = fields[i].indexOf('*');
+    if (star !== -1) {
+      geoIdx = i;
+      geoPrefix = fields[i].slice(0, star);
+      break;
+    }
+  }
   if (geoIdx === -1) return base;
 
-  const header = fields.slice(2, geoIdx).filter((p) => p !== '');
+  const headerFields = fields.slice(2, geoIdx);
+  if (geoPrefix !== '') headerFields.push(geoPrefix);
+  const header = headerFields.filter((p) => p !== '');
 
   // Las lámparas cierran su cabecera con el índice de color. Ese token no es un
   // borne: si se deja en `pins`, el editor dibuja un pin fantasma al lado de X1
@@ -160,7 +175,7 @@ export function modelOfRecord(rec: CadeRecord): CadeRecordModel {
   }
 
   base.pins = header;
-  base.geometry = splitNumbers(fields[geoIdx]);
+  base.geometry = splitNumbers(fields[geoIdx].slice(fields[geoIdx].indexOf('*')));
   return base;
 }
 
@@ -252,7 +267,7 @@ export function boxOf(rec: CadeRecordModel): { width: number; height: number } |
 /** Índice del campo de geometría dentro de la lista de campos separada por `#`. */
 function geometryFieldIndex(raw: string): number {
   const fields = raw.split('#');
-  return fields.findIndex((f, i) => i > 0 && f.startsWith('*'));
+  return fields.findIndex((f, i) => i > 0 && f.includes('*'));
 }
 
 /** Devuelve `raw` con el bloque de geometría reemplazado por `geometry`. */
@@ -260,7 +275,9 @@ export function withGeometry(rec: CadeRecordModel, geometry: number[]): string {
   const idx = geometryFieldIndex(rec.raw);
   if (idx === -1) return rec.raw;
   const fields = rec.raw.split('#');
-  fields[idx] = '*' + geometry.join('*');
+  const star = fields[idx].indexOf('*');
+  // Preserva el texto que precede al bloque en el layout extendido.
+  fields[idx] = fields[idx].slice(0, star) + '*' + geometry.join('*');
   return fields.join('#');
 }
 

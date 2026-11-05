@@ -146,6 +146,15 @@ test('classify: grupos de códigos', () => {
   assert.equal(classify(99999), 'unknown');
 });
 
+test('layout extendido: el registro 10501 expone su geometría', () => {
+  const project = load('inversion-giro-cej.cade');
+  const rec = project.records.find((r) => r.code === 10501)!;
+  assert.ok(rec.geometry.length > 0, 'geometría vacía');
+  assert.equal(rec.geometry[0], 1);
+  assert.ok(rec.pins.includes('-S3'));
+  assert.ok(rec.pins.includes('-S4'));
+});
+
 test('registros desconocidos se preservan como opacos', () => {
   const project = load('ej0def.cad');
   for (const rec of project.records) {
