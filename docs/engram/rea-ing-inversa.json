@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-05 16:24:28.460255600",
+    "exported_at":  "2026-11-05 16:55:22.184860300",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -722,6 +722,23 @@
                              "review_after":  "2027-11-05 16:24:12",
                              "created_at":  "2026-11-05 16:24:12",
                              "updated_at":  "2026-11-05 16:24:12",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  8,
+                             "sync_id":  "obs-92e98c8e5256c0e7",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "pattern",
+                             "title":  "CADe_SIMU classic drawing pack",
+                             "content":  "What: Agregado el paquete de dibujos CADe_SIMU (clasico) como tercera opcion en Ver \u003e Dibujos.\nWhy: Los bitmaps extraidos no son iconos de componentes (tiras de toolbar/splash); se implemento un tema visual SVG.\nWhere: app/src/symbols/pack.ts, app/src/ui/App.tsx, app/src/index.css.\nLearned: El pack cambia tinta/estetica, no geometria ni codigos. Verificado data-pack=cadesimu, --wire #141414, --warn #d40000, --label #0033a0, aria-checked=true. tsc OK, build OK, 177/177 tests.",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-05 16:55:04",
+                             "review_after":  "2027-05-05 16:55:04",
+                             "created_at":  "2026-11-05 16:55:04",
+                             "updated_at":  "2026-11-05 16:55:04",
                              "pinned":  false
                          }
                      ],
