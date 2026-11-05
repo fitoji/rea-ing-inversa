@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-05 15:30:13.684126800",
+    "exported_at":  "2026-11-05 16:24:28.460255600",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -705,6 +705,23 @@
                              "review_after":  "2027-05-05 15:29:57",
                              "created_at":  "2026-11-05 15:29:57",
                              "updated_at":  "2026-11-05 15:29:57",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  7,
+                             "sync_id":  "obs-c3665c986c8937d6",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "bugfix",
+                             "title":  "Supply inferred from drawing (removed manual phase/neutral marks)",
+                             "content":  "What: Eliminada la marca manual de Fase/Neutro; la alimentacion ahora se deriva del dibujo como en CADe_SIMU.\nWhy: El marcado manual sobre cables era una implementacion erronea; CADe_SIMU usa los simbolos de alimentacion (3000 L, 3001 N, 3005 L1L2L3+PE, etc.) y los tipos de cable del propio plano.\nWhere: app/src/sim/circuit.ts (live/ret desde netsOfSymbols de 3000/3006/3007 y 3001, fallback a cables 4000/4010), app/src/editor/state.ts (se quita supply/setSupply), app/src/ui/App.tsx, app/src/ui/Inspector.tsx (se quita el toggle Fase/Neutro), app/test/circuit.test.ts.\nLearned: La inferencia por colores de cable sola elegia 14/12 y puenteaba PARO; preferir el simbolo L (net 13) y N (net 16) hace que STAR energice KM1 y PARO lo corte. Suite 177/177, tsc OK, vite build OK. Commit 4552807.",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-05 16:24:12",
+                             "review_after":  "2027-11-05 16:24:12",
+                             "created_at":  "2026-11-05 16:24:12",
+                             "updated_at":  "2026-11-05 16:24:12",
                              "pinned":  false
                          }
                      ],
