@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-05 21:53:44.555747000",
+    "exported_at":  "2026-11-05 22:12:45.587651600",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -909,6 +909,23 @@
                              "review_after":  "2027-11-05 21:53:19",
                              "created_at":  "2026-11-05 21:53:19",
                              "updated_at":  "2026-11-05 21:53:19",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  19,
+                             "sync_id":  "obs-68e944348d5f4841",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "pattern",
+                             "title":  "Collapsible CADe_SIMU category bar",
+                             "content":  "What: La barra horizontal del estilo CADe_SIMU ahora muestra una categoria por icono; todas arrancan plegadas y se despliegan al hacer clic.\nWhy: El usuario pidio que se vea como CADe_SIMU, con un icono por categoria y no todos los componentes sueltos.\nWhere: app/src/ui/Palette.tsx (estado openCats, categorias con icono/label/contador/chevron, fila desplegable por categoria).\nLearned: Cada categoria usa el primer simbolo como icono, muestra el conteo y una flecha; se pueden abrir varias. Favoritos es una categoria mas. 200/200 tests, tsc OK, build OK. Commit d7e62ee.",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-05 22:12:22",
+                             "review_after":  "2027-05-05 22:12:22",
+                             "created_at":  "2026-11-05 22:12:22",
+                             "updated_at":  "2026-11-05 22:12:22",
                              "pinned":  false
                          }
                      ],
