@@ -149,16 +149,16 @@ v1 usable: **6-8 semanas** de trabajo part-time. La fase 3 es la que define el p
 
 - [x] T4.1 Solver iterativo con detección de convergencia y de lazo inestable (`app/src/sim/solver.ts`)
 - [x] T4.2 Semántica de componentes: bobina, contacto NA/NC, pulsador, selector, lámpara, fusible, térmico, motor (`app/src/sim/netlist.ts`)
-- [ ] T4.3 Propagación de estados y animación visual en el lienzo — el solver ya corre sobre archivos reales, falta pintarlo
+- [x] T4.3 Propagación de estados y animación visual: cables con tensión, contactos que conmutan y rotor del motor energizado
 - [x] T4.4 Tests con circuitos canónicos: arranque directo con enclavamiento e inversión de giro con NC cruzado
 
 **Decisión de diseño**: el solver se prueba contra circuitos escritos como datos, no extraídos de un `.cade`. Así un fallo de lógica no se confunde con un fallo de interpretación del dibujo. La extracción tiene sus propios tests de invariantes sobre los archivos reales.
 
 **Abierto:**
 
-- **La alimentación se INDICA, no se adivina.** El usuario marca un cable como fase y otro como neutro; sus redes se resuelven al armar el circuito. Sin marcar, la simulación no corre. El respaldo por código de cable existe pero no se usa para afirmar nada.
+- **La alimentación se INFIERE del dibujo, como CADe_SIMU.** Se toman las redes de los símbolos de alimentación (`3000` L, `3001` N, `3003` L+N, `3004`/`3005` trifásicos, `3006`/`3007`) y, como respaldo, los tipos de cable (`4000` fase, `4010` neutro/PE). Se eliminaron las marcas manuales Fase/Neutro.
 - **Confirmado con documentación oficial**: CADe_SIMU tiene «Cable fase» y «Cable neutro» como **elementos distintos** de la librería «Cables y conexiones». El tipo de conductor es un registro distinto, no una convención de color. Mapa inferido por estructura: `4000` fase (alimenta las cargas, numerado), `4010` neutro/PE (un solo conductor por archivo, de la bornera al motor), `4009`/`4019` mando, `4001` unión.
-- **Confirmado por simulación**: marcando los cables `#23` (fase) y `#25` (neutro) del arranque, pulsar STAR energiza KM1 y PARO lo corta. La extracción del circuito es correcta; lo que faltaba era indicar la alimentación.
+- **Confirmado por simulación y por el binario**: con la alimentación inferida de los símbolos (L en net 13, N en net 16), pulsar STAR energiza KM1 y PARO lo corta. Los cables `#23`/`#25` fueron solo un workaround de prueba, ya retirado.
 
 ## Log
 
