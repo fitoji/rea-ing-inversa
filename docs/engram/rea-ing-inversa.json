@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-05 20:16:15.254350700",
+    "exported_at":  "2026-11-05 20:30:34.323035600",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -807,6 +807,23 @@
                              "review_after":  "2027-11-05 20:16:02",
                              "created_at":  "2026-11-05 20:16:02",
                              "updated_at":  "2026-11-05 20:16:02",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  13,
+                             "sync_id":  "obs-28e03de1e2060c79",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "bugfix",
+                             "title":  "Parser prefers real records over geometry-tail duplicates",
+                             "content":  "What: El parser ahora prefiere el registro real cuando una cola de geometria imita una cabecera con el mismo id.\nWhy: En inversion-giro-cej.cade, la cola *6*5# del registro KM2 se tomaba como registro y ocultaba el *6*2001#-KM2 real, rompiendo la red.\nWhere: app/src/format/cade.ts (dedupe por id con score: codigo distinto de 0/5 + extension), app/test/project.test.ts, docs/re/pending-tasks.md, app/scripts/fixture-orphans.ts.\nLearned: El test del registro KM2 pasa; suite 188/188, tsc OK, build OK. El fixture sigue sin simular: 28 extremos sueltos y falta cableado entre 3003 y la maniobra; snap automatico no alcanza. P0.7 queda bloqueado por datos, P0.8 propone redibujar o usar un .cade completo. Commit c1e87d5.",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-05 20:30:21",
+                             "review_after":  "2027-11-05 20:30:21",
+                             "created_at":  "2026-11-05 20:30:21",
+                             "updated_at":  "2026-11-05 20:30:21",
                              "pinned":  false
                          }
                      ],
