@@ -1,6 +1,6 @@
 import type { CSSProperties, JSX } from 'react';
 import { useEffect, useState, useSyncExternalStore } from 'react';
-import { BoxesIcon, StarIcon } from 'lucide-react';
+import { BoxesIcon, ChevronDownIcon, StarIcon } from 'lucide-react';
 import { lineList, symbolList, type SymbolDef, type SymbolGroup } from '../symbols/library.ts';
 import { CATALOG } from '../symbols/catalog.ts';
 import { getScope, subscribeScope } from '../symbols/scope.ts';
@@ -81,6 +81,8 @@ export function Palette({ placing, onPick, sheets, activeSheet, onSheet }: Props
   }
   // Categorías plegadas: con el catálogo completo la lista no entra de una vista.
   const [open, setOpen] = useState<string[]>(['fav']);
+  /** Categorías desplegadas en la barra horizontal; arrancan todas plegadas. */
+  const [openCats, setOpenCats] = useState<string[]>([]);
   const [favorites, setFavorites] = useState<number[]>(readFavorites);
 
   useEffect(() => writeFavorites(favorites), [favorites]);
@@ -94,53 +96,87 @@ export function Palette({ placing, onPick, sheets, activeSheet, onSheet }: Props
 
   const groups = GROUP_ORDER.filter((g) => byGroup.has(g));
 
-  // Estilo CADe_SIMU: barra horizontal con los grupos en su orden clásico.
+  const categories = [
+    ...(favSymbols.length > 0
+      ? [{ key: 'fav', label: 'Favoritos', tone: 'var(--tone-senalizacion)', syms: favSymbols }]
+      : []),
+    ...groups.map((group) => ({
+      key: group,
+      label: GROUP_LABEL[group],
+      tone: GROUP_TONE[group],
+      syms: byGroup.get(group)!,
+    })),
+  ];
+
+  const toggleCategory = (key: string): void => {
+    setOpenCats((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
+  };
+
+  // Estilo CADe_SIMU: una categoría por ícono; se despliega al hacer clic.
   if (horizontal) {
     return (
-      <aside className="relative z-10 flex w-full shrink-0 items-stretch gap-2 border-b border-border bg-card px-2 py-1.5 shadow-chrome-down">
-        <div className="flex min-w-0 flex-1 items-stretch gap-3 overflow-x-auto">
-          {favSymbols.length > 0 && (
-            <section className="flex shrink-0 flex-col gap-1 border-r border-border pr-3">
-              <div className="flex items-center gap-1 text-[9px] font-semibold tracking-[0.5px] text-muted-foreground uppercase">
-                <StarIcon className="size-2.5 fill-current text-[var(--tone-senalizacion)]" />
-                Favoritos
-              </div>
-              <div className="flex gap-1">
-                {favSymbols.map((sym) => (
-                  <SymbolTile key={sym.code} sym={sym} group={sym.group} active={placing === sym.code} onPick={onPick} />
-                ))}
-              </div>
-            </section>
-          )}
-          {groups.map((group) => (
-            <section key={group} className="flex shrink-0 flex-col gap-1 border-r border-border pr-3 last:border-r-0">
-              <div className="flex items-center gap-1 text-[9px] font-semibold tracking-[0.5px] text-muted-foreground uppercase">
-                <span className="size-1.5 shrink-0 rounded-full" style={{ background: GROUP_TONE[group] }} />
-                {GROUP_LABEL[group]}
-              </div>
-              <div className="flex gap-1">
-                {byGroup.get(group)!.map((sym) => (
-                  <SymbolTile key={sym.code} sym={sym} group={group} active={placing === sym.code} onPick={onPick} />
-                ))}
-              </div>
-            </section>
-          ))}
+      <aside className="relative z-10 flex w-full shrink-0 flex-col border-b border-border bg-card shadow-chrome-down">
+        <div className="flex items-stretch gap-2 px-2 py-1.5">
+          <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto">
+            {categories.map((cat) => {
+              const expanded = openCats.includes(cat.key);
+              const first = cat.syms[0];
+              return (
+                <Button
+                  key={cat.key}
+                  variant={expanded ? 'secondary' : 'ghost'}
+                  className="flex h-auto shrink-0 items-center gap-1.5 px-1.5 py-1"
+                  title={cat.label}
+                  aria-expanded={expanded}
+                  onClick={() => toggleCategory(cat.key)}
+                >
+                  {first && (
+                    <span
+                      className="pal-tone grid size-[26px] shrink-0 place-items-center rounded-md border"
+                      style={{ '--ink': cat.tone } as CSSProperties}
+                    >
+                      <svg className="size-[22px]" viewBox="-4 -6 26 24" aria-hidden="true">
+                        <SymbolGlyph code={first.code} pinNames={first.pins.map((p) => p.name)} w={18} h={15} />
+                      </svg>
+                    </span>
+                  )}
+                  <span className="flex flex-col items-start leading-tight">
+                    <span className="text-[9px] font-semibold tracking-[0.3px] uppercase">{cat.label}</span>
+                    <span className="text-[8px] text-muted-foreground">{cat.syms.length}</span>
+                  </span>
+                  <ChevronDownIcon className={expanded ? 'size-3 rotate-180 transition-transform' : 'size-3 transition-transform'} />
+                </Button>
+              );
+            })}
+          </div>
+          <div className="flex shrink-0 items-center gap-1 border-l border-border pl-2">
+            {sheets.map((sheet, i) => (
+              <Button
+                key={sheet.index}
+                variant={i === activeSheet ? 'secondary' : 'ghost'}
+                size="icon-xs"
+                className="font-mono text-[10px]"
+                title={`Hoja ${i + 1}`}
+                aria-current={i === activeSheet ? 'true' : undefined}
+                onClick={() => onSheet(i)}
+              >
+                {String(i + 1).padStart(2, '0')}
+              </Button>
+            ))}
+          </div>
         </div>
-        <div className="flex shrink-0 items-center gap-1 border-l border-border pl-2">
-          {sheets.map((sheet, i) => (
-            <Button
-              key={sheet.index}
-              variant={i === activeSheet ? 'secondary' : 'ghost'}
-              size="icon-xs"
-              className="font-mono text-[10px]"
-              title={`Hoja ${i + 1}`}
-              aria-current={i === activeSheet ? 'true' : undefined}
-              onClick={() => onSheet(i)}
+        {categories
+          .filter((cat) => openCats.includes(cat.key))
+          .map((cat) => (
+            <div
+              key={cat.key}
+              className="flex items-center gap-1 overflow-x-auto border-t border-border/60 bg-background/40 px-2 py-1"
             >
-              {String(i + 1).padStart(2, '0')}
-            </Button>
+              {cat.syms.map((sym) => (
+                <SymbolTile key={sym.code} sym={sym} group={sym.group} active={placing === sym.code} onPick={onPick} />
+              ))}
+            </div>
           ))}
-        </div>
       </aside>
     );
   }
