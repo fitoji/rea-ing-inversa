@@ -47,6 +47,8 @@ export interface Device {
   /** Temporizado: modo y si el contacto base es NC. */
   timer?: 'on' | 'off' | 'both';
   timerNC?: boolean;
+  /** Bobina biestable: mantiene su estado tras desenergizarse. */
+  latching?: boolean;
 }
 
 export interface Netlist {
@@ -222,6 +224,7 @@ export function buildNetlist(records: CadeRecordModel[]): Netlist {
             ? 'both'
             : undefined,
       timerNC: rec.code === 7005 || rec.code === 7009 || rec.code === 7013,
+      latching: rec.code === 9001,
     });
   }
 

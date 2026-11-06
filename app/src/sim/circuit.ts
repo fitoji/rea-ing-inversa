@@ -65,7 +65,8 @@ export function simKindOf(device: Device): SimDevice['kind'] | null {
     case 'pushbutton':
       return device.code === 8001 || device.code === 8005 || device.code === 8009 ? 'buttonNC' : 'buttonNO';
     case 'selector':
-      return device.code === 8013 || device.code === 8015 ? 'buttonNC' : 'switch';
+      // Se accionan como pulsadores (conmutan al hacer clic).
+      return device.code === 8013 || device.code === 8015 ? 'buttonNC' : 'buttonNO';
     default:
       return null;
   }
@@ -168,6 +169,7 @@ export function circuitFrom(records: CadeRecordModel[], options: CircuitOptions 
         part: device.part,
         timer: device.timer,
         timerNC: device.timerNC,
+        latching: device.latching,
       });
     }
   }
