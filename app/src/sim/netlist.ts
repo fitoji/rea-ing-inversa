@@ -62,20 +62,24 @@ export function partKey(designator: string): string {
 }
 
 export function kindOf(code: number): DeviceKind {
-  // Bobinas: lo que se energiza. 9000 es la bobina monoestable del catálogo y
-  // 7018 la de un contactor; 9001/9004/9005/9006 son relés y temporizadores.
-  if (code === 9000 || code === 9001 || code === 7018 || code === 9004 || code === 9005 || code === 9006) return 'coil';
+  // Bobinas: lo que se energiza. 9000 monoestable, 9001 biestable, 7018 de
+  // contactor y 9004/9005/9006/9007 temporizadores.
+  if (code === 9000 || code === 9001 || code === 7018 || code === 9004 || code === 9005 || code === 9006 || code === 9007) return 'coil';
   // Contactos: 7000/7001 auxiliares, 2001/2006 los de potencia del contactor
   // y 8018 el auxiliar NC doble.
   if (code === 7000 || code === 7001 || code === 2001 || code === 2006 || code === 8018) return 'contact';
-  if (code === 8000 || code === 8001) return 'pushbutton';
-  if (code === 8012 || code === 8013) return 'selector';
+  // Pulsadores (NA/NC/NA-NC/conmutado) y setas de emergencia.
+  if (code >= 8000 && code <= 8011) return 'pushbutton';
+  // Selectores y finales de carrera.
+  if (code >= 8012 && code <= 8015) return 'selector';
   if (code === 8016 || code === 9008 || code === 9009) return 'lamp';
   // Protecciones: fusibles, automáticos, disyuntores y diferenciales conducen
   // mientras no se modelen disparos. El térmico es su propio tipo.
   if (code === 6007 || code === 8017) return 'thermal';
   if (code >= 6000 && code < 7000) return 'fuse';
-  if (code === 1000) return 'motor';
+  // Motores: trifásicos, Dahlander, rotativo, dos velocidades, CC, etc.
+  if (code >= 1000 && code <= 1010) return 'motor';
+  if (code === 10508 || code === 10509) return 'motor';
   if (code >= 3000 && code < 4000) return 'terminal';
   return 'unknown';
 }

@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-05 22:12:45.587651600",
+    "exported_at":  "2026-11-06 09:29:22.024779600",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -926,6 +926,23 @@
                              "review_after":  "2027-05-05 22:12:22",
                              "created_at":  "2026-11-05 22:12:22",
                              "updated_at":  "2026-11-05 22:12:22",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  20,
+                             "sync_id":  "obs-9805dea1bc84fec4",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "pattern",
+                             "title":  "Expanded component mapping for pushbuttons/selectors/motors",
+                             "content":  "What: Ampliado el soporte de componentes de mando y seleccion para que mas codigos de CADe_SIMU simulen.\nWhy: En pr1, los pulsadores/setas/automaticos no conducian por estar sin mapear.\nWhere: app/src/sim/netlist.ts (kindOf: 8000..8015 pushbutton/selector, 1000..1010 y 10508/10509 motor), app/src/sim/circuit.ts (simKindOf para pushbutton/selector), app/src/ui/App.tsx (PUSH_CODES ampliado).\nLearned: 200/200 tests, tsc OK, build OK. Commit pendiente.",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-06 09:29:03",
+                             "review_after":  "2027-05-06 09:29:03",
+                             "created_at":  "2026-11-06 09:29:03",
+                             "updated_at":  "2026-11-06 09:29:03",
                              "pinned":  false
                          }
                      ],

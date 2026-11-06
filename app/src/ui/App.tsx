@@ -85,7 +85,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { cn } from '@/lib/utils';
 
 /** Pulsadores que la simulación puede apretar. */
-const PUSH_CODES = new Set([8000, 8001, 8002, 8004, 8005, 8006, 8100]);
+const PUSH_CODES = new Set([8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8008, 8009, 8010, 8011, 8012, 8013, 8014, 8015, 8100]);
 
 const MODE_KEY = 'simuelectro:mode';
 

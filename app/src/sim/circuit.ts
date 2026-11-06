@@ -63,9 +63,9 @@ export function simKindOf(device: Device): SimDevice['kind'] | null {
       // NC; 2001, 2006 y 7000 son NA.
       return device.code === 7001 || device.code === 8018 ? 'contactNC' : 'contactNO';
     case 'pushbutton':
-      return device.code === 8000 ? 'buttonNO' : 'buttonNC';
+      return device.code === 8001 || device.code === 8005 || device.code === 8009 ? 'buttonNC' : 'buttonNO';
     case 'selector':
-      return device.code === 8012 ? 'switch' : 'buttonNC';
+      return device.code === 8013 || device.code === 8015 ? 'buttonNC' : 'switch';
     default:
       return null;
   }
