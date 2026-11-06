@@ -24,3 +24,5 @@ dist/
 # proyecto. Lo que viaja con el repo es el export del proyecto (docs/engram).
 docs/engram/store/
 
+# Local AI runtime state
+.atl/
