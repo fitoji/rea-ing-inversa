@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-06 09:52:51.624442700",
+    "exported_at":  "2026-11-06 09:58:39.017551800",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -977,6 +977,23 @@
                              "review_after":  "2027-05-06 09:52:35",
                              "created_at":  "2026-11-06 09:52:35",
                              "updated_at":  "2026-11-06 09:52:35",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  23,
+                             "sync_id":  "obs-016784ccc92d090c",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "pattern",
+                             "title":  "Selectors and limit switches clickable",
+                             "content":  "What: Selectores y finales de carrera ahora se accionan con clic durante la simulacion.\nWhy: P1.5 de la lista de tareas REA.\nWhere: app/src/sim/netlist.ts (8012..8015 como selector), app/src/sim/circuit.ts (simKindOf: 8013/8015 como buttonNC, el resto buttonNO).\nLearned: PUSH_CODES ya incluia 8012..8015. 205/205 tests, tsc OK, build OK. Commit e897f3e.",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-06 09:58:20",
+                             "review_after":  "2027-05-06 09:58:20",
+                             "created_at":  "2026-11-06 09:58:20",
+                             "updated_at":  "2026-11-06 09:58:20",
                              "pinned":  false
                          }
                      ],
