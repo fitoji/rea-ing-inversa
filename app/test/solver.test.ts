@@ -105,6 +105,13 @@ test('motor como carga: se alimenta si sus bornes llegan a fase y neutro', () =>
   assert.equal(simulate(circuit).loads.has('motor'), true);
 });
 
+test('variantes de motor (CC y monofásico) se alimentan igual que el trifásico', () => {
+  for (const code of [1006, 1007]) {
+    const circuit: Circuit = { supply: [FASE, NEUTRO], devices: [{ id: `m${code}`, kind: 'motor', a: FASE, b: NEUTRO, part: `M${code}` }] };
+    assert.equal(simulate(circuit).loads.has(`m${code}`), true, `motor ${code}`);
+  }
+});
+
 test('temporizador a la conexión: el contacto cierra tras el retardo', () => {
   const circuit: Circuit = {
     supply: [FASE, NEUTRO],
@@ -131,6 +138,25 @@ test('temporizador a la conexión NC: se abre tras el retardo', () => {
   assert.equal(simulate(circuit).loads.has('lamp'), true, 'NC conduce antes del retardo');
   const ready = simulate(circuit, { timers: new Map([['T1', { onReady: true, offReady: false }]]) });
   assert.equal(ready.loads.has('lamp'), false, 'NC se abre tras el retardo');
+});
+
+test('bobina biestable mantiene el estado sin entrada', () => {
+  const circuit: Circuit = {
+    supply: [FASE, NEUTRO],
+    devices: [
+      { id: 'btn', kind: 'buttonNO', a: FASE, b: 2, part: 'S1' },
+      { id: 'bob', kind: 'coil', a: 2, b: NEUTRO, part: 'K1', latching: true },
+    ],
+  };
+  const on = simulate(circuit, { pressed: new Set(['btn']) });
+  assert.equal(on.energized.has('K1'), true);
+
+  const off = simulate(circuit, { latched: on.energized });
+  assert.equal(off.energized.has('K1'), true, 'la biestable no olvida');
+
+  // Un reset explícito la desenergiza.
+  const reset = simulate(circuit, { latched: on.energized, reset: new Set(['K1']) });
+  assert.equal(reset.energized.has('K1'), false);
 });
 
 test('detecta la oscilación en vez de colgarse', () => {
