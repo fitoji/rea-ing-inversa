@@ -166,6 +166,8 @@ export function circuitFrom(records: CadeRecordModel[], options: CircuitOptions 
         a: remap(device.nets[a]!),
         b: remap(device.nets[b]!),
         part: device.part,
+        timer: device.timer,
+        timerNC: device.timerNC,
       });
     }
   }

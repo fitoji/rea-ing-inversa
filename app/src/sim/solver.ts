@@ -39,6 +39,9 @@ export interface SimDevice {
   b: number;
   /** aparato al que pertenece: la bobina y sus contactos comparten clave */
   part: string;
+  /** Temporizado: modo de retardo y si el contacto base es NC. */
+  timer?: 'on' | 'off' | 'both';
+  timerNC?: boolean;
 }
 
 export interface Circuit {
@@ -86,6 +89,8 @@ export interface SimOptions {
   initialEnergized?: Iterable<string>;
   /** máximo de iteraciones; útil para probar la detección de oscilación */
   maxIterations?: number;
+  /** Temporizadores: por aparato, si ya cumplió el retardo. */
+  timers?: ReadonlyMap<string, { onReady: boolean; offReady: boolean }>;
 }
 
 function setKey(set: ReadonlySet<string>): string {
@@ -121,10 +126,41 @@ export function simulate(circuit: Circuit, options: SimOptions = {}): SimState {
           if (!pressed.has(device.id)) closed.add(device.id);
           break;
         case 'contactNO':
-          if (energized.has(device.part)) closed.add(device.id);
+          if (device.timer) {
+            const ts = options.timers?.get(device.part);
+            const onReady = ts?.onReady ?? false;
+            const offReady = ts?.offReady ?? false;
+            const coilOn = energized.has(device.part);
+            if (device.timer === 'on') {
+              // Conexión: cierra tras el retardo.
+              if (coilOn && onReady) closed.add(device.id);
+            } else if (device.timer === 'off') {
+              // Desconexión: cierra mientras el coil está energizado o mientras
+              // el retardo de apertura no se cumplió.
+              if (coilOn || offReady) closed.add(device.id);
+            } else {
+              if (coilOn ? onReady : offReady) closed.add(device.id);
+            }
+          } else if (energized.has(device.part)) {
+            closed.add(device.id);
+          }
           break;
         case 'contactNC':
-          if (!energized.has(device.part)) closed.add(device.id);
+          if (device.timer) {
+            const ts = options.timers?.get(device.part);
+            const onReady = ts?.onReady ?? false;
+            const offReady = ts?.offReady ?? false;
+            const coilOn = energized.has(device.part);
+            if (device.timer === 'on') {
+              if (coilOn ? !onReady : true) closed.add(device.id);
+            } else if (device.timer === 'off') {
+              if (coilOn ? false : !offReady) closed.add(device.id);
+            } else {
+              if (coilOn ? !onReady : !offReady) closed.add(device.id);
+            }
+          } else if (!energized.has(device.part)) {
+            closed.add(device.id);
+          }
           break;
         case 'fuse':
         case 'thermal':

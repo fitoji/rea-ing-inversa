@@ -44,6 +44,9 @@ export interface Device {
   nets: number[];
   /** pares de bornes que forman polos: [a, b] sobre índices de `nets` */
   poles: [number, number][];
+  /** Temporizado: modo y si el contacto base es NC. */
+  timer?: 'on' | 'off' | 'both';
+  timerNC?: boolean;
 }
 
 export interface Netlist {
@@ -65,9 +68,10 @@ export function kindOf(code: number): DeviceKind {
   // Bobinas: lo que se energiza. 9000 monoestable, 9001 biestable, 7018 de
   // contactor y 9004/9005/9006/9007 temporizadores.
   if (code === 9000 || code === 9001 || code === 7018 || code === 9004 || code === 9005 || code === 9006 || code === 9007) return 'coil';
-  // Contactos: 7000/7001 auxiliares, 2001/2006 los de potencia del contactor
-  // y 8018 el auxiliar NC doble.
+  // Contactos: 7000/7001 auxiliares, 2001/2006 los de potencia del contactor,
+  // 8018 el auxiliar NC doble y 7004..7015 los temporizados.
   if (code === 7000 || code === 7001 || code === 2001 || code === 2006 || code === 8018) return 'contact';
+  if (code >= 7004 && code <= 7015) return 'contact';
   // Pulsadores (NA/NC/NA-NC/conmutado) y setas de emergencia.
   if (code >= 8000 && code <= 8011) return 'pushbutton';
   // Selectores y finales de carrera.
@@ -210,6 +214,14 @@ export function buildNetlist(records: CadeRecordModel[]): Netlist {
       pinNames: rec.pins,
       nets,
       poles: pairPins(nets.length),
+      timer: (rec.code >= 7004 && rec.code <= 7007)
+        ? 'on'
+        : (rec.code >= 7008 && rec.code <= 7011)
+          ? 'off'
+          : (rec.code >= 7012 && rec.code <= 7015)
+            ? 'both'
+            : undefined,
+      timerNC: rec.code === 7005 || rec.code === 7009 || rec.code === 7013,
     });
   }
 

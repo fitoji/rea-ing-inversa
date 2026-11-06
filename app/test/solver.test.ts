@@ -105,6 +105,34 @@ test('motor como carga: se alimenta si sus bornes llegan a fase y neutro', () =>
   assert.equal(simulate(circuit).loads.has('motor'), true);
 });
 
+test('temporizador a la conexión: el contacto cierra tras el retardo', () => {
+  const circuit: Circuit = {
+    supply: [FASE, NEUTRO],
+    devices: [
+      { id: 'coil', kind: 'coil', a: FASE, b: NEUTRO, part: 'T1' },
+      { id: 'timed', kind: 'contactNO', a: FASE, b: 3, part: 'T1', timer: 'on', timerNC: false },
+      { id: 'lamp', kind: 'lamp', a: 3, b: NEUTRO, part: 'H1' },
+    ],
+  };
+  assert.equal(simulate(circuit).loads.has('lamp'), false);
+  const ready = simulate(circuit, { timers: new Map([['T1', { onReady: true, offReady: false }]]) });
+  assert.equal(ready.loads.has('lamp'), true);
+});
+
+test('temporizador a la conexión NC: se abre tras el retardo', () => {
+  const circuit: Circuit = {
+    supply: [FASE, NEUTRO],
+    devices: [
+      { id: 'coil', kind: 'coil', a: FASE, b: NEUTRO, part: 'T1' },
+      { id: 'timed', kind: 'contactNC', a: FASE, b: 3, part: 'T1', timer: 'on', timerNC: true },
+      { id: 'lamp', kind: 'lamp', a: 3, b: NEUTRO, part: 'H1' },
+    ],
+  };
+  assert.equal(simulate(circuit).loads.has('lamp'), true, 'NC conduce antes del retardo');
+  const ready = simulate(circuit, { timers: new Map([['T1', { onReady: true, offReady: false }]]) });
+  assert.equal(ready.loads.has('lamp'), false, 'NC se abre tras el retardo');
+});
+
 test('detecta la oscilación en vez de colgarse', () => {
   // Un contacto NC del propio aparato en serie con su bobina: si se energiza,
   // abre el contacto, se desenergiza, cierra... Un lazo mal puesto.

@@ -121,6 +121,22 @@ export function App(): JSX.Element {
   const [pressedRecords, setPressedRecords] = useState<number[]>([]);
   /** Protecciones abiertas/disparadas durante la simulación. */
   const [openProtections, setOpenProtections] = useState<number[]>([]);
+  /** Reloj de simulación para temporizadores (ms desde que arrancó). */
+  const [tick, setTick] = useState(0);
+  const timerStartRef = useRef(new Map<string, number>());
+  const timerDeStartRef = useRef(new Map<string, number>());
+  const timerReadyRef = useRef(new Set<number>());
+
+  useEffect(() => {
+    if (!running) {
+      timerStartRef.current.clear();
+      timerDeStartRef.current.clear();
+      setTick(0);
+      return;
+    }
+    const id = window.setInterval(() => setTick((t) => t + 100), 100);
+    return () => window.clearInterval(id);
+  }, [running]);
   /** Aviso enfocado: se resalta en rojo en el lienzo. */
   const [highlight, setHighlight] = useState<{ ids: number[]; at: Point | null } | null>(null);
   /** Estado retenido: un contactor no olvida entre pasos (enclavamientos). */
@@ -215,10 +231,37 @@ export function App(): JSX.Element {
 
   const simulation = useMemo(() => {
     if (!running || !built) return null;
-    const state = simulate(built.circuit, { pressed, initialEnergized: lastEnergized.current });
+
+    // Temporizadores: se acumula el tiempo mientras el coil está energizado.
+    const timerParts = new Set(built.circuit.devices.filter((d) => d.timer).map((d) => d.part));
+    const timers = new Map<string, { onReady: boolean; offReady: boolean }>();
+    for (const part of timerParts) {
+      const coilOn = lastEnergized.current.has(part);
+      if (coilOn) {
+        if (!timerStartRef.current.has(part)) {
+          timerStartRef.current.set(part, tick);
+          timerDeStartRef.current.delete(part);
+        }
+        const elapsed = tick - (timerStartRef.current.get(part) ?? tick);
+        timers.set(part, { onReady: elapsed >= 1000, offReady: false });
+      } else {
+        timerStartRef.current.delete(part);
+        if (!timerDeStartRef.current.has(part)) timerDeStartRef.current.set(part, tick);
+        const elapsed = tick - (timerDeStartRef.current.get(part) ?? tick);
+        timers.set(part, { onReady: false, offReady: elapsed < 1000 });
+      }
+    }
+
+    const timerReadyIds = new Set<number>();
+    for (const d of built.circuit.devices) {
+      if (d.timer && timers.get(d.part)?.onReady) timerReadyIds.add(Number(d.id.split(':')[0]));
+    }
+    timerReadyRef.current = timerReadyIds;
+
+    const state = simulate(built.circuit, { pressed, initialEnergized: lastEnergized.current, timers });
     lastEnergized.current = state.energized;
     return state;
-  }, [running, built, pressed]);
+  }, [running, built, pressed, tick]);
 
   /** Registros cuyo aparato quedó energizado: bobina, lámpara o motor. */
   const live = useMemo(() => {
@@ -289,8 +332,9 @@ export function App(): JSX.Element {
         closed: closedContacts,
         pressed: new Set(pressedRecords),
         tripped: new Set(openProtections),
+        timerReady: timerReadyRef.current,
       }),
-    [project, running, live, closedContacts, pressedRecords, openProtections],
+    [project, running, live, closedContacts, pressedRecords, openProtections, tick],
   );
 
   const toggleSimulation = (): void => {
