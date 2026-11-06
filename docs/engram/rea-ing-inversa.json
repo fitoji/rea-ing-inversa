@@ -1,6 +1,6 @@
 {
   "version": "0.2.0",
-  "exported_at": "2026-11-06 12:28:01.304486000",
+  "exported_at": "2026-11-06 20:24:11.599131000",
   "sessions": [
     {
       "id": "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -1217,6 +1217,55 @@
       "review_after": "2027-05-06 11:19:18",
       "created_at": "2026-11-06 11:19:18",
       "updated_at": "2026-11-06 11:19:18",
+      "pinned": false
+    },
+    {
+      "id": 1828,
+      "sync_id": "obs-88fd2742937f6bd1",
+      "session_id": "manual-save-rea-ing-inversa",
+      "type": "discovery",
+      "title": "Tanda P0: parseo lineal, memo y netlist por hoja",
+      "content": "**What**: Cerrados T1 y T3 de la tanda P0 de la auditoria v0.3. T2 descartado con medicion.\n\n**Why**: El humano eligio 'P0: performance del editor' y el audit listaba parser O(n^2), arrastre a ~4 fps y netlist sin namespace de hoja.\n\n**Where**: app/src/format/cade.ts (posiciones de '#' precomputadas), app/src/editor/state.ts (memo text-\u003eProject, moveVertex con hoja), app/src/model/project.ts (CadeRecordModel.sheet), app/src/editor/network.ts (claves '\u003choja\u003e|\u003cx\u003e,\u003cy\u003e' y '\u003choja\u003e:\u003ccable\u003e'), app/src/sim/netlist.ts, app/src/ui/Canvas.tsx. Tests nuevos: test/parse-perf.test.ts, test/sheets.test.ts.\n\n**Learned**: (1) El parser SI era cuadratico (4000 registros 87 ms, 8000 343 ms) pero el fixture real tarda 1,09 ms, no los 85,7 ms que declaro el audit: arreglado a 1,25/2,34 ms, 150x en archivos de 250 KB. (2) El arrastre ya sostenia 60 fps en Chrome real (mediana 16,7 ms, p95 16,8 ms con reposo limpio): el '~4 fps' venia del parseo mal medido, asi que no se reescribio la vista previa. (3) El netlist mezclaba hojas por los BORNES (3 bornes de la hoja 1 sobre extremos de cable de la hoja 0: 54,69 / 54,78 / 54,84), no por puntos de cable; y el numero de cable tampoco tenia hoja (cable 4 sumaba 6 tramos de dos paginas). (4) Un arrastre de vertice normaliza tramos colineales de TODO el archivo (76 -\u003e 65 cables en pantalla): es preexistente y seguro, pero se ve como si el editor borrara cosas que no tocaste.\n\n**Evidence**: suite 213/213, tsc limpio, diferencial contra el commit base: los 5 archivos de una hoja conservan la particion exacta de redes, inversion-giro-cej.cade pasa de 51 a 54 redes (los 3 bornes).",
+      "project": "rea-ing-inversa",
+      "scope": "project",
+      "revision_count": 1,
+      "duplicate_count": 1,
+      "last_seen_at": "2026-11-06 20:23:54",
+      "review_after": "2027-05-06 20:23:54",
+      "created_at": "2026-11-06 20:23:54",
+      "updated_at": "2026-11-06 20:23:54",
+      "pinned": false
+    },
+    {
+      "id": 1829,
+      "sync_id": "obs-5e9703b96cea6656",
+      "session_id": "manual-save-rea-ing-inversa",
+      "type": "manual",
+      "title": "odd/editor-performance/tasks",
+      "content": "Mirror del plan de la tanda P0 (fuente: odd/tasks/editor-performance.md).\n\n**Specs**: S1 parser lineal + memo text-\u003eProject; S2 arrastre como transformacion transitoria con commit en pointerup; S3 netlist con namespace de hoja.\n\n**Estado**: T1 cerrado (c088faf) — parse 87-\u003e1,25 ms con 4000 registros, memo en projectOf. T3 cerrado (c288170) — clave de red '\u003choja\u003e|\u003cx\u003e,\u003cy\u003e', clave de cable '\u003choja\u003e:\u003ccable\u003e', moveVertex/bendCable reciben hoja. T2 DROPPED con medicion: el arrastre ya sostiene 60 fps en Chrome real, su premisa venia del parseo mal medido. T4 hecho: verificacion CDP en Chrome con el fixture de 136 cables.\n\n**Pendiente de la tanda**: nada. Suite 213/213, tsc limpio.",
+      "project": "rea-ing-inversa",
+      "scope": "project",
+      "revision_count": 1,
+      "duplicate_count": 1,
+      "last_seen_at": "2026-11-06 20:24:05",
+      "created_at": "2026-11-06 20:24:05",
+      "updated_at": "2026-11-06 20:24:05",
+      "pinned": false
+    },
+    {
+      "id": 1830,
+      "sync_id": "obs-67c77964b6515747",
+      "session_id": "manual-save-rea-ing-inversa",
+      "type": "manual",
+      "title": "Session summary 2026-11-06: tanda P0 de performance",
+      "content": "## Goal\nCerrar los tres P0 de docs/auditoria-v0.3.md sobre el Electro-Simulador (rea-ing-inversa).\n\n## Instructions\n- Espanol rioplatense, corto y directo.\n- Commits convencionales sin atribucion.\n- Evidencia medida antes de optimizar: si una premisa del audit no reproduce, se reporta y no se implementa el arreglo.\n\n## Discoveries\n- El pull dejo main == origin/main (9057f26). Export de Engram refrescado: 65 obs / 11 sesiones / 84 prompts, 0 sync_id perdidos (commit 9dd6fee).\n- parse era cuadratico de verdad pero a los tamanos reales costaba 1,09 ms, no 85,7 ms. Arreglado y con errata en el audit.\n- El arrastre nunca estuvo a 4 fps: mide 60 fps con long tasks de 60 ms solo en el pointerup.\n- P0-3 se activaba por bornes, no por cables; el numero de cable tampoco tenia hoja.\n\n## Accomplished\n- T1 perf(format) c088faf, T3 fix(sim) c288170, T2 descartado con evidencia, T4 verificado por CDP.\n- Docs: errata de P0-1 y P0-3 en docs/auditoria-v0.3.md, plan en odd/tasks/editor-performance.md.\n- Suite 213/213 (205 base + 2 perf + 6 sheets), tsc --noEmit limpio.\n\n## Next Steps\n- P1 de la tanda siguiente: tabla unica ComponentSpec por codigo (elimina la clase de bugs 8005/8100/8101).\n- P2: capa de producto — export PNG/PDF con cajetin, Tauri, AlertDialog de tres vias.\n- Deuda detectada: un arrastre de vertice normaliza tramos colineales de todo el archivo (incluidas otras hojas); acotarlo es una tarea aparte.\n- P0-2 del netlist sigue cuadratico (proyeccion nodos x tramos): no duele a los tamanos actuales.\n\n## Notes\n- pnpm no esta en PATH del harness; los tests corren con 'node --test' dentro de app/.\n- Node del harness es 24.18.0 y app/package.json pide \u003e=24.22.1.",
+      "project": "rea-ing-inversa",
+      "scope": "project",
+      "revision_count": 1,
+      "duplicate_count": 1,
+      "last_seen_at": "2026-11-06 20:24:05",
+      "created_at": "2026-11-06 20:24:05",
+      "updated_at": "2026-11-06 20:24:05",
       "pinned": false
     }
   ],
