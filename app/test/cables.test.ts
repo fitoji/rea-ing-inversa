@@ -5,14 +5,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from '../src/format/cade.ts';
 import { buildProject, wirePoints } from '../src/model/project.ts';
-import {
-  buildNetwork,
-  cableNumberOf,
-  cableSegments,
-  cableLength,
-  validate,
-  CABLE_NUMBER_INDEX,
-} from '../src/editor/network.ts';
+import { CABLE_NUMBER_INDEX, buildNetwork, cableKey, cableLength, cableNumberOf, cableSegments, netKey, validate } from '../src/editor/network.ts';
 import {
   createEditor,
   projectOf,
@@ -46,7 +39,7 @@ test('el número de cable vive en geometry[21]', () => {
 
 test('los tres tramos del cable 17 son un solo cable lógico', () => {
   const network = buildNetwork(project().records);
-  const group = network.cables.get(17)!;
+  const group = network.cables.get(cableKey(0, 17))!;
   assert.equal(group.length, 3);
   assert.deepEqual([...group].sort((a, b) => a - b), [36, 37, 38]);
 
@@ -68,7 +61,7 @@ test('los registros 4001 son uniones y su geometría es de longitud cero', () =>
 
 test('detecta la unión en T: un extremo dentro de otro tramo', () => {
   const network = buildNetwork(project().records);
-  const tee = network.nodes.get('162,105')!;
+  const tee = network.nodes.get(netKey(0, 162, 105))!;
   assert.ok(tee, 'debe existir el nodo de la unión');
   assert.equal(tee.junction, true);
   assert.ok(tee.ends.length >= 1, 'un cable termina ahí');
@@ -166,14 +159,14 @@ test('unir un vértice no colineal no toca el archivo', () => {
 
 test('cambiar el número de cable alcanza a todos los tramos del cable', () => {
   const network = buildNetwork(project().records);
-  const group = network.cables.get(17)!;
+  const group = network.cables.get(cableKey(0, 17))!;
 
   let s = createEditor(ARRANQUE);
   s = setCableNumber(s, group, 99);
 
   const after = buildNetwork(projectOf(s).records);
-  assert.equal(after.cables.get(17), undefined);
-  assert.deepEqual([...after.cables.get(99)!].sort((a, b) => a - b), [...group].sort((a, b) => a - b));
+  assert.equal(after.cables.get(cableKey(0, 17)), undefined);
+  assert.deepEqual([...after.cables.get(cableKey(0, 99))!].sort((a, b) => a - b), [...group].sort((a, b) => a - b));
 });
 
 test('seleccionar un tramo selecciona el cable entero', () => {
@@ -302,7 +295,7 @@ test('mover un vértice interior mantiene los dos tramos enganchados', () => {
 
   // El destino queda DENTRO del tramo vertical: si dos tramos verticales se
   // tocan en ese punto, no hay doblez real y se disuelven en uno solo.
-  const node = net.nodes.get(`${to.x},${to.y}`);
+  const node = net.nodes.get(netKey(0, to.x, to.y));
   assert.equal(node, undefined, 'un vértice que no dobla nada no debe quedar');
   const contains = [...net.segments.values()].some((seg) => {
     const minY = Math.min(seg.points.y1, seg.points.y2);
@@ -320,16 +313,16 @@ test('mover un vértice interior mantiene los dos tramos enganchados', () => {
 });
 
 test('mover el codo del cable 17 conserva el número y la continuidad', () => {
-  const cornersBefore = buildNetwork(project().records).cables.get(17)!.length;
+  const cornersBefore = buildNetwork(project().records).cables.get(cableKey(0, 17))!.length;
 
   let s = createEditor(ARRANQUE);
   s = moveVertex(s, { x: 144, y: 162 }, { x: 150, y: 168 });
 
   const net = buildNetwork(projectOf(s).records);
-  const node = net.nodes.get('150,168');
+  const node = net.nodes.get(netKey(0, 150, 168));
   assert.ok(node && node.ends.length + node.through.length >= 2, 'el codo movido sigue uniendo');
 
-  const cable = net.cables.get(17)!;
+  const cable = net.cables.get(cableKey(0, 17))!;
   assert.ok(cable.length >= cornersBefore, 'los tramos nuevos heredan el número de cable');
   for (const id of cable) {
     const seg = net.segments.get(id)!;
@@ -367,7 +360,7 @@ test('mover un vértice colineal produce un escalón, sin tramos duplicados', ()
   s = moveVertex(s, { x: pts.x1, y: mid }, to);
 
   const net = buildNetwork(projectOf(s).records);
-  const cable = net.cables.get(cableNumberOf(wire))!;
+  const cable = net.cables.get(cableKey(0, cableNumberOf(wire)))!;
   assert.equal(cable.length, 3, 'un escalón son tres tramos: arriba, la vertical desplazada y abajo');
 
   const signatures = new Set<string>();
@@ -384,7 +377,7 @@ test('mover un vértice colineal produce un escalón, sin tramos duplicados', ()
     signatures.add(key);
   }
 
-  assert.equal(net.nodes.get(`${to.x},${to.y}`), undefined, 'no debe quedar un vértice inútil');
+  assert.equal(net.nodes.get(netKey(0, to.x, to.y)), undefined, 'no debe quedar un vértice inútil');
 });
 
 test('si el vértice cae alineado con un extremo, degenera en L sin duplicar', () => {
@@ -397,7 +390,7 @@ test('si el vértice cae alineado con un extremo, degenera en L sin duplicar', (
   s = moveVertex(s, { x: pts.x1, y: mid }, { x: pts.x1 + 9, y: pts.y2 });
 
   const net = buildNetwork(projectOf(s).records);
-  const cable = net.cables.get(cableNumberOf(wire))!;
+  const cable = net.cables.get(cableKey(0, cableNumberOf(wire)))!;
   const signatures = new Set<string>();
   for (const id of cable) {
     const seg = net.segments.get(id)!;
@@ -420,7 +413,7 @@ test('arrastrar el cuerpo de un cable inserta un doblez y lo mueve en un solo pa
   s = bendCable(s, wire.id, at, to);
 
   const net = buildNetwork(projectOf(s).records);
-  const cable = net.cables.get(cableNumberOf(wire))!;
+  const cable = net.cables.get(cableKey(0, cableNumberOf(wire)))!;
   assert.equal(cable.length, 3, 'al doblar hacia un costado el cable queda en escalón');
   assert.equal(orphanCount(projectOf(s).records), 0, 'no deben quedar extremos sueltos');
 
@@ -436,7 +429,7 @@ test('arrastrar el extremo de un cable vertical a la derecha desplaza el tramo',
   s = moveVertex(s, { x: 48, y: 150 }, { x: 60, y: 150 });
 
   const net = buildNetwork(projectOf(s).records);
-  const cable = net.cables.get(13)!;
+  const cable = net.cables.get(cableKey(0, 13))!;
   const segs = cable.map((id) => net.segments.get(id)!);
   assert.equal(segs.length, 2, 'un codo son dos tramos');
 
@@ -446,7 +439,7 @@ test('arrastrar el extremo de un cable vertical a la derecha desplaza el tramo',
   assert.equal(horizontal.points.y1, 66, 'el codo queda pegado al extremo quieto');
 
   const net2 = buildNetwork(projectOf(s).records);
-  const node = net2.nodes.get('60,150');
+  const node = net2.nodes.get(netKey(0, 60, 150));
   assert.ok(node, 'el extremo arrastrado queda en el destino');
 });
 
@@ -455,13 +448,13 @@ test('mover un extremo y volverlo deja el cable como estaba, sin vértice colgan
   s = moveVertex(s, { x: 48, y: 150 }, { x: 60, y: 150 });
 
   const ida = buildNetwork(projectOf(s).records);
-  assert.ok(ida.nodes.get('60,66'), 'la ida deja un codo arriba');
+  assert.ok(ida.nodes.get(netKey(0, 60, 66)), 'la ida deja un codo arriba');
 
   s = moveVertex(s, { x: 60, y: 150 }, { x: 48, y: 150 });
 
   const net = buildNetwork(projectOf(s).records);
   assert.equal(projectOf(s).records.length, project().records.length, 'vuelve al mismo número de registros');
-  assert.equal(net.nodes.get('60,66'), undefined, 'el vértice del codo viejo no puede quedar colgando');
+  assert.equal(net.nodes.get(netKey(0, 60, 66)), undefined, 'el vértice del codo viejo no puede quedar colgando');
   const cablesOriginales = buildNetwork(project().records).segments.size;
   assert.equal(net.segments.size, cablesOriginales, 'no deben quedar tramos de más');
 

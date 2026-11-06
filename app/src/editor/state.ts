@@ -32,7 +32,7 @@ import {
   type CadeRecordModel,
   type Project,
 } from '../model/project.ts';
-import { CABLE_NUMBER_INDEX, buildNetwork, cableNumberOf, cableSegments } from './network.ts';
+import { CABLE_NUMBER_INDEX, buildNetwork, cableNumberOf, cableSegments, netKey, nodeXY } from './network.ts';
 import type { Point } from './pins.ts';
 
 export type Rotation = 0 | 90 | 180 | 270;
@@ -452,7 +452,7 @@ export function moveEndpoint(state: EditorState, id: number, end: 0 | 1, x: numb
  * su orientación: si el destino rompe la ortogonalidad, ese tramo se parte en
  * un codo. Todo entra en una sola operación de deshacer.
  */
-export function moveVertex(state: EditorState, from: Point, to: Point): EditorState {
+export function moveVertex(state: EditorState, from: Point, to: Point, sheet = 0): EditorState {
   if (Math.abs(from.x - to.x) < AXIS_TOL && Math.abs(from.y - to.y) < AXIS_TOL) return state;
   const project = projectOf(state);
   let id = nextId(project);
@@ -576,6 +576,8 @@ export function moveVertex(state: EditorState, from: Point, to: Point): EditorSt
   // vértice viejo plantado en el aire.
   const afterNet = buildNetwork(buildProject(parse(firstPass)).records);
   const beforeNet = buildNetwork(project.records);
+  // Las claves de red llevan la hoja adelante (`0|42,486`); acá se protegen los
+  // puntos por coordenada, que es lo que el usuario está arrastrando.
   const protect = new Set([`${from.x},${from.y}`, `${to.x},${to.y}`]);
   const deadIds = new Set<number>();
   const degreeAt = (net: typeof afterNet, key: string): number => {
@@ -585,7 +587,7 @@ export function moveVertex(state: EditorState, from: Point, to: Point): EditorSt
   for (const node of afterNet.nodes.values()) {
     if (node.pin || node.junction) continue;
     if (degreeAt(afterNet, node.key) !== 1) continue;
-    if (protect.has(node.key)) continue;
+    if (protect.has(nodeXY(node.key))) continue;
     if (degreeAt(beforeNet, node.key) < 2) continue;
     const segId = node.ends[0];
     if (segId === undefined || deadIds.has(segId)) continue;
@@ -605,7 +607,7 @@ export function moveVertex(state: EditorState, from: Point, to: Point): EditorSt
   // los handles quedan en los lugares viejos y el siguiente arrastre agarra
   // otra cosa. Se seleccionan todos los tramos del cable que toca el destino.
   const net = buildNetwork(buildProject(parse(finalText)).records);
-  const target = `${to.x},${to.y}`;
+  const target = netKey(sheet, to.x, to.y);
   const cables = new Set<number>();
   const loose = new Set<number>();
   for (const seg of net.segments.values()) {
@@ -614,6 +616,7 @@ export function moveVertex(state: EditorState, from: Point, to: Point): EditorSt
     else cables.add(seg.cable);
   }
   const selected = [...net.segments.values()]
+    .filter((seg) => seg.sheet === sheet)
     .filter((seg) => (seg.cable === 0 ? loose.has(seg.id) : cables.has(seg.cable)))
     .map((seg) => seg.id);
   return selected.length > 0 ? { ...next, selection: selected } : next;
@@ -802,21 +805,21 @@ export function addJunction(state: EditorState, x: number, y: number, templateRa
  * cualquier punto y el cable se dobla ahí. Sin esto, arrastrar el cable no hacía
  * nada y parecía que la app estaba rota.
  */
-export function bendCable(state: EditorState, id: number, at: Point, to: Point): EditorState {
+export function bendCable(state: EditorState, id: number, at: Point, to: Point, sheet = 0): EditorState {
   const inserted = insertVertex({ ...state, past: [], future: [] }, id, at.x, at.y);
   if (inserted.text === state.text) return state;
-  const moved = moveVertex({ ...inserted, past: [], future: [] }, at, to);
+  const moved = moveVertex({ ...inserted, past: [], future: [] }, at, to, sheet);
   if (moved.text === state.text) return state;
   return commit(state, moved.text);
 }
 
 export type DragOp =
   | { kind: 'move'; dx: number; dy: number }
-  | { kind: 'vertex'; from: Point; to: Point }
-  | { kind: 'bend'; id: number; at: Point; to: Point };
+  | { kind: 'vertex'; from: Point; to: Point; sheet?: number }
+  | { kind: 'bend'; id: number; at: Point; to: Point; sheet?: number };
 
 export function applyDrag(state: EditorState, op: DragOp): EditorState {
   if (op.kind === 'move') return moveSelection(state, op.dx, op.dy);
-  if (op.kind === 'vertex') return moveVertex(state, op.from, op.to);
-  return bendCable(state, op.id, op.at, op.to);
+  if (op.kind === 'vertex') return moveVertex(state, op.from, op.to, op.sheet ?? 0);
+  return bendCable(state, op.id, op.at, op.to, op.sheet ?? 0);
 }

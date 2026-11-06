@@ -71,6 +71,8 @@ export interface CadeRecordModel {
   text: string;
   /** texto original exacto del registro */
   raw: string;
+  /** índice de la hoja a la que pertenece el registro; la geometría es por hoja */
+  sheet: number;
 }
 
 export interface Sheet {
@@ -119,7 +121,7 @@ function splitNumbers(field: string): number[] {
     .filter((n) => Number.isFinite(n));
 }
 
-export function modelOfRecord(rec: CadeRecord): CadeRecordModel {
+export function modelOfRecord(rec: CadeRecord, sheet = 0): CadeRecordModel {
   const kind = classify(rec.code);
   const fields = rec.raw.split('#');
   const base: CadeRecordModel = {
@@ -132,6 +134,7 @@ export function modelOfRecord(rec: CadeRecord): CadeRecordModel {
     geometry: [],
     text: '',
     raw: rec.raw,
+    sheet,
   };
 
   if (kind === 'text') {
@@ -180,15 +183,20 @@ export function modelOfRecord(rec: CadeRecord): CadeRecordModel {
 }
 
 export function buildProject(doc: CadeDocument): Project {
-  const records = doc.records.map(modelOfRecord);
-
-  const sheets: Sheet[] = [];
-  let start = 0;
-  records.forEach((rec, i) => {
-    if (rec.kind !== 'sheet-title') return;
-    sheets.push({ index: sheets.length, startRecord: start, endRecord: i + 1, titleBlock: rec });
-    start = i + 1;
+  // Los rangos de hoja se calculan sobre los códigos, antes de construir los
+  // modelos: cada registro necesita saber a qué hoja pertenece porque la
+  // geometría (y por lo tanto las redes) es por hoja.
+  const titleIndexes: number[] = [];
+  doc.records.forEach((rec, i) => {
+    if (classify(rec.code) === 'sheet-title') titleIndexes.push(i);
   });
+
+  const ranges: { start: number; end: number; title: number | null }[] = [];
+  let start = 0;
+  for (const title of titleIndexes) {
+    ranges.push({ start, end: title + 1, title });
+    start = title + 1;
+  }
 
   // Lo que queda después del último bloque de título pertenece a ESA hoja, no a
   // una nueva. Evidencia: `ej0def.cad` tiene su bloque de título en el registro
@@ -197,11 +205,24 @@ export function buildProject(doc: CadeDocument): Project {
   //
   // Sin esto, cualquier registro agregado caía en una hoja sin título que no se
   // estaba mirando, y la edición parecía no haber hecho nada.
-  if (start < records.length) {
-    const last = sheets.at(-1);
-    if (last) last.endRecord = records.length;
-    else sheets.push({ index: 0, startRecord: 0, endRecord: records.length, titleBlock: null });
+  if (start < doc.records.length) {
+    const last = ranges.at(-1);
+    if (last) last.end = doc.records.length;
+    else ranges.push({ start: 0, end: doc.records.length, title: null });
   }
+
+  const sheetOf = new Array<number>(doc.records.length).fill(0);
+  ranges.forEach((range, index) => {
+    for (let i = range.start; i < range.end; i++) sheetOf[i] = index;
+  });
+
+  const records = doc.records.map((rec, i) => modelOfRecord(rec, sheetOf[i] ?? 0));
+  const sheets: Sheet[] = ranges.map((range, index) => ({
+    index,
+    startRecord: range.start,
+    endRecord: range.end,
+    titleBlock: range.title === null ? null : (records[range.title] ?? null),
+  }));
   return { hasMagic: doc.hasMagic, prefix: doc.prefix, records, sheets };
 }
 

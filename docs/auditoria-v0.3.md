@@ -189,3 +189,42 @@ Medición reproducida con `app/test/parse-perf.test.ts` antes de arreglar el esc
 - Arreglado en `app/src/format/cade.ts` (posiciones de `#` precomputadas) y `app/src/editor/state.ts`
   (memo `text → Project`): un archivo de 250 KB pasa de 343 ms a 2,3 ms por parseo, y cambiar la
   selección deja de reconstruir el `Project`. El arrastre sigue parseando por evento (P0-2).
+
+## Errata de P0-3 — netlist por hoja (2026-11-06, tanda P0)
+
+P0-3 se confirma, pero el mecanismo real no era el que suponía el diagnóstico.
+
+- **No hay ningún punto de cable compartido entre las dos hojas.** Redes por hoja: 112
+  nodos en la hoja 0, 42 en la hoja 1; la intersección de claves es vacía. Un archivo
+  multi-hoja con los mismos cables dibujados en el mismo lugar sí fallaría, pero este
+  archivo no lo hace.
+- **Lo que sí se mezclaba eran los bornes**: tres bornes de componentes de la hoja 1
+  caen en coordenadas donde la hoja 0 tiene extremos de cable (`54,69`, `54,78`,
+  `54,84`). En el netlist global esos bornes se fundían con el cableado de la primera
+  página: la simulación veía conectado un componente de la página 2.
+- **Y el número de cable tampoco tenía hoja**: las dos páginas usan los cables 4, 5 y 6,
+  así que `cableSegments` devolvía tramos de ambas. El cable 4 "tenía" 6 tramos: 4 de la
+  hoja 0 y 2 de la hoja 1, con esa longitud informada en el inspector.
+
+Arreglado con la hoja como parte de la identidad:
+
+- `CadeRecordModel.sheet`, asignado en `buildProject`.
+- Clave de red `"<hoja>|<x>,<y>"` y clave de cable `"<hoja>:<número>"`.
+- `NetNode.sheet` y `NetSegment.sheet`; la proyección de un punto sobre un tramo ya no
+  cruza hojas.
+- `moveVertex`/`bendCable`/`DragOp` reciben la hoja: mover un vértice en la página 2
+  dejaba de seleccionar el cable homónimo de la página 1.
+
+Verificación diferencial contra el commit base:
+
+| Archivo | Redes antes | Redes después |
+| --- | --- | --- |
+| `arranque-paro-motor-3f.cad` | 20 | 20 (idénticas) |
+| `ej0def.cad` | 15 | 15 (idénticas) |
+| `inversion-giro-mini.cade` | 7 | 7 (idénticas) |
+| `luz-con-interruptor.cade` | 3 | 3 (idénticas) |
+| `pr1-rodolfo-giusti.cad` | 21 | 21 (idénticas) |
+| `inversion-giro-cej.cade` | 51 | 54 (los 3 bornes dejan de fusionarse) |
+
+Los cinco archivos de una hoja conservan la partición de redes exacta; el único
+multi-hoja suma exactamente los 3 nodos que estaban fusionados.

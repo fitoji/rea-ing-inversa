@@ -16,7 +16,7 @@
 
 import type { CadeRecordModel } from '../model/project.ts';
 import { attachPoints } from '../editor/pins.ts';
-import { buildNetwork } from '../editor/network.ts';
+import { buildNetwork, netKey } from '../editor/network.ts';
 
 export type DeviceKind =
   | 'coil'
@@ -132,8 +132,6 @@ class UnionFind {
   }
 }
 
-const key = (x: number, y: number): string => `${Math.round(x * 100) / 100},${Math.round(y * 100) / 100}`;
-
 export function buildNetlist(records: CadeRecordModel[]): Netlist {
   const network = buildNetwork(records);
   const pins = attachPoints(records);
@@ -159,8 +157,7 @@ export function buildNetlist(records: CadeRecordModel[]): Netlist {
   const netIdByKey = new Map<string, number>();
   const rootToNet = new Map<string, number>();
   let nextNet = 0;
-  const netOf = (x: number, y: number): number => {
-    const k = key(x, y);
+  const netOf = (k: string): number => {
     const cached = netIdByKey.get(k);
     if (cached !== undefined) return cached;
     const root = uf.find(k);
@@ -178,10 +175,10 @@ export function buildNetlist(records: CadeRecordModel[]): Netlist {
     sizes.set(id, (sizes.get(id) ?? 0) + 1);
   };
 
-  for (const node of network.nodes.values()) bump(netOf(node.x, node.y));
+  for (const node of network.nodes.values()) bump(netOf(node.key));
   for (const seg of network.segments.values()) {
-    netOf(seg.points.x1, seg.points.y1);
-    netOf(seg.points.x2, seg.points.y2);
+    netOf(seg.a);
+    netOf(seg.b);
   }
 
   const devices: Device[] = [];
@@ -192,7 +189,7 @@ export function buildNetlist(records: CadeRecordModel[]): Netlist {
     if (rec.kind !== 'connection') continue;
     const pts = wirePointsOf(rec);
     if (!pts) continue;
-    recordNets.set(rec.id, [netOf(pts.x1, pts.y1), netOf(pts.x2, pts.y2)]);
+    recordNets.set(rec.id, [netOf(netKey(rec.sheet, pts.x1, pts.y1)), netOf(netKey(rec.sheet, pts.x2, pts.y2))]);
   }
 
   for (const rec of records) {
@@ -200,7 +197,7 @@ export function buildNetlist(records: CadeRecordModel[]): Netlist {
     const points = pinPoints.get(rec.id);
     if (!points || points.length === 0) continue;
 
-    const nets = points.map((p) => netOf(p.x, p.y));
+    const nets = points.map((p) => netOf(netKey(rec.sheet, p.x, p.y)));
     for (const net of nets) {
       const set = members.get(net) ?? new Set<number>();
       set.add(rec.id);

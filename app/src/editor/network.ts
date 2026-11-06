@@ -31,7 +31,9 @@ export const JUNCTION_CODE = 4001;
 export type NodeKind = 'end' | 'corner' | 'tee' | 'junction' | 'pin';
 
 export interface NetNode {
+  /** `<hoja>|<x>,<y>`: la geometría es por hoja, dos páginas no comparten punto */
   key: string;
+  sheet: number;
   x: number;
   y: number;
   /** tramos que terminan exactamente acá */
@@ -50,6 +52,7 @@ export interface NetNode {
 export interface NetSegment {
   id: number;
   code: number;
+  sheet: number;
   cable: number;
   a: string;
   b: string;
@@ -59,10 +62,10 @@ export interface NetSegment {
 export interface Network {
   nodes: Map<string, NetNode>;
   segments: Map<number, NetSegment>;
-  /** número de cable -> ids de tramo, en orden de archivo */
-  cables: Map<number, number[]>;
-  /** puntos de unión declarados por registros 4001 */
-  junctionPoints: Point[];
+  /** `<hoja>:<número de cable>` -> ids de tramo, en orden de archivo */
+  cables: Map<string, number[]>;
+  /** puntos de unión declarados por registros 4001, con su hoja */
+  junctionPoints: (Point & { sheet: number })[];
   /** bornes de componente por id */
   pins: Map<number, Point[]>;
 }
@@ -76,7 +79,13 @@ export interface Finding {
   at?: Point;
 }
 
-const key = (x: number, y: number): string => `${Math.round(x * 100) / 100},${Math.round(y * 100) / 100}`;
+const xyKey = (x: number, y: number): string => `${Math.round(x * 100) / 100},${Math.round(y * 100) / 100}`;
+/** Clave de red: la hoja es parte de la identidad del punto. */
+export const netKey = (sheet: number, x: number, y: number): string => `${sheet}|${xyKey(x, y)}`;
+/** Coordenadas de una clave de red, sin su hoja. */
+export const nodeXY = (nodeKey: string): string => nodeKey.slice(nodeKey.indexOf('|') + 1);
+/** Clave del grupo de tramos de un cable: el número de cable es por hoja. */
+export const cableKey = (sheet: number, cable: number): string => `${sheet}:${cable}`;
 const TOL = 0.01;
 
 export function cableNumberOf(rec: CadeRecordModel): number {
@@ -99,16 +108,18 @@ const onSegmentInterior = (seg: NetSegment, x: number, y: number): boolean => {
 
 export function buildNetwork(records: CadeRecordModel[]): Network {
   const segments = new Map<number, NetSegment>();
-  const cables = new Map<number, number[]>();
-  const junctionPoints: Point[] = [];
+  const cables = new Map<string, number[]>();
+  const junctionPoints: (Point & { sheet: number })[] = [];
   const pins = attachPoints(records);
+  const sheetOf = new Map<number, number>();
+  for (const rec of records) sheetOf.set(rec.id, rec.sheet);
 
   for (const rec of records) {
     if (rec.kind === 'component') continue;
     if (rec.code === JUNCTION_CODE) {
       const x = rec.geometry[8];
       const y = rec.geometry[9];
-      if (Number.isFinite(x) && Number.isFinite(y)) junctionPoints.push({ x, y });
+      if (Number.isFinite(x) && Number.isFinite(y)) junctionPoints.push({ x, y, sheet: rec.sheet });
       continue;
     }
     const pts = wirePoints(rec);
@@ -117,48 +128,60 @@ export function buildNetwork(records: CadeRecordModel[]): Network {
     segments.set(rec.id, {
       id: rec.id,
       code: rec.code,
+      sheet: rec.sheet,
       cable,
-      a: key(pts.x1, pts.y1),
-      b: key(pts.x2, pts.y2),
+      a: netKey(rec.sheet, pts.x1, pts.y1),
+      b: netKey(rec.sheet, pts.x2, pts.y2),
       points: pts,
     });
-    const list = cables.get(cable) ?? [];
+    const groupKey = cableKey(rec.sheet, cable);
+    const list = cables.get(groupKey) ?? [];
     list.push(rec.id);
-    cables.set(cable, list);
+    cables.set(groupKey, list);
   }
 
   const nodes = new Map<string, NetNode>();
-  const ensure = (x: number, y: number): NetNode => {
-    const k = key(x, y);
+  const ensure = (sheet: number, x: number, y: number): NetNode => {
+    const k = netKey(sheet, x, y);
     let node = nodes.get(k);
     if (!node) {
-      node = { key: k, x, y, ends: [], through: [], junction: false, pin: false, connected: false, kind: 'end' };
+      node = { key: k, sheet, x, y, ends: [], through: [], junction: false, pin: false, connected: false, kind: 'end' };
       nodes.set(k, node);
     }
     return node;
   };
 
   for (const seg of segments.values()) {
-    ensure(seg.points.x1, seg.points.y1).ends.push(seg.id);
-    ensure(seg.points.x2, seg.points.y2).ends.push(seg.id);
+    ensure(seg.sheet, seg.points.x1, seg.points.y1).ends.push(seg.id);
+    ensure(seg.sheet, seg.points.x2, seg.points.y2).ends.push(seg.id);
   }
 
-  for (const p of junctionPoints) ensure(p.x, p.y).junction = true;
+  // La unión (4001) cae en la hoja de su propio registro.
+  for (const rec of records) {
+    if (rec.kind === 'component' || rec.code !== JUNCTION_CODE) continue;
+    const x = rec.geometry[8];
+    const y = rec.geometry[9];
+    if (Number.isFinite(x) && Number.isFinite(y)) ensure(rec.sheet, x, y).junction = true;
+  }
 
   const pinByKey = new Map<string, number[]>();
   for (const [componentId, list] of pins) {
+    const sheet = sheetOf.get(componentId) ?? 0;
     for (const p of list) {
-      const k = key(p.x, p.y);
+      const k = netKey(sheet, p.x, p.y);
       const ids = pinByKey.get(k) ?? [];
       ids.push(componentId);
       pinByKey.set(k, ids);
-      ensure(p.x, p.y).pin = true;
+      ensure(sheet, p.x, p.y).pin = true;
     }
   }
 
   // Proyección: un borne o una unión que cae en el medio de un tramo lo corta.
+  // Solo dentro de la misma hoja: un tramo de la página 2 no pasa por un punto
+  // de la página 1 aunque compartan coordenadas.
   for (const node of nodes.values()) {
     for (const seg of segments.values()) {
+      if (seg.sheet !== node.sheet) continue;
       if (onSegmentInterior(seg, node.x, node.y)) node.through.push(seg.id);
     }
   }
@@ -181,7 +204,7 @@ export function cableSegments(network: Network, segmentId: number): number[] {
   const seg = network.segments.get(segmentId);
   if (!seg) return [];
   if (seg.cable === 0) return [segmentId];
-  return network.cables.get(seg.cable) ?? [segmentId];
+  return network.cables.get(cableKey(seg.sheet, seg.cable)) ?? [segmentId];
 }
 
 /** Longitud total de un conjunto de tramos. */
@@ -226,16 +249,16 @@ export function validate(records: CadeRecordModel[]): Finding[] {
 
   const seen = new Map<string, number>();
   for (const p of network.junctionPoints) {
-    const k = key(p.x, p.y);
+    const k = netKey(p.sheet, p.x, p.y);
     seen.set(k, (seen.get(k) ?? 0) + 1);
   }
   for (const [k, count] of seen) {
     if (count > 1) {
-      const [jx, jy] = k.split(',').map(Number);
+      const [jx, jy] = nodeXY(k).split(',').map(Number);
       findings.push({
         level: 'warn',
         code: 'duplicate-junction',
-        message: `Dos uniones superpuestas en ${k}`,
+        message: `Dos uniones superpuestas en ${nodeXY(k)}`,
         ids: [],
         at: { x: jx ?? 0, y: jy ?? 0 },
       });
@@ -260,7 +283,8 @@ export function validate(records: CadeRecordModel[]): Finding[] {
     }
   }
 
-  for (const [cable, ids] of network.cables) {
+  for (const [group, ids] of network.cables) {
+    const cable = Number(group.slice(group.indexOf(':') + 1));
     if (cable === 0 || ids.length < 2) continue;
     const ends = new Map<string, number>();
     for (const id of ids) {
@@ -274,7 +298,7 @@ export function validate(records: CadeRecordModel[]): Finding[] {
         findings.push({
           level: 'warn',
           code: 'cable-disconnected',
-          message: `Cable ${cable} con un extremo desconectado en ${k}`,
+          message: `Cable ${cable} con un extremo desconectado en ${nodeXY(k)}`,
           ids,
           at: { x: node.x, y: node.y },
         });

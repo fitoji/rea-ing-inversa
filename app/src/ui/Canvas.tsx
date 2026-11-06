@@ -190,6 +190,8 @@ export function Canvas(props: Props): JSX.Element {
 
   const pins = useMemo(() => attachPoints(records), [records]);
   const network = useMemo(() => buildNetwork(records), [records]);
+  // Hoja que se está dibujando: los registros llegan recortados a esta página.
+  const sheet = records[0]?.sheet ?? 0;
   const pinList = useMemo(() => [...pins.values()].flat(), [pins]);
 
   /** Snap magnético: primero al borne más cercano, después a la grilla. */
@@ -334,14 +336,14 @@ export function Canvas(props: Props): JSX.Element {
     if (drag?.kind === 'vertex') {
       if (Math.hypot(world.x - drag.sx, world.y - drag.sy) > 0.5) setDrag({ ...drag, moved: true });
       const p = snapPoint(world);
-      onDragPreview({ kind: 'vertex', from: drag.from, to: p });
+      onDragPreview({ kind: 'vertex', from: drag.from, to: p, sheet });
       return;
     }
     if (drag?.kind === 'bend') {
       if (!drag.moved && Math.hypot(world.x - drag.sx, world.y - drag.sy) < 0.8) return;
       if (!drag.moved) setDrag({ ...drag, moved: true });
       const p = snapPoint(world);
-      onDragPreview({ kind: 'bend', id: drag.id, at: drag.at, to: p });
+      onDragPreview({ kind: 'bend', id: drag.id, at: drag.at, to: p, sheet });
       return;
     }
     if (marquee) {
@@ -368,7 +370,7 @@ export function Canvas(props: Props): JSX.Element {
       const moved = Math.hypot(world.x - drag.sx, world.y - drag.sy) > 0.5;
       const p = snapPoint(world);
       setDrag(null);
-      if (moved) onDragCommit({ kind: 'vertex', from: drag.from, to: p });
+      if (moved) onDragCommit({ kind: 'vertex', from: drag.from, to: p, sheet });
       else onDragPreview(null);
       return;
     }
@@ -379,7 +381,7 @@ export function Canvas(props: Props): JSX.Element {
         onDragPreview(null);
         return;
       }
-      onDragCommit({ kind: 'bend', id: drag.id, at: drag.at, to: snapPoint(world) });
+      onDragCommit({ kind: 'bend', id: drag.id, at: drag.at, to: snapPoint(world), sheet });
       return;
     }
     if (marquee) {
