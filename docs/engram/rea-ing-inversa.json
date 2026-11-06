@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-06 09:29:22.024779600",
+    "exported_at":  "2026-11-06 09:45:46.900886400",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -943,6 +943,23 @@
                              "review_after":  "2027-05-06 09:29:03",
                              "created_at":  "2026-11-06 09:29:03",
                              "updated_at":  "2026-11-06 09:29:03",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  21,
+                             "sync_id":  "obs-b3d1dbb97d3794b5",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "pattern",
+                             "title":  "Timed contacts (ON/OFF delay) support",
+                             "content":  "What: Soporte de contactos temporizados (ON-delay, OFF-delay, ON/OFF) en el solver y UI.\nWhy: P1.1 de la lista de tareas REA; CADe_SIMU tiene contactos temporizados a la conexion/desconexion.\nWhere: app/src/sim/solver.ts (SimOptions.timers, closed logic por modo), app/src/sim/netlist.ts (7004..7015 -\u003e contact, timer/timerNC), app/src/sim/circuit.ts (copia timer/timerNC), app/src/ui/App.tsx (reloj cada 100 ms, timerStart/timerDeStart, timers map, timerReadyRef), app/test/solver.test.ts.\nLearned: Delay por defecto 1000 ms (no hay dato en el fixture). El coil debe tener terminales directos a fase/neutro para energizar. Visual state timing para 9004/9005 ya existia. 202/202 tests, tsc OK, build OK. Commit 902c159.",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-06 09:45:28",
+                             "review_after":  "2027-05-06 09:45:28",
+                             "created_at":  "2026-11-06 09:45:28",
+                             "updated_at":  "2026-11-06 09:45:28",
                              "pinned":  false
                          }
                      ],
