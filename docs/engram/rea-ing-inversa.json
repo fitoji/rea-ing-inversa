@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-06 10:09:06.830535500",
+    "exported_at":  "2026-11-06 10:20:17.108139600",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -1011,6 +1011,22 @@
                              "review_after":  "2027-05-06 10:08:45",
                              "created_at":  "2026-11-06 10:08:45",
                              "updated_at":  "2026-11-06 10:08:45",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  25,
+                             "sync_id":  "obs-e72b2fc16fa8c9ed",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "manual",
+                             "title":  "Session summary 2026-11-06: CADe_SIMU RE and Electro-Simulador work",
+                             "content":  "## Goal\nConfigurar el entorno de agentes (gentle-ai, REA, Ghidra, CodeGraph) y hacer ingenieria inversa de CADe_SIMU V4 para aplicar hallazgos al proyecto Electro-Simulador (rea-ing-inversa).\n\n## Instructions\n- Respuestas en espanol (voseo), corto y directo.\n- Commits convencionales, sin atribucion AI.\n- Documentar en docs/re y versionar la memoria Engram en docs/engram.\n- Antes de aplicar cambios de herramientas, mostrar el plan y esperar aprobacion.\n- Preferir CodeGraph para explorar codigo; para datos de fixture usar scripts Node.\n\n## Discoveries\n- CADe_SIMU V4: PE32 x86, MFC 4.2 debug, GDI, libnodave (PLC S7). Clave shareware 4962.\n- Formato .cad/.cade: cabecera CADe_SIMU + hasta 2000 registros + $ + bloques metadata/textos/flags + ***$\u0026\u0026\u0026. Dos layouts: estandar (10 textos + 23 numericos) y extendido (11 + 24) para codigos 0x41c/0x431/0x2904..0x2936.\n- La cola de geometria puede imitar una cabecera (*6*5#); dedupe por id con score (codigo valido + extension) lo resuelve.\n- 10501 es configuracion de hoja; 10500/10502..10509/10550 son componentes neumaticos.\n- La alimentacion sale de simbolos (3000 L, 3001 N, 3003 L+N, 3004/3005 trifasicos, 3006/3007) y tipos de cable (4000 fase, 4010 neutro/PE).\n- Los extremos de cable que tocan varias cajas deben asignarse a todas (no solo la mas cercana).\n- Componentes sin mapear: 2006 (Contactor I), 8017/8018 (termico/aux NC doble), 8000..8015 (pulsadores/selectores).\n- El binario tiene 270 codigos de componente; los bitmaps extraidos son UI (toolbars/splash) + 12 primitivas D/U, no iconos de componentes.\n- CADe_SIMU no acepta archivos por CLI; abre por Archivo \u003e Abrir. Nuestro .cad es compatible.\n- En simulacion pinta energia en rojo, anima el motor (flecha de giro) y conmuta contactos.\n- E: es FAT32; Ghidra requiere copia en NTFS.\n- Engram MCP degradado; usar CLI engram save/export.\n\n## Accomplished\n- gentle-ai 4.3.1 + OpenCode configurado (doctor healthy).\n- REA 6.8.0 + skill + Ghidra 12.1.4 + JDK 21 + CodeGraph 1.6.2 instalados y configurados.\n- Parser: layout extendido (10500) y dedupe de colas de geometria (KM2 recuperado).\n- Solver: alimentacion inferida por simbolos, temporizadores ON/OFF, bobinas biestables, protecciones toggleables, mas componentes mapeados.\n- UI: estados visuales por componente (idle/active/closed/open/pressed/flashing/timing/tripped), rotor del motor, animacion de cables, solo-lectura en simulacion, tema y paleta horizontal CADe_SIMU, paleta por defecto solo CADe_SIMU.\n- Inventario: 212 simbolos CADe_SIMU + 3 extras + 0 QET; 280 PNG UI + 1248 strings.\n- Informe completo en docs/re/cadesimu-v4-rea.md y tareas en docs/re/pending-tasks.md.\n- 205/205 tests, tsc OK, build OK.\n- 15 commits locales pusheados.\n\n## Next Steps\n- P0.2: resolver codigo 1073 (tabla codigo-\u003enombre en Ghidra).\n- P0.3/P0.5/P0.7: fixture original inversion-giro-cej.cade (28 extremos sueltos, dibujo incompleto).\n- P2.2: bloques E/S PLC.\n- P3.2: config.cfg por posiciones fijas (opcional).\n\n## Relevant Files\n- docs/re/cadesimu-v4-rea.md\n- docs/re/pending-tasks.md\n- docs/re/cade-resource-strings.txt\n- docs/re/bitmaps/\n- docs/re/componentes-completo.md\n- app/src/format/cade.ts\n- app/src/model/project.ts\n- app/src/sim/circuit.ts, netlist.ts, solver.ts, visual.ts\n- app/src/ui/App.tsx, Canvas.tsx, Inspector.tsx, Palette.tsx, SymbolGlyph.tsx, diagram.css\n- app/src/symbols/families.ts, pack.ts, scope.ts\n- app/test/*.test.ts\n- docs/engram/rea-ing-inversa.json",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-06 10:20:01",
+                             "created_at":  "2026-11-06 10:20:01",
+                             "updated_at":  "2026-11-06 10:20:01",
                              "pinned":  false
                          }
                      ],
