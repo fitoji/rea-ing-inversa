@@ -66,8 +66,16 @@ export function createEditor(text: string): EditorState {
   };
 }
 
+// Memo de un solo registro: el editor construye el Project muchas veces sobre
+// el mismo texto (cambiar la selección no cambia el documento). `Project` se
+// trata como inmutable en todo el editor, así que reusar la instancia es seguro.
+let projectCache: { text: string; project: Project } | null = null;
+
 export function projectOf(state: EditorState): Project {
-  return buildProject(parse(state.text));
+  if (projectCache !== null && projectCache.text === state.text) return projectCache.project;
+  const project = buildProject(parse(state.text));
+  projectCache = { text: state.text, project };
+  return project;
 }
 
 function commit(state: EditorState, text: string, selection = state.selection): EditorState {

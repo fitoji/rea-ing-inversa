@@ -170,3 +170,22 @@ PLC, neumática, Arduino. No empezar antes de P0-P2.
 - No se midió rendimiento de render con muchos registros en el navegador; las cifras de P0-1 son
   del parser en Node.
 - `seo` no aplica (app de escritorio) y `vite` no arrojó hallazgos: la configuración está limpia.
+
+## Errata de medición de P0-1 (2026-11-06, tanda P0)
+
+Medición reproducida con `app/test/parse-perf.test.ts` antes de arreglar el escaneo:
+
+| Documento | Registros | `parse` antes | `parse` después |
+| --- | --- | --- | --- |
+| `inversion-giro-cej.cade` (12,9 KB) | 161 | 1,09 ms | 0,16 ms |
+| sintético 61 KB | 2.000 | 22,8 ms | 0,62 ms |
+| sintético 124 KB | 4.000 | 87,0 ms | 1,25 ms |
+| sintético 250 KB | 8.000 | 343,2 ms | 2,34 ms |
+
+- **La forma cuadrática se confirma**: duplicar el documento multiplicaba el tiempo por 3,92.
+- **El valor de 85,7 ms para el fixture real no se reproduce**: son 1,09 ms. La extrapolación
+  «50 KB → 1,7 s» de arriba también estaba inflada: 50 KB parsea en ~15 ms. El defecto es real,
+  pero no bloqueaba el editor a los tamaños de archivo que hoy se manejan.
+- Arreglado en `app/src/format/cade.ts` (posiciones de `#` precomputadas) y `app/src/editor/state.ts`
+  (memo `text → Project`): un archivo de 250 KB pasa de 343 ms a 2,3 ms por parseo, y cambiar la
+  selección deja de reconstruir el `Project`. El arrastre sigue parseando por evento (P0-2).
