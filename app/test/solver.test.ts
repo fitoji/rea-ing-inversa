@@ -112,6 +112,13 @@ test('variantes de motor (CC y monofásico) se alimentan igual que el trifásico
   }
 });
 
+test('motores trifásicos y de dos velocidades se alimentan entre fase y neutro', () => {
+  for (const code of [1000, 1001, 1002, 1003, 1004, 1005, 1010]) {
+    const circuit: Circuit = { supply: [FASE, NEUTRO], devices: [{ id: `m${code}`, kind: 'motor', a: FASE, b: NEUTRO, part: `M${code}` }] };
+    assert.equal(simulate(circuit).loads.has(`m${code}`), true, `motor ${code}`);
+  }
+});
+
 test('temporizador a la conexión: el contacto cierra tras el retardo', () => {
   const circuit: Circuit = {
     supply: [FASE, NEUTRO],

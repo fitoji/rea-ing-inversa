@@ -28,16 +28,24 @@ export interface VisualContext {
   pressed: ReadonlySet<number>;
   /** ids de protecciones disparadas (aún no modelado por el solver) */
   tripped?: ReadonlySet<number>;
+  /** ids de temporizadores/contactos temporizados que ya cumplieron el retardo */
+  timerReady?: ReadonlySet<number>;
 }
 
 /** Señalización óptica fija e intermitente. */
 const LAMP = new Set([9008, 9009]);
 /** Bobinas, electroválvulas y temporizadores. */
-const COIL = new Set([9000, 9001, 9003, 9004, 9005]);
+const COIL = new Set([9000, 9001, 9003, 9004, 9005, 9006, 9007]);
 /** Pulsadores y finales de carrera. */
 const PUSHER = new Set([8000, 8001, 8012, 8013]);
 /** Contactos principales y auxiliares. */
 const CONTACT = new Set([2001, 2002, 7000, 7001]);
+/** Contactos temporizados. */
+const TIMED_CONTACT = new Set([7004, 7005, 7006, 7007, 7008, 7009, 7010, 7011, 7012, 7013, 7014, 7015]);
+/** Temporizadores a la conexión (coil). */
+const TIMER_COIL = new Set([9004, 9005, 9006, 9007]);
+/** Contactos temporizados NC. */
+const TIMED_NC = new Set([7005, 7009, 7013]);
 
 function isMotor(code: number, pins: string[]): boolean {
   return resolveSymbol(code, pins).group === 'motor';
@@ -63,7 +71,14 @@ export function visualStateOf(
   if (isMotor(rec.code, rec.pins)) return ctx.live.has(id) ? 'active' : 'idle';
   if (COIL.has(rec.code)) {
     if (!ctx.live.has(id)) return 'idle';
-    return rec.code === 9004 || rec.code === 9005 ? 'timing' : 'active';
+    if (TIMER_COIL.has(rec.code)) return ctx.timerReady?.has(id) ? 'active' : 'timing';
+    return 'active';
+  }
+  if (TIMED_CONTACT.has(rec.code)) {
+    const baseNC = TIMED_NC.has(rec.code);
+    const ready = ctx.timerReady?.has(id) ?? false;
+    if (!ctx.live.has(id)) return baseNC ? (ready ? 'open' : 'closed') : 'idle';
+    return ready ? 'active' : 'timing';
   }
   if (CONTACT.has(rec.code)) return ctx.closed.has(id) ? 'closed' : 'open';
   return ctx.live.has(id) ? 'active' : 'idle';

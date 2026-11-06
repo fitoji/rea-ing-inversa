@@ -42,6 +42,8 @@ export interface SimDevice {
   /** Temporizado: modo de retardo y si el contacto base es NC. */
   timer?: 'on' | 'off' | 'both';
   timerNC?: boolean;
+  /** Bobina biestable: mantiene su estado tras desenergizarse. */
+  latching?: boolean;
 }
 
 export interface Circuit {
@@ -91,6 +93,10 @@ export interface SimOptions {
   maxIterations?: number;
   /** Temporizadores: por aparato, si ya cumplió el retardo. */
   timers?: ReadonlyMap<string, { onReady: boolean; offReady: boolean }>;
+  /** Bobinas biestables que deben mantenerse energizadas. */
+  latched?: ReadonlySet<string>;
+  /** Bobinas biestables que se resetean en este paso. */
+  reset?: ReadonlySet<string>;
 }
 
 function setKey(set: ReadonlySet<string>): string {
@@ -233,6 +239,16 @@ export function simulate(circuit: Circuit, options: SimOptions = {}): SimState {
       if (!forward && !backward) continue;
       loads.add(device.id);
       if (device.kind === 'coil') nextEnergized.add(device.part);
+    }
+
+    // Bobinas biestables: mantienen su estado aunque deje de llegarles tensión.
+    if (options.latched) {
+      for (const part of options.latched) {
+        const isLatching = devices.some((d) => d.part === part && d.latching);
+        if (!isLatching) continue;
+        if (options.reset?.has(part)) continue;
+        nextEnergized.add(part);
+      }
     }
 
     if (setKey(nextEnergized) === setKey(energized)) {

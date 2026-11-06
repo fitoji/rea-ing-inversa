@@ -258,7 +258,7 @@ export function App(): JSX.Element {
     }
     timerReadyRef.current = timerReadyIds;
 
-    const state = simulate(built.circuit, { pressed, initialEnergized: lastEnergized.current, timers });
+    const state = simulate(built.circuit, { pressed, initialEnergized: lastEnergized.current, timers, latched: lastEnergized.current });
     lastEnergized.current = state.energized;
     return state;
   }, [running, built, pressed, tick]);
