@@ -20,8 +20,8 @@
 | ID | Tarea | Evidencia REA |
 |---|---|---|
 | P0.1 | âœ… Probar un componente extendido real: test sintÃ©tico de `10500` con 11 textos y 24 nÃºmeros. Pendiente: fixture real de `1052`/`10502..10509`/`10550`. | Layout extendido confirmado en el serializer. |
-| P0.2 | Resolver `1073` (`0x431`): aparece en el layout extendido pero no estÃ¡ en el catÃ¡logo ni en `classify`. | Cadena de formato extendido del binario. |
-| P0.3 | Investigar por quÃ© `10501` tiene 22 nÃºmeros de geometrÃ­a y no 24; confirmar Ã­ndices `GEOMETRY` para el layout extendido. | Registro `*3*10501#...` de `inversion-giro-cej.cade`. |
+| P0.2 | Pendiente: Resolver `1073` (`0x431`): usa layout extendido pero no esta en el catalogo ni en `classify`. Busqueda de strings en el binario no devolvio nombre; requiere tabla codigo->nombre en Ghidra. | Cadena de formato extendido del binario. |
+| P0.3 | Investigado: `10501` tiene 22 numeros de geometria, no 24. Los indices GEOMETRY siguen valiendo (x=8, y=9); el registro funciona. | Registro `*3*10501#...` de `inversion-giro-cej.cade`. |
 | P0.4 | âœ… AlimentaciÃ³n por sÃ­mbolos: `3000`, `3001`, `3003` (L+N), `3004`, `3005`, `3006`, `3007` (con N/PE). Tests de inferencia y remapeo. | `3005` tiene nets 0,1,2,12; el motor usa 9,10,11,12. |
 | P0.5 | ðŸŸ¡ IntegraciÃ³n de inversiÃ³n de giro: el circuito se arma con supply inferida, pero el fixture tiene cables sueltos y no energiza. | Fixture real y observaciÃ³n en CADe_SIMU. |
 | P0.7 | ðŸŸ¡ Reparar `inversion-giro-cej.cade`: el parser ya recupera el registro KM2 que una cola de geometrÃ­a tapaba (`*6*5#`), pero quedan 28 extremos sueltos y el control no cierra. El dibujo estÃ¡ incompleto (falta cableado entre 3003 y la maniobra); el snap automÃ¡tico no alcanza. | DiagnÃ³stico con `app/scripts/fixture-orphans.ts`. |
