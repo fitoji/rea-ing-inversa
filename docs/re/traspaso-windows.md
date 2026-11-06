@@ -38,30 +38,39 @@ import, no un clic.
 2. Copiar cualquier `.cade` / `.cad` / `CADe_S1` suelto que haya en el disco y no esté en
    `app/test/fixtures/`. Ver «lo que falta no es REA» más abajo: los archivos reales valen más que
    otra pasada de descompilación.
-3. **No re-exportar Engram a ciegas.** Ver la advertencia de la sección siguiente: el JSON commiteado
-   tiene más historia que la base actual. Respaldarlo antes de tocarlo.
+3. **Verificar Engram antes de tocarlo.** Ver la sección de integridad del store: la base local ya
+   perdió historia una vez y el JSON versionado fue lo que la salvó.
 4. Anotar la clave shareware usada (`4962`) — está en `cadesimu-v4-rea.md`, pero conviene que no se
    pierda si se reinstala CADe_SIMU en otra máquina para observación en ejecución.
 
-## ⚠️ Advertencia: el export de Engram es más rico que la base actual
+## Engram: incidente de integridad del store (resuelto el 2026-11-06)
 
-Verificado el 2026-11-06:
+Al preparar el traspaso se detectó que la base local había perdido 32 observaciones (ids `1641..1784`,
+creadas entre 2026-10-28 y 2026-11-04). El JSON commiteado era la única copia que quedaba.
 
-| | Observaciones | Sesiones |
-| --- | --- | --- |
-| `docs/engram/rea-ing-inversa.json` (commiteado) | **56** | 7 |
-| Base actual (`~/.engram/engram.db`) | **28** | 2 |
+**Recuperado.** `engram import docs/engram/rea-ing-inversa.json` devolvió:
 
-Faltan 32 observaciones, con ids `1641..1784`, creadas entre 2026-10-28 y 2026-11-04. No están
-borradas lógicamente (`deleted_at` nulo en todas): no existen en el store. La base tiene 29 filas en
-total, contando otro proyecto.
+```
+Observations: 32 imported, 0 updated, 24 skipped stale
+Sessions:     6
+```
 
-**El comando de export reescribe el archivo completo.** Ejecutar `engram export` hoy destruye la
-única copia de esas 32 observaciones. El JSON commiteado es el archivo, no la base.
+El import **sí deduplica por `sync_id`**: las 24 observaciones que seguían en la base se saltaron
+como *stale*, sin duplicar. Verificado post-import: 62 filas, 0 `sync_id` duplicados, 0 borrados
+lógicos. El export quedó en **61 observaciones, 8 sesiones, 80 prompts**, y los 61 `sync_id` del
+JSON coinciden con la base.
 
-Antes de migrar: copiar ese JSON fuera del repo. `engram import <archivo>` es la vía de
-recuperación; falta verificar si deduplica por `sync_id` o duplica las 24 observaciones que sí
-siguen en la base.
+### Dos reglas que salieron de esto
+
+1. **`engram export` reescribe el archivo completo.** Comparar los conteos contra la base antes de
+   correrlo: si el JSON tiene más observaciones, no se exporta, se importa.
+2. **El export no debe llevar BOM.** Un BOM UTF-8 hace fallar el import con
+   `engram: parse ...: invalid character 'ï' looking for beginning of value`. El export propio de
+   Engram sale sin BOM; si el archivo pasó por PowerShell, verificar los primeros bytes sean
+   `123,10,32` (`{`, salto de línea, espacio).
+
+El store vive en `~/.engram/engram.db` y es global (todos los proyectos): no se versiona ni se copia
+entre máquinas. Lo que viaja es este JSON.
 
 ## ¿Hace falta otra pasada de REA?
 
