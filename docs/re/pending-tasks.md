@@ -10,6 +10,10 @@
 - [x] **Animación del motor**: rotor girando cuando el motor está energizado.
 - [x] **Cables con tensión**: `wire.live` animado y contactos que conmutan.
 - [x] **Bitmaps y strings**: 280 PNG (12 primitivas D/U + UI: toolbars/splash) y 1.248 cadenas en `docs/re/`. Los bitmaps **no** son íconos de componentes: CADe_SIMU dibuja los símbolos con GDI.
+- [x] **Mapeo extendido de componentes**: 8000..8015, 1000..1010, 10508/10509, 9007, 2006, 8017/8018 mapeados.
+- [x] **Temporizadores (P1.1)**: soporte de contactos temporizados ON/OFF/ambos con reloj de 100 ms.
+- [x] **Bobinas biestables (P1.2)**: latching con `initialEnergized` y reset.
+- [x] **Protecciones toggleables**: abrir/disparar y rearmar con clic.
 
 ## P0 — Correctitud del parser y del solver
 
@@ -28,12 +32,12 @@
 
 | ID | Tarea | Evidencia REA |
 |---|---|---|
-| P1.1 | Contactos temporizados: conexión, desconexión y conexión-desconexión; variantes NA/NC/NA+NC/CON. | Catálogo ES (`Contacto temporizado...`) y módulos `Temporiza.cpp`/`Temporiza1.cpp`. |
-| P1.2 | Bobinas biestables y relés con memoria. | `Bobina biestable`, `Bobina biestable contactor, relé`. |
-| P1.3 | Variantes de motor: Dahlander, rotor bobinado, dos velocidades, CC imán permanente, CC excitación independiente, paso a paso. | Strings `Motor Dahalander`, `Motor rotor bobinado`, `Motor dos velocidades`. |
-| P1.4 | Contactos auxiliares de relé térmico NA/NC y disparo de protecciones. | `Contacto auxiliar relé térmico NA/NC/NA-NC`. |
-| P1.5 | Selectores y finales de carrera adicionales; setas de emergencia. | Catálogo `CON button mushroom`, `Automatic switch I/II/III`. |
-| P1.6 | Verificar en pantalla el rotor y los contactos con alimentación inferida (sin marcas manuales). | Cambio reciente de supply. |
+| P1.1 | ✅ Temporizadores ON/OFF/ambos con reloj de 100 ms y `timerReady`/`offReady`. | `7004..7015` contactos y `9004..9007` bobinas. |
+| P1.2 | ✅ Bobinas biestables con latching y reset explícito. | `9001` Bobina biestable. |
+| P1.3 | ✅ Variantes de motor mapeadas (1000..1010, 10508/10509) y verificadas como cargas. | Catálogo de motores. |
+| P1.4 | ✅ Contactos auxiliares térmicos y disparo de protecciones (toggleables). | `8017`, `8018`, `6000`..`6009`. |
+| P1.5 | ✅ Selectores y finales de carrera accionables con clic. | `8012..8015`. |
+| P1.6 | ✅ Verificado en vivo: motor y bobina `active`, auxiliar `closed`, STAR `pressed`, rotor girando. | `data-state` + CSS. |
 
 ## P2 — Neumática y PLC (backlog v2, ya fundamentado)
 
@@ -47,7 +51,7 @@
 
 | ID | Tarea | Evidencia REA |
 |---|---|---|
-| P3.1 | Generar el envelope completo al crear un archivo nuevo: `CADe_SIMU` + registros + `$$$` + bloques metadata/textos/flags + `***$$$&&&`. | `FUN_004315f0`/`FUN_00432710`. |
+| P3.1 | ✅ El envelope completo se genera con `blankDocument()` (`SHEET_TITLE` con `$$$`, `&&&`, flags) al crear un proyecto nuevo. | `app/src/format/blank.ts`. |
 | P3.2 | Leer/escribir `config.cfg` por posiciones fijas (opcional, compatibilidad). | `FUN_008782d0`/`FUN_00408ef0`. |
 | P3.3 | Probar abrir/guardar con CADe_SIMU original tras el fix extendido (round-trip real). | Observación: `Archivo → Abrir` acepta nuestro `.cad`. |
 | P3.4 | Regresión de color de lámparas `9008`/`9009`. | REA confirmó slot de color. |
