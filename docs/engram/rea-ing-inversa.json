@@ -1,6 +1,6 @@
 ﻿{
     "version":  "0.2.0",
-    "exported_at":  "2026-11-06 09:58:39.017551800",
+    "exported_at":  "2026-11-06 10:09:06.830535500",
     "sessions":  [
                      {
                          "id":  "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -994,6 +994,23 @@
                              "review_after":  "2027-05-06 09:58:20",
                              "created_at":  "2026-11-06 09:58:20",
                              "updated_at":  "2026-11-06 09:58:20",
+                             "pinned":  false
+                         },
+                         {
+                             "id":  24,
+                             "sync_id":  "obs-4e3220224ae12322",
+                             "session_id":  "manual-save-rea-ing-inversa",
+                             "type":  "pattern",
+                             "title":  "Pneumatic actuator symbols from CADe_SIMU",
+                             "content":  "What: Agregados simbolos SVG dedicados para los actuadores neumaticos del catalogo CADe_SIMU.\nWhy: P2.1 de la lista de tareas REA.\nWhere: app/src/symbols/families.ts (helper actuator + 10 codigos: 10500, 10502..10509, 10550).\nLearned: 10501 queda como configuracion de hoja (no es simbodo). 205/205 tests, tsc OK, build OK. Commit c268ea9.",
+                             "project":  "rea-ing-inversa",
+                             "scope":  "project",
+                             "revision_count":  1,
+                             "duplicate_count":  1,
+                             "last_seen_at":  "2026-11-06 10:08:45",
+                             "review_after":  "2027-05-06 10:08:45",
+                             "created_at":  "2026-11-06 10:08:45",
+                             "updated_at":  "2026-11-06 10:08:45",
                              "pinned":  false
                          }
                      ],
