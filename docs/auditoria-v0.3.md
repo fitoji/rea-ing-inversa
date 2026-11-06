@@ -228,3 +228,24 @@ Verificación diferencial contra el commit base:
 
 Los cinco archivos de una hoja conservan la partición de redes exacta; el único
 multi-hoja suma exactamente los 3 nodos que estaban fusionados.
+
+## Errata de P0-2 — arrastre (2026-11-06, tanda P0)
+
+Medido en Chrome real por CDP (Headless 155), cargando `inversion-giro-cej.cade` por el
+input de archivo de la app y arrastrando un vértice con eventos de ratón reales a ~60 Hz,
+240 eventos:
+
+| | Mediana de fotograma | p95 | Máximo | Long tasks |
+| --- | --- | --- | --- | --- |
+| Reposo (baseline) | 16,7 ms | 16,7 ms | 16,8 ms | 0 |
+| Arrastrando | 16,7 ms | 16,8 ms | 50,1 ms | 2 (hasta 60 ms) |
+
+- **Los «~4 fps» no se reproducen**: el arrastre sostiene la tasa de refresco. El costo por
+  evento medido en Node (`projectOf(applyDrag(...))`, 12,9 KB) es de 7,8 ms, dentro del
+  presupuesto de 16,7 ms de un fotograma a 60 Hz.
+- La cifra original se derivaba del valor de parseo de P0-1, que también estaba inflado.
+- Lo que sí queda es un `pointerup` con 2 long tasks de hasta 60 ms: el commit único
+  reconstruye red, validaciones y circuito. Es un tiron único, no un problema por fotograma.
+- **No se implementó el refactor de vista previa en `Canvas`**: mover el delta al paint no
+  tiene beneficio demostrable contra esta medición, y sí riesgo de regresión en el
+  renderizado de cables.
