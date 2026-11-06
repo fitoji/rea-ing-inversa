@@ -26,7 +26,7 @@
 | P0.5 | 🟡 Integración de inversión de giro: el circuito se arma con supply inferida, pero el fixture tiene cables sueltos y no energiza. | Fixture real y observación en CADe_SIMU. |
 | P0.7 | 🟡 Reparar `inversion-giro-cej.cade`: el parser ya recupera el registro KM2 que una cola de geometría tapaba (`*6*5#`), pero quedan 28 extremos sueltos y el control no cierra. El dibujo está incompleto (falta cableado entre 3003 y la maniobra); el snap automático no alcanza. | Diagnóstico con `app/scripts/fixture-orphans.ts`. |
 | P0.8 | ✅ Generado `inversion-giro-mini.cade` con `make-inversion-demo.ts`: dos bobinas, enclavamiento propio y NC cruzado. Test end-to-end en `circuit.test.ts`. El fixture original sigue pendiente (P0.7). | P0.7 bloqueado por datos, no por el solver. |
-| P0.6 | Actualizar `odd/tasks/simuelectro.md`: T4.3 cerrada y decisión de alimentación reemplazada. | Este análisis. |
+| P0.6 | ✅ Actualizado `odd/tasks/simuelectro.md`: T4.3 cerrada y alimentación inferida documentada. | Este análisis. |
 
 ## P1 — Simulación que CADe_SIMU sí tiene
 
@@ -45,7 +45,7 @@
 |---|---|---|
 | P2.1 | Símbolos y estado simple para actuadores neumáticos `10500..10509`, `10550`. | Catálogo: Actuador simple/doble efecto, pinza, ventosa, motor neumático. |
 | P2.2 | Bloques de Entrada/Salida PLC (`Intercambio E/S`), mapeo de señales. | `libnodave.dll` y menú `Intercambio E/S (PLC)`. |
-| P2.3 | Grafcet / Ladder / Lógica: documentar como no-goal de v1. | Barras del menú de CADe_SIMU. |
+| P2.3 | ✅ Documentado como no-goal de v1 en `docs/re/pending-tasks.md` (Grafcet/Ladder/Lógica). | Barras del menú de CADe_SIMU. |
 
 ## P3 — Formato y producto
 
@@ -53,8 +53,8 @@
 |---|---|---|
 | P3.1 | ✅ El envelope completo se genera con `blankDocument()` (`SHEET_TITLE` con `$$$`, `&&&`, flags) al crear un proyecto nuevo. | `app/src/format/blank.ts`. |
 | P3.2 | Leer/escribir `config.cfg` por posiciones fijas (opcional, compatibilidad). | `FUN_008782d0`/`FUN_00408ef0`. |
-| P3.3 | Probar abrir/guardar con CADe_SIMU original tras el fix extendido (round-trip real). | Observación: `Archivo → Abrir` acepta nuestro `.cad`. |
-| P3.4 | Regresión de color de lámparas `9008`/`9009`. | REA confirmó slot de color. |
+| P3.3 | ✅ Round-trip validado: nuestro `.cad` abre en CADe_SIMU V4 (Archivo → Abrir). | Observación en ejecución. |
+| P3.4 | ✅ Regresión de color de lámparas `9008`/`9009` (suite lamp-color). | REA confirmó slot de color. |
 | P3.5 | Documentar el mapa de módulos del binario para futuras pasadas (Pilotos/Temporiza/Simbolo). | Strings `__FILE__` extraídos. |
 
 ## Notas
