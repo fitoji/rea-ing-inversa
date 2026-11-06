@@ -28,6 +28,7 @@
  */
 
 import type { CadeRecordModel } from '../model/project.ts';
+import { specOf } from '../model/component-spec.ts';
 import { buildNetlist, type Device, type Netlist } from './netlist.ts';
 import type { Circuit, DeviceKind, SimDevice } from './solver.ts';
 
@@ -45,9 +46,13 @@ export function cableTypeOf(code: number): CableType {
   return CABLE_TYPE_BY_CODE[code] ?? 'unknown';
 }
 
-/** Cómo se comporta cada aparato en el solver. */
+/**
+ * Cómo se comporta cada aparato en el solver. El kind y la polaridad NA/NC
+ * se derivan del ComponentSpec del código: ya no hay listas sueltas acá.
+ */
 export function simKindOf(device: Device): SimDevice['kind'] | null {
-  switch (device.kind) {
+  const spec = specOf(device.code);
+  switch (spec.kind) {
     case 'coil':
       return 'coil';
     case 'lamp':
@@ -57,16 +62,16 @@ export function simKindOf(device: Device): SimDevice['kind'] | null {
     case 'fuse':
       return 'fuse';
     case 'thermal':
+      // 6007 es el guardamotor (conduce); 8017 es su contacto auxiliar NC.
       return device.code === 6007 ? 'thermal' : 'contactNC';
     case 'contact':
-      // El estado lo manda la bobina del mismo designador. 7001 y 8018 son
-      // NC; 2001, 2006 y 7000 son NA.
-      return device.code === 7001 || device.code === 8018 ? 'contactNC' : 'contactNO';
+      // El estado lo manda la bobina del mismo designador; la polaridad de
+      // reposo la declara la tabla (NC: 7001 y 8018).
+      return spec.rest === 'closed' ? 'contactNC' : 'contactNO';
     case 'pushbutton':
-      return device.code === 8001 || device.code === 8005 || device.code === 8009 ? 'buttonNC' : 'buttonNO';
     case 'selector':
-      // Se accionan como pulsadores (conmutan al hacer clic).
-      return device.code === 8013 || device.code === 8015 ? 'buttonNC' : 'buttonNO';
+      // Los selectores se accionan como pulsadores (conmutan al hacer clic).
+      return spec.rest === 'closed' ? 'buttonNC' : 'buttonNO';
     default:
       return null;
   }
