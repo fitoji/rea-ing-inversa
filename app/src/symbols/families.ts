@@ -220,6 +220,18 @@ const SENSOR_CODES = Object.keys(CATALOG)
 
 // --- catálogo generado -----------------------------------------------------
 
+/** Cilindro neumático: cuerpo rectangular + pistón. */
+function actuator(code: number, _name: string, double: boolean): SymbolDef {
+  const pins = double
+    ? [left(0.25, 'A'), left(0.75, 'B')]
+    : [left(0.5, 'A')];
+  return def(code, 'mando', pins, (w, h) => {
+    const body = [{ d: rect(w * 0.15, h * 0.25, w * 0.7, h * 0.5) }];
+    const piston = [{ d: line(w * 0.85, h * 0.5, w, h * 0.5), thin: true }];
+    return [...body, ...piston];
+  }, { w: 18, h: 15 }, (w, h) => [{ x: w * 0.5, y: h * 0.5, value: 'P', size: Math.min(w, h) * 0.3, anchor: 'middle' }]);
+}
+
 export const FAMILY_SYMBOLS: SymbolDef[] = [
   // motores
   def(1001, 'motor', motorTriYD, motorBody(motorTriYD), { w: 24, h: 24 }, motorLabel('M')),
@@ -346,6 +358,18 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
   strip(4015, 2),
   strip(4016, 3),
   // 4017 (4 vías = 8 bornes) no entra: el registro guarda 7 bornes como máximo.
+
+  // neumática: actuadores y pinzas (del catálogo CADe_SIMU)
+  actuator(10500, 'Actuador de simple efecto', false),
+  actuator(10502, 'Actuador sin vástago', false),
+  actuator(10503, 'Actuador sin vástago magnético', false),
+  actuator(10504, 'Actuador de doble efecto', true),
+  actuator(10505, 'Pinza neumática simple efecto', false),
+  actuator(10506, 'Pinza neumática', true),
+  actuator(10507, 'Ventosa', false),
+  actuator(10508, 'Motor neumático', false),
+  actuator(10509, 'Motor neumático reversible', true),
+  actuator(10550, 'Actuador lineal eléctrico', false),
 ];
 
 /** Regleta / conector: caja con un contacto por vía. */
