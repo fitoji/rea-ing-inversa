@@ -1,6 +1,6 @@
 {
   "version": "0.2.0",
-  "exported_at": "2026-11-06 20:24:11.599131000",
+  "exported_at": "2026-11-07 06:09:28.393439000",
   "sessions": [
     {
       "id": "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -1266,6 +1266,54 @@
       "last_seen_at": "2026-11-06 20:24:05",
       "created_at": "2026-11-06 20:24:05",
       "updated_at": "2026-11-06 20:24:05",
+      "pinned": false
+    },
+    {
+      "id": 1833,
+      "sync_id": "obs-50768b38603e3072",
+      "session_id": "manual-save-rea-ing-inversa",
+      "type": "manual",
+      "title": "odd/component-spec/tasks",
+      "content": "Mirror del plan P1 (fuente: odd/tasks/component-spec.md).\n\n**Specs**: S1 tabla unica ComponentSpec y derivar los cinco consumidores; S2 8005 se presiona en simulacion y se dibuja en reposo; S3 8100 pulsable pero kindOf unknown; S4 8101/8102/8103 nunca son lamp; S5 ningun codigo puede estar en una tabla y ausente en otra en la misma dimension; S6 paridad congelada con lo que ya funciona.\n\n**Defectos probados a cerrar**: 8005 y 11 pulsadores mas sin estado visual; 8100 con el clic perdido; 8101/8103 dibujadas como lampara y nunca lamp; 8102 sin glifo; 8016 lamp solo en el solver; 2002 y 8018 con semantica a medias; 9004-9007 bobinas temporizadas que nunca llegan a timerReady.\n\n**Fuera de alcance declarado**: 5000-5009 (catalogo dice fusible/seccionador, no conduce) y 4009/4010 (nombre de catalogo vs tipo inferido).\n\n**Tasks**: T1 tabla + test de paridad (worker); T2 netlist/circuit derivan (worker); T3 visual deriva (inline); T4 App.PUSH_CODES y project.LAMP_CODES (inline); T5 glifo 8102 (inline).",
+      "project": "rea-ing-inversa",
+      "scope": "project",
+      "revision_count": 1,
+      "duplicate_count": 1,
+      "last_seen_at": "2026-11-06 20:35:41",
+      "created_at": "2026-11-06 20:35:41",
+      "updated_at": "2026-11-06 20:35:41",
+      "pinned": false
+    },
+    {
+      "id": 1839,
+      "sync_id": "obs-456e30627b528599",
+      "session_id": "manual-save-rea-ing-inversa",
+      "type": "manual",
+      "title": "Session summary 2026-11-06 bis: P1 tabla ComponentSpec a medio camino",
+      "content": "## Goal\nCerrar P1 de docs/auditoria-v0.3.md: una sola tabla ComponentSpec por codigo y derivar los cinco consumidores (circuito, netlist, visual, App, project).\n\n## Estado de los commits\n- Tanda P0 completa y pusheada: c088faf (parser lineal), c288170 (netlist por hoja), de6d1eb y 551e1da (memoria y erratas). origin/main al dia en ese momento.\n- P1 T1+T2: **0123b9b** feat(model): single ComponentSpec table. Verificado por mi: suite 235/235, tsc limpio, diferencial end-to-end contra 551e1da sobre los 6 fixtures identico (kinds, timers, reposo, efecto de cada pulsacion).\n- **4e049cb** feat(model): 9003 electrovalvula es una bobina. Impacto medido: EV1:coil y EV2:coil aparecen en inversion-giro-cej.cade; estado energizado sin cambios.\n- Local: sin pushear (3 commits sobre origin/main: 0123b9b, 4e049cb y el de memoria que sigue).\n\n## Defectos que encontre en la entrega del worker (corregidos)\n1. 8100 habia quedado como 'contact': CATALOG lo lista como 'Pulsador' (-S) y como contacto el cierre dependia de una bobina homonima, o sea el clic seguia perdido (S3 sin cerrar). Ahora es pushbutton y el test compara que reemplazar 8000 por 8100 sea indistinguible para el solver.\n2. 7005/7009/7013 habian quedado NA 'para congelar paridad', pero solver.ts:155-172 si conmuta contactNC temporizado y TIMED_NC los dibuja NC. Ahora rest:'closed'.\n3. 9003 solo existia en la capa visual: al derivar T3 se habria perdido el glifo de bobina. Lo agregue a la tabla (4e049cb).\n\n## Lo que quedo pendiente y como retomarlo\nT3, T4, T5. El worker mw5gbd9h-3-fb2h **fallo** despues de escribir los tests RED y antes de implementar. En el arbol de trabajo quedan 4 archivos de test sin commitear con **5 tests RED**:\n- app/test/visual.test.ts: 'todo presionable reporta pressed, este o no en el viejo PUSHER' (S2/S3); 'pulsador o selector con reposo NC se dibuja cerrado; NA, abierto'; '2006 y 8018 son contactos'.\n- app/test/catalog.test.ts: '8102 tiene glifo propio: ya no cae al simbolo generico' (S4).\n- app/test/lamp-color.test.ts: '8101, 8102 y 8103 llevan el slot de color como el resto de las lamparas' (S4).\n- app/test/component-spec.test.ts: ajuste mio por 9003.\nEstado actual: 243 tests, 238 pasan, 5 fallan (todos RED de T3-T5). NO commitear hasta ponerlos verdes.\n\n## Como seguir manana\n1. Correr 'node --test' en app/ y confirmar los 5 RED.\n2. Implementar T3 en app/src/sim/visual.ts derivando de specOf: PUSHER=pressable, LAMP=kind lamp, COIL=kind coil, CONTACT=contact sin timer, TIMED_CONTACT=contact con timer, TIMER_COIL=coil con timer, TIMED_NC=contact con timer y rest closed, NC en reposo=rest closed, motor=kind motor. Mantener la API exportada.\n3. T4: App.tsx PUSH_CODES y project.ts LAMP_CODES desde isPushable/isLamp.\n4. T5: lampDevice(8102) en families.ts junto a 8101/8103.\n5. Verificar: suite completa, tsc, y diferencial de estados visuales contra 551e1da (solo deben cambiar los codigos declarados en odd/tasks/component-spec.md).\n\n## Notas de entorno\n- pnpm no esta en el PATH del harness; usar 'node --test' y './node_modules/.bin/tsc --noEmit' dentro de app/.\n- 'git push' falla con el HOME redirigido del harness: usar HOME=/Users/fitoji para que osxkeychain encuentre la credencial.\n- engram: ENGRAM_DATA_DIR=/Users/fitoji/.engram y binario en /opt/homebrew/bin/engram.",
+      "project": "rea-ing-inversa",
+      "scope": "project",
+      "revision_count": 1,
+      "duplicate_count": 1,
+      "last_seen_at": "2026-11-07 06:09:19",
+      "created_at": "2026-11-07 06:09:19",
+      "updated_at": "2026-11-07 06:09:19",
+      "pinned": false
+    },
+    {
+      "id": 1840,
+      "sync_id": "obs-88dcfc0fb2dbaa54",
+      "session_id": "manual-save-rea-ing-inversa",
+      "type": "manual",
+      "title": "odd/component-spec/tasks",
+      "content": "Estado P1 al 2026-11-06 (retomar aca).\n\nT1 (tabla + solver) y T2 (netlist/circuit derivan) CERRADOS en 0123b9b, mas 9003 en 4e049cb. Verificados: suite 235/235, tsc limpio, diferencial end-to-end contra 551e1da identico en los 6 fixtures.\n\nPENDIENTE T3 (visual.ts deriva de specOf), T4 (App.PUSH_CODES y project.LAMP_CODES) y T5 (glifo de 8102). Los 5 tests RED ya estan escritos sin commitear en app/test/visual.test.ts, catalog.test.ts y lamp-color.test.ts, y la suite queda en 238/243.\n\nCodigos que deben cambiar de comportamiento visible: 8000-8015 y 8100 con feedback de pulsado; 8016, 8101, 8102 y 8103 como lamparas; 2006 y 8018 como contactos; 7018 como bobina con estado visual.\n\nFuera de alcance declarado: 5000-5009 (catalogo dice fusible/seccionador y no conduce; decidir es tarea de REA) y 4009/4010 (nombre de catalogo contra tipo inferido).",
+      "project": "rea-ing-inversa",
+      "scope": "project",
+      "revision_count": 1,
+      "duplicate_count": 1,
+      "last_seen_at": "2026-11-07 06:09:19",
+      "created_at": "2026-11-07 06:09:19",
+      "updated_at": "2026-11-07 06:09:19",
       "pinned": false
     }
   ],
