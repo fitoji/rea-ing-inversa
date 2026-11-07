@@ -129,6 +129,9 @@ function buildTable(): Readonly<Record<number, ComponentSpec>> {
   // declara su modo (9004 conexión, 9005 desconexión, 9006 ambos, 9007
   // intermitente — cicla en ambos sentidos).
   one(9000, { kind: 'coil', rest: 'open', pressable: false, protection: false });
+  // 9003 es «Electroválvula» (CATALOG, -EV): la capa visual ya la trataba como
+  // bobina pero el solver la ignoraba. Eléctricamente es una carga inductiva.
+  one(9003, { kind: 'coil', rest: 'open', pressable: false, protection: false });
   one(9001, { kind: 'coil', rest: 'open', pressable: false, protection: false, latching: true });
   one(7018, { kind: 'coil', rest: 'open', pressable: false, protection: false });
   one(9004, { kind: 'coil', rest: 'open', pressable: false, protection: false, timer: 'on' });
