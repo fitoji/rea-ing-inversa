@@ -9,7 +9,7 @@ Catálogo de componentes eléctricos que ofrece la paleta del editor: cómo se d
 - **Los grupos y los nombres de familia** son los de la paleta (`app/src/ui/Palette.tsx`).
 - **Los bornes** son una convención IEC elegida al dibujar cada símbolo, no un dato que venga en el archivo: el formato los guarda por registro y acá se listan los que la app asigna por defecto. En la miniatura se ven como círculos.
 
-Totales: **270 códigos** en el catálogo generado, **215 componentes dibujados**, **59 códigos del catálogo caen al fallback** (un rectángulo con el código adentro).
+Totales: **270 códigos** en el catálogo generado, **235 componentes dibujados**, **47 códigos del catálogo caen al fallback** (un rectángulo con el código adentro).
 
 Hay **3 componentes dibujados que no figuran en el catálogo**: `8016` (Lámpara de señalización), `8017` (Contacto del térmico), `8018` (Contacto auxiliar NC doble). No salen del menú del CAD pero aparecen en archivos reales, así que su plantilla se generó desde los fixtures y el dibujo se escribió a mano. Por eso no tienen designador de catálogo.
 
@@ -63,50 +63,60 @@ De los 270 códigos, **125 no traen designador** en el catálogo: el menú del C
 | Dibujo | Código | Nombre | Designador | Bornes |
 | --- | --- | --- | --- | --- |
 | ![Resistencia I](img/componentes/1050.svg) | `1050` | Resistencia I | `-R` | 1 · 2 |
-| ![Resistencia III](img/componentes/1051.svg) | `1051` | Resistencia III | `-R` | 1 · 3 · 5 · 2 · 4 · 6 |
+| ![Resistencia III](img/componentes/1051.svg) | `1051` | Resistencia III | `-R` | 1 · 2 · 3 · 4 · 5 · 6 |
 | ![Autotransformador III](img/componentes/1052.svg) | `1052` | Autotransformador III | `-T` | U1 · V1 · W1 · U2 · V2 · W2 |
-| ![Arrancador electrónico](img/componentes/1053.svg) | `1053` | Arrancador electrónico | `-G` | 1 · 3 · 5 · 2 · 4 · 6 |
-| ![Variador velocidad ca II.](img/componentes/1054.svg) | `1054` | Variador velocidad ca II. | `-G` | 1 · 3 · 2 · 4 |
-| ![Variador velocidad ca III.](img/componentes/1055.svg) | `1055` | Variador velocidad ca III. | `-G` | 1 · 3 · 5 · 2 · 4 · 6 |
+| ![Arrancador electrónico](img/componentes/1053.svg) | `1053` | Arrancador electrónico | `-G` | 1 · 2 · 3 · 4 · 5 · 6 |
+| ![Variador velocidad ca II.](img/componentes/1054.svg) | `1054` | Variador velocidad ca II. | `-G` | 1 · 2 · 3 · 4 |
+| ![Variador velocidad ca III.](img/componentes/1055.svg) | `1055` | Variador velocidad ca III. | `-G` | 1 · 2 · 3 · 4 · 5 · 6 |
 | ![Variador velocidad cc.](img/componentes/1057.svg) | `1057` | Variador velocidad cc. | `-G` | L+ · L- · M+ · M- |
 | ![Variador velocidad cc.](img/componentes/1058.svg) | `1058` | Variador velocidad cc. | `-G` | L+ · L- · M+ · M- |
 | ![Relé 1 canal](img/componentes/1076.svg) | `1076` | Relé 1 canal | `-K` | A1 · A2 · 11 · 14 |
-| ![Contactor II](img/componentes/2000.svg) | `2000` | Contactor II | `-KM` | 1 · 3 · 2 · 4 |
+| ![Contactor II](img/componentes/2000.svg) | `2000` | Contactor II | `-KM` | 1 · 2 · 3 · 4 |
 | ![Contactor III](img/componentes/2001.svg) | `2001` | Contactor III | `-KM` | 1 · 3 · 5 · 2 · 4 · 6 |
-| ![Interruptor II](img/componentes/2003.svg) | `2003` | Interruptor II | `-S` | 1 · 3 · 2 · 4 |
-| ![Interruptor III](img/componentes/2004.svg) | `2004` | Interruptor III | `-S` | 1 · 3 · 5 · 2 · 4 · 6 |
+| ![Interruptor II](img/componentes/2003.svg) | `2003` | Interruptor II | `-S` | 1 · 2 · 3 · 4 |
+| ![Interruptor III](img/componentes/2004.svg) | `2004` | Interruptor III | `-S` | 1 · 2 · 3 · 4 · 5 · 6 |
 | ![Contactor I](img/componentes/2006.svg) | `2006` | Contactor I | `-KM` | 1 · 2 |
 | ![Interruptor I](img/componentes/2007.svg) | `2007` | Interruptor I | `-S` | 1 · 2 |
 
-## Protección (23)
+## Protección (33)
 
 | Dibujo | Código | Nombre | Designador | Bornes |
 | --- | --- | --- | --- | --- |
 | ![Fusible I](img/componentes/5000.svg) | `5000` | Fusible I | `-F` | 1 · 2 |
-| ![Fusible IN](img/componentes/5001.svg) | `5001` | Fusible IN | `-F` | 1 · 3 · 2 · 4 |
-| ![Fusible II](img/componentes/5002.svg) | `5002` | Fusible II | `-F` | 1 · 3 · 2 · 4 |
-| ![Fusible III](img/componentes/5003.svg) | `5003` | Fusible III | `-F` | 1 · 3 · 5 · 2 · 4 · 6 |
+| ![Fusible IN](img/componentes/5001.svg) | `5001` | Fusible IN | `-F` | 1 · 2 · 3 · 4 |
+| ![Fusible II](img/componentes/5002.svg) | `5002` | Fusible II | `-F` | 1 · 2 · 3 · 4 |
+| ![Fusible III](img/componentes/5003.svg) | `5003` | Fusible III | `-F` | 1 · 2 · 3 · 4 · 5 · 6 |
 | ![Seccionador I](img/componentes/5005.svg) | `5005` | Seccionador I | `-F` | 1 · 2 |
-| ![Seccionador IN](img/componentes/5006.svg) | `5006` | Seccionador IN | `-F` | 1 · 3 · 2 · 4 |
-| ![Seccionador II](img/componentes/5007.svg) | `5007` | Seccionador II | `-F` | 1 · 3 · 2 · 4 |
-| ![Seccionador III](img/componentes/5008.svg) | `5008` | Seccionador III | `-F` | 1 · 3 · 5 · 2 · 4 · 6 |
+| ![Seccionador IN](img/componentes/5006.svg) | `5006` | Seccionador IN | `-F` | 1 · 2 · 3 · 4 |
+| ![Seccionador II](img/componentes/5007.svg) | `5007` | Seccionador II | `-F` | 1 · 2 · 3 · 4 |
+| ![Seccionador III](img/componentes/5008.svg) | `5008` | Seccionador III | `-F` | 1 · 2 · 3 · 4 · 5 · 6 |
+| ![Automático I](img/componentes/6000.svg) | `6000` | Automático I | `-F` | 1 · 2 |
 | ![Automático I](img/componentes/6000.svg) | `6000` | Automático I | `-F` | 1 · 2 |
 | ![Automático IN](img/componentes/6001.svg) | `6001` | Automático IN | `-F` | 1 · 3 · 2 · 4 |
+| ![Automático IN](img/componentes/6001.svg) | `6001` | Automático IN | `-F` | 1 · 3 · 2 · 4 |
+| ![Automático II](img/componentes/6002.svg) | `6002` | Automático II | `-F` | 1 · 3 · 2 · 4 |
 | ![Automático II](img/componentes/6002.svg) | `6002` | Automático II | `-F` | 1 · 3 · 2 · 4 |
 | ![Automático III](img/componentes/6003.svg) | `6003` | Automático III | `-F` | 1 · 3 · 5 · 2 · 4 · 6 |
+| ![Automático III](img/componentes/6003.svg) | `6003` | Automático III | `-F` | 1 · 3 · 5 · 2 · 4 · 6 |
+| ![Automático IIIN](img/componentes/6004.svg) | `6004` | Automático IIIN | `-F` | 1 · 3 · 5 · 2 · 4 · 6 |
 | ![Diferencial IN](img/componentes/6005.svg) | `6005` | Diferencial IN | `-F` | 1 · 3 · 2 · 4 |
+| ![Diferencial IIIN](img/componentes/6006.svg) | `6006` | Diferencial IIIN | `-F` | 1 · 3 · 5 · 2 · 4 · 6 |
+| ![Relé térmico](img/componentes/6007.svg) | `6007` | Relé térmico | `-F` | 1 · 3 · 5 · 2 · 4 · 6 |
 | ![Relé térmico](img/componentes/6007.svg) | `6007` | Relé térmico | `-F` | 1 · 3 · 5 · 2 · 4 · 6 |
 | ![Disyuntor II](img/componentes/6008.svg) | `6008` | Disyuntor II | `-Q` | 1 · 3 · 2 · 4 |
+| ![Disyuntor II](img/componentes/6008.svg) | `6008` | Disyuntor II | `-Q` | 1 · 3 · 2 · 4 |
+| ![Disyuntor III](img/componentes/6009.svg) | `6009` | Disyuntor III | `-Q` | 1 · 3 · 5 · 2 · 4 · 6 |
 | ![Disyuntor III](img/componentes/6009.svg) | `6009` | Disyuntor III | `-Q` | 1 · 3 · 5 · 2 · 4 · 6 |
 | ![Disyuntor I](img/componentes/6010.svg) | `6010` | Disyuntor I | `-Q` | 1 · 2 |
-| ![Contactor](img/componentes/6015.svg) | `6015` | Contactor | `-Q` | 1 · 3 · 5 · 2 · 4 · 6 |
-| ![Relé térmico](img/componentes/6016.svg) | `6016` | Relé térmico | `-F` | 1 · 3 · 5 · 2 · 4 · 6 |
+| ![Disyuntor I](img/componentes/6010.svg) | `6010` | Disyuntor I | `-Q` | 1 · 2 |
+| ![Contactor](img/componentes/6015.svg) | `6015` | Contactor | `-Q` | 1 · 2 · 3 · 4 · 5 · 6 |
+| ![Relé térmico](img/componentes/6016.svg) | `6016` | Relé térmico | `-F` | 1 · 2 · 3 · 4 · 5 · 6 |
 | ![Interruptor automático](img/componentes/6017.svg) | `6017` | Interruptor automático | `-F` | 1 · 2 |
-| ![Interruptor diferencial](img/componentes/6018.svg) | `6018` | Interruptor diferencial | `-F` | 1 · 3 · 2 · 4 |
+| ![Interruptor diferencial](img/componentes/6018.svg) | `6018` | Interruptor diferencial | `-F` | 1 · 2 · 3 · 4 |
 | ![Interruptor](img/componentes/6019.svg) | `6019` | Interruptor | `-S` | 1 · 2 |
 | ![Interruptor](img/componentes/6020.svg) | `6020` | Interruptor | `-S` | 1 · 2 |
 
-## Mando (38)
+## Mando (48)
 
 | Dibujo | Código | Nombre | Designador | Bornes |
 | --- | --- | --- | --- | --- |
@@ -148,6 +158,16 @@ De los 270 códigos, **125 no traen designador** en el catálogo: el menú del C
 | ![Temporizador intermitente](img/componentes/9007.svg) | `9007` | Temporizador intermitente | `-K` | A1 · A2 |
 | ![Contacto NA](img/componentes/10050.svg) | `10050` | Contacto NA | `-U` | 13 · 14 |
 | ![Contacto NC](img/componentes/10051.svg) | `10051` | Contacto NC | — | 11 · 12 |
+| ![Actuador de simple efecto](img/componentes/10500.svg) | `10500` | Actuador de simple efecto | `-A` | A |
+| ![Actuador sin vástago](img/componentes/10502.svg) | `10502` | Actuador sin vástago | `-A` | A |
+| ![Actuador sin vástago magnético](img/componentes/10503.svg) | `10503` | Actuador sin vástago magnético | `-A` | A |
+| ![Actuador de doble efecto](img/componentes/10504.svg) | `10504` | Actuador de doble efecto | `-A` | A · B |
+| ![Pinza neumática simple efecto](img/componentes/10505.svg) | `10505` | Pinza neumática simple efecto | `-A` | A |
+| ![Pinza neumática](img/componentes/10506.svg) | `10506` | Pinza neumática | `-A` | A · B |
+| ![Ventosa](img/componentes/10507.svg) | `10507` | Ventosa | `-V` | A |
+| ![Motor neumático](img/componentes/10508.svg) | `10508` | Motor neumático | `-M` | A |
+| ![Motor neumático reversible](img/componentes/10509.svg) | `10509` | Motor neumático reversible | `-M` | A · B |
+| ![Actuador lineal eléctrico](img/componentes/10550.svg) | `10550` | Actuador lineal eléctrico | `-M` | A |
 
 ## Señalización y pulsadores (22)
 
@@ -277,14 +297,14 @@ De los 270 códigos, **125 no traen designador** en el catálogo: el menú del C
 
 | Dibujo | Código | Nombre | Designador | Bornes |
 | --- | --- | --- | --- | --- |
-| ![Regleta cuadrada](img/componentes/4011.svg) | `4011` | Regleta cuadrada | `-X` | 1 · 3 · 2 · 4 |
-| ![Regleta redonda](img/componentes/4012.svg) | `4012` | Regleta redonda | — | 1 · 3 · 2 · 4 |
-| ![Conector salida](img/componentes/4013.svg) | `4013` | Conector salida | — | 1 · 3 · 2 · 4 |
-| ![Conector entrada](img/componentes/4014.svg) | `4014` | Conector entrada | — | 1 · 3 · 2 · 4 |
-| ![Regleta redonda 2](img/componentes/4015.svg) | `4015` | Regleta redonda 2 | — | 1 · 3 · 2 · 4 |
-| ![Regleta redonda 3](img/componentes/4016.svg) | `4016` | Regleta redonda 3 | — | 1 · 3 · 5 · 2 · 4 · 6 |
+| ![Regleta cuadrada](img/componentes/4011.svg) | `4011` | Regleta cuadrada | `-X` | 1 · 2 · 3 · 4 |
+| ![Regleta redonda](img/componentes/4012.svg) | `4012` | Regleta redonda | — | 1 · 2 · 3 · 4 |
+| ![Conector salida](img/componentes/4013.svg) | `4013` | Conector salida | — | 1 · 2 · 3 · 4 |
+| ![Conector entrada](img/componentes/4014.svg) | `4014` | Conector entrada | — | 1 · 2 · 3 · 4 |
+| ![Regleta redonda 2](img/componentes/4015.svg) | `4015` | Regleta redonda 2 | — | 1 · 2 · 3 · 4 |
+| ![Regleta redonda 3](img/componentes/4016.svg) | `4016` | Regleta redonda 3 | — | 1 · 2 · 3 · 4 · 5 · 6 |
 
-## Códigos sin símbolo dedicado (59)
+## Códigos sin símbolo dedicado (47)
 
 No tienen dibujo propio: el lienzo los pinta con el fallback, un rectángulo con el código adentro y los bornes que declare el archivo. Siguen siendo válidos para abrir y guardar sin pérdida; lo que falta es el dibujo, así que no llevan miniatura acá.
 
@@ -303,8 +323,6 @@ Lo mismo pasa con cualquier código que no esté en el catálogo, por ejemplo `2
 | `4018` | Cable + | — |
 | `5004` | Fusible IIIN | `-F` |
 | `5009` | Seccionador IIIN | `-F` |
-| `6004` | Automático IIIN | `-F` |
-| `6006` | Diferencial IIIN | `-F` |
 | `8102` | Botonera | `-H` |
 | `10000` | Función lógica AND 2 | `-U` |
 | `10001` | Función lógica AND 3 | — |
@@ -340,17 +358,7 @@ Lo mismo pasa con cualquier código que no esté en el catálogo, por ejemplo `2
 | `10108` | Enlace de Salida GRAFCET | — |
 | `10111` | Macro Etapa GRAFCET | — |
 | `10112` | Etapa 0 GRAFCET | — |
-| `10500` | Actuador de simple efecto | `-A` |
 | `10501` | Actuador de doble efecto | `-A` |
-| `10502` | Actuador sin vástago | `-A` |
-| `10503` | Actuador sin vástago magnético | `-A` |
-| `10504` | Actuador de doble efecto | `-A` |
-| `10505` | Pinza neumática simple efecto | `-A` |
-| `10506` | Pinza neumática | `-A` |
-| `10507` | Ventosa | `-V` |
-| `10508` | Motor neumático | `-M` |
-| `10509` | Motor neumático reversible | `-M` |
-| `10550` | Actuador lineal eléctrico | `-M` |
 
 ## Cómo mantenerlo
 
