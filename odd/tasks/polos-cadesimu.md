@@ -164,6 +164,33 @@ Afecta sólo las miniaturas de `docs/img/componentes/`.
 desde `size`. Ruta: `app/src/symbols/draw.ts` (helper `shapesBounds`) +
 `app/scripts/make-component-docs.ts`. | `fix(docs): miniaturas sin recorte del arte`
 
+**E14** T5 verificación sobre los 10 PNG, consultando `resolveSymbol()` por código (caja, grilla,
+orientación de bornes):
+
+| Código | PNG | Caja | Grilla | Veredicto |
+|---|---|---|---|---|
+| `1000` | motor trifásico | 24×24 | sí, fila superior | ✅ |
+| `6009` | disyuntor trifásico | 18×24 | sí | ✅ |
+| `6007` | relé térmico | 21×15 | sí | ✅ |
+| `6003` | automático tripolar | 18×15 | sí | ✅ |
+| `6000` | protección cortocircuito mono | 12×15 | sí | ✅ |
+| `6018` | relé diferencial | 12×15 | sí | ◐ falta el toroide (fuera de alcance) |
+| `5000` | fusible monofásico | **6×24** | **no**, bornes en `y=24` | ✗ |
+| `8000` | pulsador NO | **14×24** | **no** | ✗ dos terminales, diferido |
+| `8001` | pulsador NC | **sin caja** | — | ✗ cae al genérico |
+| `9000` | bobina de contactor | **24×24** | **no** | ✗ dos terminales, diferido |
+
+**E15** Causa raíz de las cuatro ✗: **precedencia de packs**. Para `5000`, `8000`, `8001` y `9000`,
+`resolveSymbol()` **no** devuelve el `SymbolDef` de `families.ts`: devuelve geometría de otro
+conjunto con su propia caja (`5000` 6×24 en vez de 12×15, `9000` 24×24 en vez de 15×15, `8000`
+14×24 en vez de 6×15). Por eso el redibujo de `families.ts` queda **bypasseado** en esos códigos,
+y por eso sus bornes siguen fuera de la grilla (en `5000` caen en `y=24`, el borde, no en `h−3=21`).
+No es un defecto del dibujo: es del orden de resolución en `library.ts`.
+
+**T7** (nueva) — S2, S3, S4 | Resolver la precedencia de `resolveSymbol()` para que el dibujo
+propio gane donde corresponde, y que ningún símbolo quede con caja sin declarar. Cubre `5000`,
+`8000`, `8001`, `9000`. | `fix(symbols): precedencia de packs y cajas sin declarar`
+
 **R1** ~~Riesgo abierto~~ **Resuelto por E8.** La "anomalía" del pulsador `8000` con ambos bornes
 en `x=0` se explica porque su caja mide 6 de ancho: hay una sola columna de grilla. No era una
 regla distinta.

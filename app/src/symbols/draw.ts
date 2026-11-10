@@ -134,6 +134,106 @@ export function verticalPoles(w: number, h: number, n = 3): Shape[] {
   return poleColumns(n, w).flatMap((x) => verticalPole(x, h));
 }
 
+/**
+ * Caja que encierra todas las formas de un símbolo, en las mismas unidades que
+ * la caja declarada. Hace falta porque el dibujo puede desbordarla (S2c): el
+ * accionamiento manual se pinta a la izquierda de `x = 0` y la punta de la
+ * cuchilla del primer polo queda en `x < 0`.
+ *
+ * Los arcos se aproximan expandiendo por su radio, que es lo que dibuja
+ * `circle()`.
+ */
+export function shapesBounds(shapes: Shape[]): { minX: number; minY: number; maxX: number; maxY: number } {
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+
+  const add = (x: number, y: number): void => {
+    if (x < minX) minX = x;
+    if (y < minY) minY = y;
+    if (x > maxX) maxX = x;
+    if (y > maxY) maxY = y;
+  };
+
+  for (const shape of shapes) {
+    const tokens = shape.d.match(/[A-Za-z]|-?\d*\.?\d+(?:e[-+]?\d+)?/g) ?? [];
+    let x = 0;
+    let y = 0;
+    let startX = 0;
+    let startY = 0;
+    let cmd = '';
+    let i = 0;
+
+    while (i < tokens.length) {
+      const token = tokens[i]!;
+      if (/[A-Za-z]/.test(token)) {
+        cmd = token;
+        i++;
+        continue;
+      }
+      const num = (): number => Number(tokens[i++]);
+      const relative = cmd === cmd.toLowerCase();
+      switch (cmd.toLowerCase()) {
+        case 'm':
+        case 'l': {
+          const nx = num();
+          const ny = num();
+          x = relative ? x + nx : nx;
+          y = relative ? y + ny : ny;
+          if (cmd.toLowerCase() === 'm' && cmd === 'M') {
+            startX = x;
+            startY = y;
+            cmd = 'L';
+          }
+          add(x, y);
+          break;
+        }
+        case 'h': {
+          const nx = num();
+          x = relative ? x + nx : nx;
+          add(x, y);
+          break;
+        }
+        case 'v': {
+          const ny = num();
+          y = relative ? y + ny : ny;
+          add(x, y);
+          break;
+        }
+        case 'z': {
+          x = startX;
+          y = startY;
+          add(x, y);
+          break;
+        }
+        case 'a': {
+          const rx = Math.abs(num());
+          const ry = Math.abs(num());
+          num();
+          num();
+          num();
+          num();
+          const dx = num();
+          const dy = num();
+          const nx = relative ? x + dx : dx;
+          const ny = relative ? y + dy : dy;
+          const r = Math.max(rx, ry);
+          add(Math.min(x, nx) - r, Math.min(y, ny) - r);
+          add(Math.max(x, nx) + r, Math.max(y, ny) + r);
+          x = nx;
+          y = ny;
+          break;
+        }
+        default:
+          i++;
+      }
+    }
+  }
+
+  return { minX, minY, maxX, maxY };
+}
+
 /** Radio de la cuchilla abierta (`BLADE_DEG`). */
 const BLADE_RAD = (BLADE_DEG * Math.PI) / 180;
 

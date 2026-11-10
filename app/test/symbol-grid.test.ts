@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { FAMILY_SYMBOLS } from '../src/symbols/families.ts';
+import { shapesBounds } from '../src/symbols/draw.ts';
 import { symbolFor, type Shape } from '../src/symbols/library.ts';
 
 /**
@@ -546,6 +547,17 @@ test('los interruptores 6019, 6020 y 5005-5008 quedan como llave simple', () => 
     }
   }
   assert.deepEqual(off, [], `los interruptores simples no llevan cuerpo ni disparo:\n  ${off.join('\n  ')}`);
+});
+
+test('el bbox de las formas cubre el arte que desborda la caja (S2c)', () => {
+  const sym = FAMILY_SYMBOLS.find((s) => s.code === 6009);
+  const size = sym?.size;
+  assert.ok(size, 'el 6009 debe declarar caja');
+  const b = shapesBounds(sym.shapes(size.w, size.h));
+  assert.ok(b.minX < 0, `el accionamiento desborda a la izquierda, minX=${b.minX}`);
+  assert.ok(b.maxX <= size.w + 0.01, `no desborda a la derecha, maxX=${b.maxX}`);
+  assert.ok(b.maxY <= size.h + 0.01, `no desborda abajo, maxY=${b.maxY}`);
+  assert.ok(b.minY >= -0.01, `no desborda arriba, minY=${b.minY}`);
 });
 
 /** `d` de un polígono cerrado, para reusar `bbox()` sobre puntos ya leídos. */

@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="45" height="54" viewBox="-1.5 -1.5 15 18" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" width="49" height="54" viewBox="-2.7 -1.5 16.2 18" role="img">
 <title>Piloto</title>
-<rect x="-1.5" y="-1.5" width="15" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<rect x="-2.7" y="-1.5" width="16.2" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
 <path d="M0 7.5L2.4 7.5" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M2.4 7.5a3.6 3.6 0 1 0 7.2 0a3.6 3.6 0 1 0 -7.2 0Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M9.6 7.5L12 7.5" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
