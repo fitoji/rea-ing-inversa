@@ -15,7 +15,24 @@
  */
 import { CATALOG } from './catalog.ts';
 import type { Shape, SymbolDef, SymbolGroup, SymbolPin } from './library.ts';
-import { circle, clock, contact, left, line, poles, rect, right, spread, threePole } from './draw.ts';
+import {
+  cellBody,
+  circle,
+  clock,
+  contact,
+  filledSquareOnBlade,
+  left,
+  line,
+  magneticTriangle,
+  manualOperator,
+  poles,
+  poleColumns,
+  rect,
+  right,
+  spread,
+  thermalHook,
+  verticalPoles,
+} from './draw.ts';
 
 const nameOf = (code: number): string => CATALOG[code]?.name ?? `Componente ${code}`;
 
@@ -48,6 +65,32 @@ const def = (
   size: { w: number; h: number },
   labels?: (w: number, h: number) => { x: number; y: number; value: string; size: number; anchor?: 'start' | 'middle' | 'end' }[],
 ): SymbolDef => ({ code, name: nameOf(code), group, pins, size, shapes, labels });
+
+/** Igual que `def`, pero deriva los bornes de la caja con `poles()`. */
+const defPoles = (
+  code: number,
+  group: SymbolGroup,
+  n: number,
+  shapes: (w: number, h: number) => Shape[],
+  size: { w: number; h: number },
+  labels?: (w: number, h: number) => { x: number; y: number; value: string; size: number; anchor?: 'start' | 'middle' | 'end' }[],
+): SymbolDef => def(code, group, poles(n, size), shapes, size, labels);
+
+/**
+ * Bornes en el orden en que los escribe el `.cade`: primero la fila superior
+ * (`1 3 5`) y después la inferior (`2 4 6`).
+ *
+ * `poles()` los devuelve intercalados por polo, que es el orden espacial; el
+ * registro del CAD guarda los impares arriba y los pares abajo, y un componente
+ * sintetizado tiene que conservarlos en ese orden para que cada borne siga
+ * cayendo en el mismo sitio del dibujo.
+ */
+function polesInCadeOrder(n: number, size: { w: number; h: number }): SymbolPin[] {
+  const all = poles(n, size);
+  const parity = (odd: boolean): SymbolPin[] =>
+    all.filter((pin) => (odd ? Number(pin.name) % 2 === 1 : Number(pin.name) % 2 === 0));
+  return [...parity(true), ...parity(false)];
+}
 
 // --- motores ---------------------------------------------------------------
 
@@ -84,7 +127,8 @@ const motorDC: SymbolPin[] = [left(0.38, 'A1'), right(0.38, 'A2'), left(0.7, 'E1
 // --- potencia --------------------------------------------------------------
 
 const resistor = (code: number, count: number): SymbolDef => {
-  const pins = count === 1 ? poles(1) : poles(count);
+  const size = { w: 18, h: count === 1 ? 12 : 24 };
+  const pins = poles(count, size);
   return def(code, 'potencia', pins, (w, h) => {
     const rows = spread(count).map((n) => n * h);
     return rows.flatMap((y) => [
@@ -92,15 +136,60 @@ const resistor = (code: number, count: number): SymbolDef => {
       { d: rect(w * 0.3, y - h * 0.06, w * 0.4, h * 0.12) },
       { d: line(w * 0.7, y, w, y) },
     ]);
-  }, { w: 18, h: count === 1 ? 12 : 24 });
+  }, size);
 };
 
 /** Aparato de potencia con `n` polos y una etiqueta opcional. */
-const polesDevice = (code: number, n: number, group: SymbolGroup, letter?: string): SymbolDef =>
-  def(code, group, poles(n), (w, h) => {
-    const rows = spread(n).map((v) => v * h);
-    return rows.flatMap((y) => contact(w, y, false));
-  }, { w: 18, h: n === 1 ? 12 : 24 }, letter ? motorLabel(letter) : undefined);
+const polesDevice = (code: number, n: number, group: SymbolGroup, letter?: string): SymbolDef => {
+  const size = { w: n === 1 ? 12 : n * 6, h: 15 };
+  return defPoles(code, group, n, (w, h) => verticalPoles(w, h, n), size, letter ? motorLabel(letter) : undefined);
+};
+
+/**
+ * Aparato de protección: cuerpo con celdas y los elementos de disparo que
+ * pide S6.
+ *
+ * `hook` es el disparo térmico y `triangle` el magnético; cuando el aparato
+ * lleva los dos, el cuerpo se parte en dos filas, una por disparo, como en
+ * `disyuntor trifasico.png`. Un interruptor manual no lleva ninguno de los dos.
+ *
+ * `cadeOrder` escribe los bornes en el orden del registro del CAD (impares
+ * arriba, pares abajo) en vez del orden espacial de `poles()`; lo usan los
+ * códigos que tienen plantilla real o duplicado en `library.ts`, para que un
+ * componente sintetizado escriba los mismos bornes en el mismo orden.
+ */
+const protectionDevice = (
+  code: number,
+  n: number,
+  size: { w: number; h: number },
+  opts: {
+    body?: boolean;
+    hook?: boolean;
+    triangle?: boolean;
+    square?: boolean;
+    manual?: boolean;
+    test?: boolean;
+    cadeOrder?: boolean;
+  } = {},
+): SymbolDef => {
+  const rows = opts.hook && opts.triangle ? 2 : 1;
+  const pins = opts.cadeOrder ? polesInCadeOrder(n, size) : poles(n, size);
+  return def(code, 'proteccion', pins, (w, h) => {
+    const cols = poleColumns(n, w);
+    const out: Shape[] = [...verticalPoles(w, h, n)];
+    if (opts.body) out.push(...cellBody(w, h, n, rows));
+    if (opts.hook || opts.triangle) {
+      for (const x of cols) {
+        if (opts.hook) out.push(...thermalHook(x, h, rows, 0));
+        if (opts.triangle) out.push(...magneticTriangle(x, h, rows, rows - 1));
+      }
+    }
+    if (opts.square) out.push(...cols.flatMap((x) => filledSquareOnBlade(x, h)));
+    if (opts.manual) out.push(...manualOperator(w, h, n, rows));
+    if (opts.test) out.push(...testButton(w, h));
+    return out;
+  }, size);
+};
 
 /** Variador / arrancador: caja con la designación del equipo. */
 const drive = (code: number, pins: SymbolPin[], letter: string, size = { w: 24, h: 24 }): SymbolDef =>
@@ -245,9 +334,9 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
     { d: circle(w / 2, h * 0.35, Math.min(w, h) * 0.16), thin: true },
     { d: circle(w / 2, h * 0.65, Math.min(w, h) * 0.16), thin: true },
   ], { w: 24, h: 24 }, motorLabel('T')),
-  drive(1053, poles(3), 'G'),
-  drive(1054, poles(2), 'G', { w: 18, h: 15 }),
-  drive(1055, poles(3), 'G'),
+  drive(1053, poles(3, { w: 24, h: 24 }), 'G'),
+  drive(1054, poles(2, { w: 18, h: 15 }), 'G', { w: 18, h: 15 }),
+  drive(1055, poles(3, { w: 24, h: 24 }), 'G'),
   drive(1057, [left(0.3, 'L+'), right(0.3, 'L-'), left(0.7, 'M+'), right(0.7, 'M-')], 'G', { w: 18, h: 15 }),
   drive(1058, [left(0.3, 'L+'), right(0.3, 'L-'), left(0.7, 'M+'), right(0.7, 'M-')], 'G', { w: 18, h: 15 }),
   def(1076, 'potencia', [left(0.3, 'A1'), right(0.3, 'A2'), left(0.7, '11'), right(0.7, '14')], (w, h) => [
@@ -281,21 +370,40 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
   ], { w: 18, h: 15 }, motorLabel('V')),
 
   // protección
-  def(5000, 'proteccion', poles(1), (w, h) => fuseBody(w, h), { w: 12, h: 15 }),
-  def(5001, 'proteccion', poles(2), (w, h) => fuseBody(w, h), { w: 12, h: 15 }),
-  def(5002, 'proteccion', poles(2), (w, h) => fuseBody(w, h), { w: 12, h: 15 }),
-  def(5003, 'proteccion', poles(3), (w, h) => fuseBody(w, h), { w: 18, h: 15 }),
-  def(5005, 'proteccion', poles(1), (w, h) => [...contact(w, h / 2, false)], { w: 12, h: 15 }),
-  def(5006, 'proteccion', poles(2), (w, h) => spread(2).flatMap((n) => contact(w, n * h, false)), { w: 12, h: 15 }),
-  def(5007, 'proteccion', poles(2), (w, h) => spread(2).flatMap((n) => contact(w, n * h, false)), { w: 12, h: 15 }),
-  def(5008, 'proteccion', poles(3), (w, h) => threePole(w, h, false), { w: 18, h: 15 }),
-  def(6005, 'proteccion', poles(2), (w, h) => [...spread(2).flatMap((n) => contact(w, n * h, false)), ...testButton(w, h)], { w: 12, h: 15 }),
-  def(6015, 'proteccion', poles(3), (w, h) => threePole(w, h, false), { w: 18, h: 15 }),
-  def(6016, 'proteccion', poles(3), (w, h) => [...threePole(w, h, false), ...thermalMark(w, h)], { w: 18, h: 15 }),
-  def(6017, 'proteccion', poles(1), (w, h) => [...contact(w, h / 2, false), ...thermalMark(w, h)], { w: 12, h: 15 }),
-  def(6018, 'proteccion', poles(2), (w, h) => [...spread(2).flatMap((n) => contact(w, n * h, false)), ...testButton(w, h)], { w: 12, h: 15 }),
-  def(6019, 'proteccion', poles(1), (w, h) => contact(w, h / 2, false), { w: 12, h: 15 }),
-  def(6020, 'proteccion', poles(1), (w, h) => contact(w, h / 2, false), { w: 12, h: 15 }),
+  defPoles(5000, 'proteccion', 1, (w, h) => fuseBody(w, h), { w: 12, h: 15 }),
+  defPoles(5001, 'proteccion', 2, (w, h) => fuseBody(w, h), { w: 12, h: 15 }),
+  defPoles(5002, 'proteccion', 2, (w, h) => fuseBody(w, h), { w: 12, h: 15 }),
+  defPoles(5003, 'proteccion', 3, (w, h) => fuseBody(w, h), { w: 18, h: 15 }),
+  defPoles(5005, 'proteccion', 1, (w, h) => verticalPoles(w, h, 1), { w: 12, h: 15 }),
+  defPoles(5006, 'proteccion', 2, (w, h) => verticalPoles(w, h, 2), { w: 12, h: 15 }),
+  defPoles(5007, 'proteccion', 2, (w, h) => verticalPoles(w, h, 2), { w: 12, h: 15 }),
+  defPoles(5008, 'proteccion', 3, (w, h) => verticalPoles(w, h, 3), { w: 18, h: 15 }),
+  // Protección 6000–6010 (S7): cada código con su propio dibujo, ninguno cae al
+  // genérico. Caja medida en E8 cuando se indica; si no, se deriva con la
+  // convención de las medidas (`n === 1 ? 12 : n * 6` de ancho, 15 de alto).
+  //
+  // «IIIN» se dibuja tripolar: el registro guarda 7 bornes como máximo y un
+  // cuarto polo necesita 8 (ver `4017` en la lista de regletas).
+  protectionDevice(6000, 1, { w: 12, h: 15 }, { square: true, cadeOrder: true }),
+  protectionDevice(6001, 2, { w: 12, h: 15 }, { square: true, cadeOrder: true }), // medido
+  protectionDevice(6002, 2, { w: 12, h: 15 }, { square: true, cadeOrder: true }), // medido
+  protectionDevice(6003, 3, { w: 18, h: 15 }, { square: true, cadeOrder: true }), // medido
+  protectionDevice(6004, 3, { w: 18, h: 15 }, { square: true, cadeOrder: true }),
+  protectionDevice(6005, 2, { w: 12, h: 15 }, { body: true, test: true, cadeOrder: true }),
+  protectionDevice(6006, 3, { w: 18, h: 15 }, { body: true, test: true, cadeOrder: true }),
+  // El térmico dibuja el gancho de cada polo en su celda (`rele termico.png`).
+  protectionDevice(6007, 3, { w: 21, h: 15 }, { body: true, hook: true, cadeOrder: true }), // medido
+  protectionDevice(6008, 2, { w: 12, h: 15 }, { body: true, hook: true, cadeOrder: true }),
+  // Disyuntor III: caja de dos filas, gancho arriba y triángulo abajo, con el
+  // accionamiento manual a la izquierda (`disyuntor trifasico.png`).
+  protectionDevice(6009, 3, { w: 18, h: 24 }, { body: true, hook: true, triangle: true, manual: true, cadeOrder: true }), // medido
+  protectionDevice(6010, 1, { w: 12, h: 15 }, { body: true, hook: true, cadeOrder: true }),
+  protectionDevice(6015, 3, { w: 18, h: 15 }, { body: true, manual: true }),
+  protectionDevice(6016, 3, { w: 18, h: 15 }, { body: true, hook: true }),
+  protectionDevice(6017, 1, { w: 12, h: 15 }, { square: true }),
+  protectionDevice(6018, 2, { w: 12, h: 15 }, { body: true, triangle: true, test: true }),
+  defPoles(6019, 'proteccion', 1, (w, h) => verticalPoles(w, h, 1), { w: 12, h: 15 }),
+  defPoles(6020, 'proteccion', 1, (w, h) => verticalPoles(w, h, 1), { w: 12, h: 15 }),
 
   // mando: contactos y temporizadores
   contactDevice(7003, 'CO', 'mando'),
@@ -374,7 +482,8 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
 
 /** Regleta / conector: caja con un contacto por vía. */
 function strip(code: number, ways: number): SymbolDef {
-  return def(code, 'borne', poles(ways), (w, h) => {
+  const size = { w: 12, h: Math.max(12, ways * 6) };
+  return def(code, 'borne', poles(ways, size), (w, h) => {
     const ys = spread(ways).map((v) => v * h);
     return [
       { d: rect(0, h * 0.12, w, h * 0.76) },
@@ -384,7 +493,7 @@ function strip(code: number, ways: number): SymbolDef {
         { d: line(w * 0.68, y, w, y) },
       ]),
     ];
-  }, { w: 12, h: Math.max(12, ways * 6) });
+  }, size);
 }
 
 /** Cables: no son componentes, se insertan como tramo (ver addWire). */
@@ -413,12 +522,4 @@ function fuseBody(w: number, h: number): Shape[] {
 function testButton(w: number, h: number): Shape[] {
   const r = Math.min(w, h) * 0.1;
   return [{ d: circle(w * 0.82, h * 0.16, r), thin: true }];
-}
-
-function thermalMark(w: number, h: number): Shape[] {
-  const cy = h / 2;
-  return [
-    { d: rect(w * 0.36, cy - h * 0.1, w * 0.28, h * 0.2), thin: true },
-    { d: line(w * 0.36, cy + h * 0.1, w * 0.64, cy - h * 0.1), thin: true },
-  ];
 }

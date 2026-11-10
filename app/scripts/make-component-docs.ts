@@ -19,6 +19,7 @@ import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CATALOG } from '../src/symbols/catalog.ts';
+import { shapesBounds } from '../src/symbols/draw.ts';
 import {
   lineList,
   resolveSymbol,
@@ -105,18 +106,28 @@ function glyphSvg(input: SymbolDef): string {
   );
   const w = sym.size?.w ?? DEFAULT_BOX;
   const h = sym.size?.h ?? DEFAULT_BOX;
-  const viewW = w + PAD * 2;
-  const viewH = h + PAD * 2;
   const shapes = sym.shapes(w, h);
+  // El dibujo puede desbordar la caja declarada (S2c): el accionamiento manual
+  // va a la izquierda de x=0 y la punta de la cuchilla del primer polo tambien.
+  // El viewBox se calcula sobre el bbox real para no recortarlos.
+  const bounds = shapesBounds(shapes);
+  const minX = Math.min(0, bounds.minX);
+  const minY = Math.min(0, bounds.minY);
+  const maxX = Math.max(w, bounds.maxX);
+  const maxY = Math.max(h, bounds.maxY);
+  const viewX = minX - PAD;
+  const viewY = minY - PAD;
+  const viewW = maxX - minX + PAD * 2;
+  const viewH = maxY - minY + PAD * 2;
   const labels = sym.labels?.(w, h) ?? [];
   const pins = sym.pins.map(
     (pin) =>
       `<circle cx="${Math.round(pin.nx * w * 100) / 100}" cy="${Math.round(pin.ny * h * 100) / 100}" r="1.4" fill="${PIN_FILL}" stroke="${PIN_STROKE}" stroke-width="0.42"/>`,
   );
   return [
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(viewW * SCALE)}" height="${Math.round(viewH * SCALE)}" viewBox="${-PAD} ${-PAD} ${viewW} ${viewH}" role="img">`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(viewW * SCALE)}" height="${Math.round(viewH * SCALE)}" viewBox="${viewX} ${viewY} ${viewW} ${viewH}" role="img">`,
     `<title>${escapeXml(sym.name)}</title>`,
-    `<rect x="${-PAD}" y="${-PAD}" width="${viewW}" height="${viewH}" rx="1.2" fill="${CARD_FILL}" stroke="${CARD_STROKE}" stroke-width="0.3"/>`,
+    `<rect x="${viewX}" y="${viewY}" width="${viewW}" height="${viewH}" rx="1.2" fill="${CARD_FILL}" stroke="${CARD_STROKE}" stroke-width="0.3"/>`,
     ...shapes.map(pathOf),
     ...pins,
     ...labels.map(textOf),

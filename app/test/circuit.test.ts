@@ -35,7 +35,83 @@ test('cada aparato mapea a un comportamiento del solver', () => {
   assert.equal(simKindOf(fake(6009, 'fuse')), 'fuse');
   assert.equal(simKindOf(fake(6007, 'thermal')), 'thermal');
   assert.equal(simKindOf(fake(1000, 'motor')), 'motor');
-  assert.equal(simKindOf(fake(6003, 'unknown')), null);
+  // El kind lo manda el código vía ComponentSpec: un Device con kind
+  // 'unknown' y código 6003 ya no puede existir (6003 es un fusible).
+  assert.equal(simKindOf(fake(12345, 'unknown')), null);
+});
+
+test('simKindOf deriva kind y polaridad del ComponentSpec', () => {
+  const fake = (code: number, kind: Device['kind']): Device =>
+    ({ recordId: 1, code, designator: 'X', part: 'X', kind, pinNames: [], nets: [0, 1], poles: [[0, 1]] });
+  // La polaridad NA/NC sale de `specOf(code).rest`, no de una lista suelta.
+  assert.equal(simKindOf(fake(8018, 'contact')), 'contactNC');
+  assert.equal(simKindOf(fake(2002, 'contact')), 'contactNO', '2002 era unknown en el solver');
+  assert.equal(simKindOf(fake(8100, 'pushbutton')), 'buttonNO', '8100 era unknown y el clic se perdía');
+  assert.equal(simKindOf(fake(8005, 'pushbutton')), 'buttonNC');
+  assert.equal(simKindOf(fake(8009, 'pushbutton')), 'buttonNC');
+  assert.equal(simKindOf(fake(8013, 'selector')), 'buttonNC');
+  assert.equal(simKindOf(fake(8015, 'selector')), 'buttonNC');
+  assert.equal(simKindOf(fake(8017, 'thermal')), 'contactNC', '8017 es el contacto NC del relé térmico');
+  assert.equal(simKindOf(fake(8101, 'lamp')), 'lamp');
+});
+
+// Plano mínimo con alimentación L/N, un pulsador y una lámpara; los tests
+// cambian el código conservando la geometría para probar la semántica nueva.
+const LUZ = readFileSync(join(FIXTURES, 'luz-con-interruptor.cade'), 'latin1');
+const luzWith = (from: string, to: string) => buildProject(parse(LUZ.replace(from, to))).records;
+const built = (b: NonNullable<ReturnType<typeof circuitFrom>>, part: string) =>
+  b.circuit.devices.find((d) => d.part === part)!;
+
+test('la bobina temporizada 9004 llega al circuito con su modo', () => {
+  const built = circuitFrom(luzWith('8016#-H1', '9004#-KT1'));
+  assert.ok(built, 'el plano debe armar circuito');
+  const device = built.devices.find((d) => d.part === 'KT1');
+  assert.ok(device, 'la bobina temporizada debe estar en la netlist');
+  assert.equal(device.kind, 'coil');
+  assert.equal(device.timer, 'on', 'el Device lleva el modo: antes TIMER_COIL esperaba timerReady y nunca llegaba');
+  const sim = built.circuit.devices.find((d) => d.part === 'KT1');
+  assert.ok(sim);
+  assert.equal(sim.kind, 'coil');
+  assert.equal(sim.timer, 'on', 'el SimDevice hereda el modo de temporizador');
+
+  // El timer en una bobina no rompe la detección de carga: se energiza igual.
+  const button = built.circuit.devices.find((d) => d.part === 'S1')!;
+  const pressed = simulate(built.circuit, { pressed: new Set([button.id]) });
+  assert.equal(pressed.energized.has('KT1'), true);
+});
+
+test('8100 se comporta igual que un pulsador que ya funcionaba', () => {
+  // S3: «8100 está en PUSH_CODES pero kindOf lo devuelve unknown, así que el
+  // clic se pierde». La prueba no es que encienda una carga en este plano (el
+  // plano de luz no se energiza ni con 8000), sino que reemplazar 8000 por 8100
+  // sea indistinguible para el solver: misma netlist, mismo resultado al
+  // presionar. Antes, 8100 ni siquiera llegaba a la netlist.
+  const reference = circuitFrom(luzWith('8000#-S1', '8000#-S1'));
+  const candidate = circuitFrom(luzWith('8000#-S1', '8100#-S1'));
+  assert.ok(reference && candidate);
+
+  const kinds = (built: NonNullable<typeof candidate>): string[] =>
+    built.circuit.devices.map((d) => `${d.part}:${d.kind}`).sort();
+  assert.deepEqual(kinds(candidate), kinds(reference), 'la netlist de 8100 debe ser la de un pulsador');
+
+  const button = built(candidate, 'S1');
+  assert.equal(button.kind, 'buttonNO', 'CATALOG lo lista como «Pulsador» (-S)');
+
+  const run = (built: NonNullable<typeof candidate>, pressed: boolean): string[] => {
+    const device = built.circuit.devices.find((d) => d.part === 'S1')!;
+    const result = simulate(built.circuit, { pressed: pressed ? new Set([device.id]) : new Set<string>() });
+    return [...result.energized].sort();
+  };
+  assert.deepEqual(run(candidate, true), run(reference, true), 'presionar 8100 debe dar el mismo estado que presionar 8000');
+  assert.deepEqual(run(candidate, false), run(reference, false));
+});
+
+test('8101 se simula como lámpara', () => {
+  const built = circuitFrom(luzWith('8016#-H1', '8101#-H1'));
+  assert.ok(built);
+  const sim = built.circuit.devices.find((d) => d.part === 'H1');
+  assert.ok(sim, 'la lámpara debe llegar al solver');
+  assert.equal(sim.kind, 'lamp');
 });
 
 test('la alimentación se infiere del dibujo (sin marcas manuales)', () => {

@@ -1,21 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="63" height="63" viewBox="-1.5 -1.5 21 21" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" width="78" height="54" viewBox="-3.4699999999999998 -1.5 25.97 18" role="img">
 <title>Relé térmico</title>
-<rect x="-1.5" y="-1.5" width="21" height="21" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
-<path d="M0 3.24L6.12 3.24" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M11.88 3.24L18 3.24" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M6.12 3.24L11.88 0.65" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M0 9L6.12 9" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M11.88 9L18 9" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M6.12 9L11.88 6.41" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M0 14.76L6.12 14.76" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M11.88 14.76L18 14.76" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M6.12 14.76L11.88 12.17" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M6.48 6.84H11.52V11.16H6.48Z" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M6.48 11.16L11.52 6.84" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="0" cy="3.24" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<circle cx="0" cy="9" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<circle cx="0" cy="14.76" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<circle cx="18" cy="3.24" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<circle cx="18" cy="9" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<circle cx="18" cy="14.76" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<rect x="-3.4699999999999998" y="-1.5" width="25.97" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M0 0L0 3" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 8.25L-1.97 3.38" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 8.25L0 12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6 0L6 3" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6 8.25L4.03 3.38" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6 8.25L6 12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 0L12 3" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 8.25L10.03 3.38" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 8.25L12 12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 8.7H15V11.7H0Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6 8.7L6 11.7" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 8.7L12 11.7" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 9.3H2.4V11.1H0" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6 9.3H8.4V11.1H6" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 9.3H14.4V11.1H12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="0" cy="0" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="6" cy="0" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="12" cy="0" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="0" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="6" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="12" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
 </svg>

@@ -15,6 +15,7 @@
  */
 
 import type { CadeRecordModel } from '../model/project.ts';
+import { specOf } from '../model/component-spec.ts';
 import { attachPoints } from '../editor/pins.ts';
 import { buildNetwork, netKey } from '../editor/network.ts';
 
@@ -66,34 +67,17 @@ export function partKey(designator: string): string {
   return designator.trim().toUpperCase().replace(/^[-\s]+/, '');
 }
 
+/**
+ * Kind de simulación de un código, derivado del ComponentSpec: la tabla
+ * única de semántica por código (`model/component-spec.ts`).
+ */
 export function kindOf(code: number): DeviceKind {
-  // Bobinas: lo que se energiza. 9000 monoestable, 9001 biestable, 7018 de
-  // contactor y 9004/9005/9006/9007 temporizadores.
-  if (code === 9000 || code === 9001 || code === 7018 || code === 9004 || code === 9005 || code === 9006 || code === 9007) return 'coil';
-  // Contactos: 7000/7001 auxiliares, 2001/2006 los de potencia del contactor,
-  // 8018 el auxiliar NC doble y 7004..7015 los temporizados.
-  if (code === 7000 || code === 7001 || code === 2001 || code === 2006 || code === 8018) return 'contact';
-  if (code >= 7004 && code <= 7015) return 'contact';
-  // Pulsadores (NA/NC/NA-NC/conmutado) y setas de emergencia.
-  if (code >= 8000 && code <= 8011) return 'pushbutton';
-  // Selectores y finales de carrera.
-  if (code >= 8012 && code <= 8015) return 'selector';
-  if (code === 8016 || code === 9008 || code === 9009) return 'lamp';
-  // Protecciones: fusibles, automáticos, disyuntores y diferenciales conducen
-  // mientras no se modelen disparos. El térmico es su propio tipo.
-  if (code === 6007 || code === 8017) return 'thermal';
-  if (code >= 6000 && code < 7000) return 'fuse';
-  // Motores: trifásicos, Dahlander, rotativo, dos velocidades, CC, etc.
-  if (code >= 1000 && code <= 1010) return 'motor';
-  if (code === 10508 || code === 10509) return 'motor';
-  if (code >= 3000 && code < 4000) return 'terminal';
-  return 'unknown';
+  return specOf(code).kind;
 }
 
 /** Protecciones que el usuario puede abrir/disparar en simulación. */
 export function isProtectionCode(code: number): boolean {
-  const kind = kindOf(code);
-  return kind === 'fuse' || kind === 'thermal';
+  return specOf(code).protection;
 }
 
 /** Agrupa bornes en polos: la primera mitad contra la segunda. */
@@ -204,24 +188,21 @@ export function buildNetlist(records: CadeRecordModel[]): Netlist {
       members.set(net, set);
     }
 
+    // La semántica del aparato sale del ComponentSpec: kind, temporizador y
+    // biestable son dimensiones de la misma fila.
+    const spec = specOf(rec.code);
     devices.push({
       recordId: rec.id,
       code: rec.code,
       designator: rec.designator,
       part: partKey(rec.designator),
-      kind: kindOf(rec.code),
+      kind: spec.kind,
       pinNames: rec.pins,
       nets,
       poles: pairPins(nets.length),
-      timer: (rec.code >= 7004 && rec.code <= 7007)
-        ? 'on'
-        : (rec.code >= 7008 && rec.code <= 7011)
-          ? 'off'
-          : (rec.code >= 7012 && rec.code <= 7015)
-            ? 'both'
-            : undefined,
-      timerNC: rec.code === 7005 || rec.code === 7009 || rec.code === 7013,
-      latching: rec.code === 9001,
+      timer: spec.timer,
+      timerNC: spec.timer !== undefined && spec.rest === 'closed',
+      latching: spec.latching ?? false,
     });
   }
 

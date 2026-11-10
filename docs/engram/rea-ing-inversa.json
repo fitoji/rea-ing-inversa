@@ -1,6 +1,6 @@
 {
   "version": "0.2.0",
-  "exported_at": "2026-11-06 20:24:11.599131000",
+  "exported_at": "2026-11-10 08:06:11.490369000",
   "sessions": [
     {
       "id": "ses_e7ba73c77ffetvLtwg4xRRMVH7",
@@ -85,6 +85,115 @@
       "directory": "/Volumes/SSD Samsung MAC/DEV SSD/NUEVA GENERACION/ELECTROMECANICA-PROJECTOS/REA-ing-inversa",
       "started_at": "2026-11-06 11:24:42.022390000",
       "ended_at": "2026-11-06 11:25:21"
+    },
+    {
+      "id": "ses_e40678efdffeq1icbMUV1dxADP",
+      "project": "rea-ing-inversa",
+      "ownership_mode": "shared",
+      "directory": "/Volumes/SSD Samsung MAC/DEV SSD/NUEVA GENERACION/ELECTROMECANICA-PROJECTOS/REA-ing-inversa",
+      "started_at": "2026-11-09 09:16:41.135996000"
+    },
+    {
+      "id": "01a1bfd6-0dce-7675-9376-fdca096c084a",
+      "project": "rea-ing-inversa",
+      "ownership_mode": "project_owned",
+      "directory": "/Volumes/SSD Samsung MAC/DEV SSD/NUEVA GENERACION/ELECTROMECANICA-PROJECTOS/REA-ing-inversa",
+      "started_at": "2026-11-09 10:24:37.952919000",
+      "ended_at": "2026-11-09 10:38:32"
+    },
+    {
+      "id": "01a1bfdf-5842-704b-b73b-022f8927db65",
+      "project": "rea-ing-inversa",
+      "ownership_mode": "project_owned",
+      "directory": "/Volumes/SSD Samsung MAC/DEV SSD/NUEVA GENERACION/ELECTROMECANICA-PROJECTOS/REA-ing-inversa",
+      "started_at": "2026-11-09 10:34:13.513328000",
+      "ended_at": "2026-11-09 10:35:09"
+    },
+    {
+      "id": "ses_e401be84dffehnfxKpxxomdKGb",
+      "project": "rea-ing-inversa",
+      "ownership_mode": "shared",
+      "directory": "/Volumes/SSD Samsung MAC/DEV SSD/NUEVA GENERACION/ELECTROMECANICA-PROJECTOS/REA-ing-inversa",
+      "started_at": "2026-11-09 10:39:18.999216000"
+    },
+    {
+      "id": "01a1bfd6-0dce-7675-9376-fdca096c084a:resume:2",
+      "project": "rea-ing-inversa",
+      "ownership_mode": "project_owned",
+      "directory": "/Volumes/SSD Samsung MAC/DEV SSD/NUEVA GENERACION/ELECTROMECANICA-PROJECTOS/REA-ing-inversa",
+      "started_at": "2026-11-09 10:40:45.390136000",
+      "ended_at": "2026-11-09 10:41:16"
+    },
+    {
+      "id": "01a1bfd6-0dce-7675-9376-fdca096c084a:resume:3",
+      "project": "rea-ing-inversa",
+      "ownership_mode": "project_owned",
+      "directory": "/Volumes/SSD Samsung MAC/DEV SSD/NUEVA GENERACION/ELECTROMECANICA-PROJECTOS/REA-ing-inversa",
+      "started_at": "2026-11-09 10:41:22.639762000",
+      "ended_at": "2026-11-09 10:42:00"
+    },
+    {
+      "id": "01a1bfe7-034c-778d-9bef-c153744f1293",
+      "project": "rea-ing-inversa",
+      "ownership_mode": "project_owned",
+      "directory": "/Volumes/SSD Samsung MAC/DEV SSD/NUEVA GENERACION/ELECTROMECANICA-PROJECTOS/REA-ing-inversa",
+      "started_at": "2026-11-09 10:42:31.331959000",
+      "ended_at": "2026-11-09 10:42:38"
+    },
+    {
+      "id": "01a1bfed-b728-774c-bcb8-8ebceacb94fa",
+      "project": "rea-ing-inversa",
+      "ownership_mode": "project_owned",
+      "directory": "/Volumes/SSD Samsung MAC/DEV SSD/NUEVA GENERACION/ELECTROMECANICA-PROJECTOS/REA-ing-inversa",
+      "started_at": "2026-11-09 10:49:50.872397000",
+      "ended_at": "2026-11-09 10:50:00"
+    },
+    {
+      "id": "01a1bff5-c451-771c-a768-aff171187227",
+      "project": "rea-ing-inversa",
+      "ownership_mode": "project_owned",
+      "directory": "/Volumes/SSD Samsung MAC/DEV SSD/NUEVA GENERACION/ELECTROMECANICA-PROJECTOS/REA-ing-inversa",
+      "started_at": "2026-11-09 10:59:31.517526000",
+      "ended_at": "2026-11-09 11:02:42"
+    },
+    {
+      "id": "01a1bff7-1c63-7277-9169-83297edd6a28",
+      "project": "rea-ing-inversa",
+      "ownership_mode": "project_owned",
+      "directory": "/Volumes/SSD Samsung MAC/DEV SSD/NUEVA GENERACION/ELECTROMECANICA-PROJECTOS/REA-ing-inversa",
+      "started_at": "2026-11-09 11:00:20.459729000",
+      "ended_at": "2026-11-09 11:00:38"
+    },
+    {
+      "id": "01a1bff9-85f6-7230-8ca3-b55a358a9cb4",
+      "project": "rea-ing-inversa",
+      "ownership_mode": "project_owned",
+      "directory": "/Volumes/SSD Samsung MAC/DEV SSD/NUEVA GENERACION/ELECTROMECANICA-PROJECTOS/REA-ing-inversa",
+      "started_at": "2026-11-09 11:05:59.477456000"
+    },
+    {
+      "id": "01a1bffc-cf28-7144-a4dd-3282d803f03e",
+      "project": "rea-ing-inversa",
+      "ownership_mode": "project_owned",
+      "directory": "/Volumes/SSD Samsung MAC/DEV SSD/NUEVA GENERACION/ELECTROMECANICA-PROJECTOS/REA-ing-inversa",
+      "started_at": "2026-11-09 11:06:29.120744000",
+      "ended_at": "2026-11-09 11:06:45"
+    },
+    {
+      "id": "01a1c030-f620-729d-acac-4003049d1897",
+      "project": "rea-ing-inversa",
+      "ownership_mode": "project_owned",
+      "directory": "/Volumes/SSD Samsung MAC/DEV SSD/NUEVA GENERACION/ELECTROMECANICA-PROJECTOS/REA-ing-inversa",
+      "started_at": "2026-11-09 12:03:27.524775000",
+      "ended_at": "2026-11-09 12:28:15"
+    },
+    {
+      "id": "01a1c04c-5f42-70b3-8d7e-ffe728ccf9d7",
+      "project": "rea-ing-inversa",
+      "ownership_mode": "project_owned",
+      "directory": "/Volumes/SSD Samsung MAC/DEV SSD/NUEVA GENERACION/ELECTROMECANICA-PROJECTOS/REA-ing-inversa",
+      "started_at": "2026-11-09 12:33:19.676709000",
+      "ended_at": "2026-11-09 12:42:21"
     }
   ],
   "observations": [
@@ -1267,6 +1376,160 @@
       "created_at": "2026-11-06 20:24:05",
       "updated_at": "2026-11-06 20:24:05",
       "pinned": false
+    },
+    {
+      "id": 1833,
+      "sync_id": "obs-50768b38603e3072",
+      "session_id": "manual-save-rea-ing-inversa",
+      "type": "manual",
+      "title": "odd/component-spec/tasks",
+      "content": "Mirror del plan P1 (fuente: odd/tasks/component-spec.md).\n\n**Specs**: S1 tabla unica ComponentSpec y derivar los cinco consumidores; S2 8005 se presiona en simulacion y se dibuja en reposo; S3 8100 pulsable pero kindOf unknown; S4 8101/8102/8103 nunca son lamp; S5 ningun codigo puede estar en una tabla y ausente en otra en la misma dimension; S6 paridad congelada con lo que ya funciona.\n\n**Defectos probados a cerrar**: 8005 y 11 pulsadores mas sin estado visual; 8100 con el clic perdido; 8101/8103 dibujadas como lampara y nunca lamp; 8102 sin glifo; 8016 lamp solo en el solver; 2002 y 8018 con semantica a medias; 9004-9007 bobinas temporizadas que nunca llegan a timerReady.\n\n**Fuera de alcance declarado**: 5000-5009 (catalogo dice fusible/seccionador, no conduce) y 4009/4010 (nombre de catalogo vs tipo inferido).\n\n**Tasks**: T1 tabla + test de paridad (worker); T2 netlist/circuit derivan (worker); T3 visual deriva (inline); T4 App.PUSH_CODES y project.LAMP_CODES (inline); T5 glifo 8102 (inline).",
+      "project": "rea-ing-inversa",
+      "scope": "project",
+      "revision_count": 1,
+      "duplicate_count": 1,
+      "last_seen_at": "2026-11-06 20:35:41",
+      "created_at": "2026-11-06 20:35:41",
+      "updated_at": "2026-11-06 20:35:41",
+      "pinned": false
+    },
+    {
+      "id": 1839,
+      "sync_id": "obs-456e30627b528599",
+      "session_id": "manual-save-rea-ing-inversa",
+      "type": "manual",
+      "title": "Session summary 2026-11-06 bis: P1 tabla ComponentSpec a medio camino",
+      "content": "## Goal\nCerrar P1 de docs/auditoria-v0.3.md: una sola tabla ComponentSpec por codigo y derivar los cinco consumidores (circuito, netlist, visual, App, project).\n\n## Estado de los commits\n- Tanda P0 completa y pusheada: c088faf (parser lineal), c288170 (netlist por hoja), de6d1eb y 551e1da (memoria y erratas). origin/main al dia en ese momento.\n- P1 T1+T2: **0123b9b** feat(model): single ComponentSpec table. Verificado por mi: suite 235/235, tsc limpio, diferencial end-to-end contra 551e1da sobre los 6 fixtures identico (kinds, timers, reposo, efecto de cada pulsacion).\n- **4e049cb** feat(model): 9003 electrovalvula es una bobina. Impacto medido: EV1:coil y EV2:coil aparecen en inversion-giro-cej.cade; estado energizado sin cambios.\n- Local: sin pushear (3 commits sobre origin/main: 0123b9b, 4e049cb y el de memoria que sigue).\n\n## Defectos que encontre en la entrega del worker (corregidos)\n1. 8100 habia quedado como 'contact': CATALOG lo lista como 'Pulsador' (-S) y como contacto el cierre dependia de una bobina homonima, o sea el clic seguia perdido (S3 sin cerrar). Ahora es pushbutton y el test compara que reemplazar 8000 por 8100 sea indistinguible para el solver.\n2. 7005/7009/7013 habian quedado NA 'para congelar paridad', pero solver.ts:155-172 si conmuta contactNC temporizado y TIMED_NC los dibuja NC. Ahora rest:'closed'.\n3. 9003 solo existia en la capa visual: al derivar T3 se habria perdido el glifo de bobina. Lo agregue a la tabla (4e049cb).\n\n## Lo que quedo pendiente y como retomarlo\nT3, T4, T5. El worker mw5gbd9h-3-fb2h **fallo** despues de escribir los tests RED y antes de implementar. En el arbol de trabajo quedan 4 archivos de test sin commitear con **5 tests RED**:\n- app/test/visual.test.ts: 'todo presionable reporta pressed, este o no en el viejo PUSHER' (S2/S3); 'pulsador o selector con reposo NC se dibuja cerrado; NA, abierto'; '2006 y 8018 son contactos'.\n- app/test/catalog.test.ts: '8102 tiene glifo propio: ya no cae al simbolo generico' (S4).\n- app/test/lamp-color.test.ts: '8101, 8102 y 8103 llevan el slot de color como el resto de las lamparas' (S4).\n- app/test/component-spec.test.ts: ajuste mio por 9003.\nEstado actual: 243 tests, 238 pasan, 5 fallan (todos RED de T3-T5). NO commitear hasta ponerlos verdes.\n\n## Como seguir manana\n1. Correr 'node --test' en app/ y confirmar los 5 RED.\n2. Implementar T3 en app/src/sim/visual.ts derivando de specOf: PUSHER=pressable, LAMP=kind lamp, COIL=kind coil, CONTACT=contact sin timer, TIMED_CONTACT=contact con timer, TIMER_COIL=coil con timer, TIMED_NC=contact con timer y rest closed, NC en reposo=rest closed, motor=kind motor. Mantener la API exportada.\n3. T4: App.tsx PUSH_CODES y project.ts LAMP_CODES desde isPushable/isLamp.\n4. T5: lampDevice(8102) en families.ts junto a 8101/8103.\n5. Verificar: suite completa, tsc, y diferencial de estados visuales contra 551e1da (solo deben cambiar los codigos declarados en odd/tasks/component-spec.md).\n\n## Notas de entorno\n- pnpm no esta en el PATH del harness; usar 'node --test' y './node_modules/.bin/tsc --noEmit' dentro de app/.\n- 'git push' falla con el HOME redirigido del harness: usar HOME=/Users/fitoji para que osxkeychain encuentre la credencial.\n- engram: ENGRAM_DATA_DIR=/Users/fitoji/.engram y binario en /opt/homebrew/bin/engram.",
+      "project": "rea-ing-inversa",
+      "scope": "project",
+      "revision_count": 1,
+      "duplicate_count": 1,
+      "last_seen_at": "2026-11-07 06:09:19",
+      "created_at": "2026-11-07 06:09:19",
+      "updated_at": "2026-11-07 06:09:19",
+      "pinned": false
+    },
+    {
+      "id": 1840,
+      "sync_id": "obs-88dcfc0fb2dbaa54",
+      "session_id": "manual-save-rea-ing-inversa",
+      "type": "manual",
+      "title": "odd/component-spec/tasks",
+      "content": "Estado P1 al 2026-11-06 (retomar aca).\n\nT1 (tabla + solver) y T2 (netlist/circuit derivan) CERRADOS en 0123b9b, mas 9003 en 4e049cb. Verificados: suite 235/235, tsc limpio, diferencial end-to-end contra 551e1da identico en los 6 fixtures.\n\nPENDIENTE T3 (visual.ts deriva de specOf), T4 (App.PUSH_CODES y project.LAMP_CODES) y T5 (glifo de 8102). Los 5 tests RED ya estan escritos sin commitear en app/test/visual.test.ts, catalog.test.ts y lamp-color.test.ts, y la suite queda en 238/243.\n\nCodigos que deben cambiar de comportamiento visible: 8000-8015 y 8100 con feedback de pulsado; 8016, 8101, 8102 y 8103 como lamparas; 2006 y 8018 como contactos; 7018 como bobina con estado visual.\n\nFuera de alcance declarado: 5000-5009 (catalogo dice fusible/seccionador y no conduce; decidir es tarea de REA) y 4009/4010 (nombre de catalogo contra tipo inferido).",
+      "project": "rea-ing-inversa",
+      "scope": "project",
+      "revision_count": 1,
+      "duplicate_count": 1,
+      "last_seen_at": "2026-11-07 06:09:19",
+      "created_at": "2026-11-07 06:09:19",
+      "updated_at": "2026-11-07 06:09:19",
+      "pinned": false
+    },
+    {
+      "id": 1841,
+      "sync_id": "obs-3c44ca4d287f7c84",
+      "session_id": "ses_e40678efdffeq1icbMUV1dxADP",
+      "type": "discovery",
+      "title": "Managed opencode launcher shadowed by Homebrew PATH order",
+      "content": "What: Verified gentle-ai doctor warning [!!] opencode:managed_profile is real: in a new login shell `command -v opencode` prints /opt/homebrew/bin/opencode, not /Users/fitoji/.gentle-ai/bin/opencode. Why: the managed PATH export lives in ~/.zprofile (line 11), but ~/.zshrc later prepends ~10 dirs (pnpm, bun, fnm, curl, antigravity), pushing .gentle-ai/bin to position 15, after /opt/homebrew/bin (13). Both binaries are opencode v2.2.6; the wrapper only sets OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS=true before exec'ing the Homebrew binary, so the practical loss is that flag. Where: ~/.zprofile lines 10-12, ~/.zshrc lines 49-90 (multiple PATH prepends). Learned: doctor's remedy is to append `export PATH='/Users/fitoji/.gentle-ai/bin':\"$PATH\"` as the LAST PATH change in the startup files (end of .zshrc); its p10k mention is a static-analysis limitation, the real cause is PATH ordering.",
+      "project": "rea-ing-inversa",
+      "scope": "project",
+      "topic_key": "config/gentle-ai-opencode-path",
+      "revision_count": 1,
+      "duplicate_count": 1,
+      "last_seen_at": "2026-11-09 09:18:32",
+      "review_after": "2027-05-09 09:18:32",
+      "created_at": "2026-11-09 09:18:32",
+      "updated_at": "2026-11-09 09:18:32",
+      "pinned": false
+    },
+    {
+      "id": 1842,
+      "sync_id": "obs-006942811cdecd84",
+      "session_id": "01a1bfd6-0dce-7675-9376-fdca096c084a",
+      "type": "config",
+      "title": "Migrate Gentle Shell to bundled 4.7.0 (self-contained install)",
+      "content": "**What**: Migrated Gentle Shell from a global npm `gentle-pi@4.2.0` (fnm node 24.16) to the official self-contained bundled install `gentle-pi@4.7.0` + bundled Pi 1.5.0 at `/Users/fitoji/.gentle-shell`, then provisioned the isolated agent home with `gentle-shell setup` (gentle-ai 4.4.0 from Homebrew was already latest).\n\n**Why**: User asked to update Gentle Shell to its latest version and chose the official updater (`gentle-shell upgrade`) over an in-place `npm -g` install, because release 4.7.0 publishes a self-contained distribution.\n\n**Where**:\n- `~/.gentle-shell/current -\u003e versions/4.7.0-1.5.0` (bundled distribution: gentle-pi 4.7.0 + pi-coding-agent 1.5.0)\n- `~/.gentle-shell/runtime/node-24.21.0/` and `~/.gentle-shell/runtime/pnpm-11.1.1/` (pinned, real binaries, not symlinks into fnm/brew)\n- `~/.gentle-shell/bin/gentle-shell` (bundled launcher), PATH prepend at `~/.zshrc:97`\n- `~/.gentle-shell/agent/settings.json` (npmCommand rewritten to the bundled runtime; packages: gentle-engram, pi-web-access, pi-btw)\n- `~/.gentle-shell/config.json` (provisioned record now gentleAi 4.4.0 / gentlePi 4.7.0)\n- `~/.gentle-shell/path-entry.json` (records the .zshrc line)\n\n**Learned**:\n1. `gentle-shell upgrade` on the release channel migrates to the bundled install as soon as the release publishes `gentle-shell-*` assets + `gentle-shell-distribution.json`. It keeps the old global package and asks once about removing it; non-interactive runs answer No, so the duplicate stays.\n2. That duplicate is a real shadowing risk: the PATH prepend lives only in `~/.zshrc`, so non-login shells (`zsh -c`) still resolve the stale fnm `gentle-shell` (4.2.0). `~/.zshenv` has no PATH entry.\n3. `versions.history` keeps only `4.7.0-1.5.0`, so `gentle-shell upgrade --rollback` cannot return to 4.2.0; the actual rollback is commenting `~/.zshrc:97` so the still-installed fnm global 4.2.0 wins again.\n4. `gentle-ai sync --scope global` operates on the shared `~/.pi` home, NOT on the isolated `~/.gentle-shell/agent`; the isolated home is provisioned by `gentle-shell setup`.\n5. Pi background-subagent policy is read by gentle-pi from `${GENTLE_PI_CONFIG_HOME:-~/.pi/gentle-ai}/background-subagents.json`, not from the isolated home — so migrating does not flip that policy (stays `on`).\n6. `gentle-shell setup` snapshots the persona file and restores its prior state; an absent persona file is restored as absent (it deletes what gentle-ai wrote) and still prints \"kept your Pi persona unchanged\". An empty `~/.gentle-shell/config/gentle-ai` is therefore expected, not a defect.\n7. Verification: `gentle-shell --version`, `gentle-shell -- --version` (→ 1.5.0), and a headless `gentle-shell -p \"...\"` run are cheap end-to-end smoke checks of the bundled stack.",
+      "project": "rea-ing-inversa",
+      "scope": "project",
+      "topic_key": "gentle-shell/migration-4.7.0",
+      "revision_count": 1,
+      "duplicate_count": 1,
+      "last_seen_at": "2026-11-09 10:35:48",
+      "review_after": "2027-02-09 10:35:48",
+      "created_at": "2026-11-09 10:35:48",
+      "updated_at": "2026-11-09 10:35:48",
+      "pinned": false
+    },
+    {
+      "id": 1844,
+      "sync_id": "obs-13d5ef3a5577fb4d",
+      "session_id": "01a1bff9-85f6-7230-8ca3-b55a358a9cb4",
+      "type": "discovery",
+      "title": "Diagnosticar geometría de polos multipolares invertida (bornes left/right)",
+      "content": "**What**: Diagnóstico del modelo de símbolos de electro-simulador: los aparatos multipolares de potencia (disyuntores Q, automáticos F, contactores) se dibujan con los bornes 1-3-5 y 2-4-6 enfrentados horizontalmente (izquierda/derecha) en vez de arriba/abajo, y con contactos horizontales, no con el polo vertical de UNE-EN 60617.\n\n**Why**: El símbolo \"Disyuntor III\" / \"Interruptor automático\" de la app no representa el componente real. Los PNG de referencia en `data/samples/components_png/` están correctos; la geometría de la app no.\n\n**Where**:\n- `app/src/symbols/draw.ts:103-109` — `poles(n)` usa `left(...)`/`right(...)`: 1,3,5 a la izquierda y 2,4,6 a la derecha, a las mismas alturas.\n- `app/src/symbols/draw.ts:83-88` — `threePole()` apila tres `contact()` horizontales; no modela tres polos verticales en paralelo.\n- `app/src/symbols/draw.ts:74-81` — `contact()` dibuja el contacto sobre una fila horizontal con cuchilla corta, no la cuchilla oblicua larga del polo vertical.\n- `app/src/symbols/families.ts:292-298` — 6015/6016/6017/6018/6019/6020 se definen solo con `contact`/`threePole` + `thermalMark`.\n- `app/src/symbols/families.ts:418-423` — `thermalMark` dibuja un rectángulo con diagonal central; no es el gancho ⊐ por polo.\n- `app/src/symbols/library.ts:41` — `SymbolPin.side` sí soporta `'top' | 'bottom'` (el motor en la línea 93 los usa), así que el modelo puede expresarlo; el helper `poles()` es el que no lo aprovecha.\n- Faltan por completo: cuerpo con celdas y tabiques compartidos, disparador magnético ▷, y accionamiento manual con enlace mecánico discontinuo.\n- Códigos 6008/6009/6010 (Disyuntor I/II/III) no están definidos en `families.ts`: caen al dibujo genérico.\n\n**Learned**: El defecto es estructural, no cosmético: afecta a todos los aparatos multipolares de potencia, no solo al disyuntor. Antes de redibujar hay que mover `poles()` a top/bottom y agregar un `verticalPole()` reutilizable; parchear cada `def()` no escala. La skill de `data/simbolos-electricos-une-svg/` ya tenía bien resuelta esta geometría y su fórmula de longitud de cuchilla.",
+      "project": "rea-ing-inversa",
+      "scope": "project",
+      "topic_key": "electro-simulador/simbolos/geometria-polos-multipolares",
+      "revision_count": 1,
+      "duplicate_count": 1,
+      "last_seen_at": "2026-11-09 11:15:36",
+      "review_after": "2027-05-09 11:15:36",
+      "created_at": "2026-11-09 11:15:36",
+      "updated_at": "2026-11-09 11:15:36",
+      "pinned": false
+    },
+    {
+      "id": 1845,
+      "sync_id": "obs-5d57033c1a375892",
+      "session_id": "01a1bff9-85f6-7230-8ca3-b55a358a9cb4",
+      "type": "architecture",
+      "title": "Planificar y entregar polos verticales y fidelidad CADeSimu",
+      "content": "**What**: Feature `odd/tasks/polos-cadesimu.md`: redibujar la aparamenta de `app/src/symbols/` con polos verticales sobre la grilla de 6 unidades de CADeSimu, preservando el juego de nombres de borne. Rama `feat/simbolos-verticales-cadesimu`, **publicada en origin**.\n\n**Why**: Los 10 PNG de referencia estaban correctos y los 10 símbolos de la app mal. Causa única: todas las primitivas asumían flujo horizontal izquierda→derecha. Además los bornes no caían en la grilla, así que al importar un `.cade` los cables no coincidían con los puntos de conexión.\n\n**Where**:\n- Spec y punto de reanudación: `odd/tasks/polos-cadesimu.md` (specs S1-S9, decisiones D1-D3, tareas T1-T7, secciones `## Delivery` y `## Log`)\n- Código: `app/src/symbols/draw.ts`, `families.ts`, `library.ts`, `app/scripts/make-component-docs.ts`\n- Tests: `app/test/symbol-grid.test.ts`\n- Evidencia de la grilla: `docs/cade-format.md:177-196`\n- Referencia visual: `data/samples/components_png/` (10 PNG)\n- Export de memoria: `docs/engram/rea-ing-inversa.json`\n\n**Learned** (estado entregado):\n- T1 y T2: `poles(n, size)` deriva de la caja; `poleColumns()` da columnas cada 6; `verticalPole()` dibuja cuchilla a 22° con `blade: {px, py, deg}` (imprescindible: el solver y el lienzo lo usan). `threePole()` delega en `verticalPoles()`.\n- T3: `filledSquareOnBlade`, `thermalHook`, `magneticTriangle`, `cellBody`, `manualOperator`.\n- T4: `protectionDevice` cubre 6000-6010 con cajas medidas (6001 12×15, 6002 12×15, 6003 18×15, 6007 21×15, 6009 18×24). `polesInCadeOrder()` respeta el orden del formato `1 3 5 2 4 6`. Motor `1000` = `U1 V1 W1 PE` en una fila superior, 24×24.\n- T6: `shapesBounds()` en `draw.ts` y el generador de docs lo usan para el `viewBox`.\n- Verificación: `tsc` limpio, `symbol-grid.test.ts` 16/16, suite 253/5 con las 5 fallas del WIP ajeno.\n- T5: 6 de 10 PNG pasan (1000, 6009, 6007, 6003, 6000, 6018 con toroide pendiente). Los 4 restantes fallan por precedencia de packs, no por el dibujo.\n- **D3**: la caja declarada es la grilla de bornes y el dibujo puede desbordarla (evidencia: `templates.ts` guardamotor en `-21 -3 18 24`). El lienzo de la app no recorta; solo lo hacían las miniaturas de `docs/`.\n\n**Cierre / reanudación en otra máquina**:\n- Rama `feat/simbolos-verticales-cadesimu` pusheada a `origin`, al día. 6 commits propios: `docs(odd)` spec, `feat(symbols)` geometría + tests, `docs(components)` miniaturas regeneradas, `fix(docs)` viewBox + hallazgos T5, `docs(engram)` export, `docs(odd)` mapa de slices.\n- No se abrió PR; queda a decisión del usuario.\n- El WIP del usuario en `app/test/` (visual, lamp-color, catalog, component-spec) **no** se commiteó y **no** viajó en el push.\n- Para retomar: `git checkout feat/simbolos-verticales-cadesimu`, importar `docs/engram/rea-ing-inversa.json` si hace falta recuperar memoria, y arrancar por T7.\n\n**Pendiente**:\n- T7 — `resolveSymbol()` devuelve geometría de otro pack para `5000`, `8000`, `8001` y `9000` (cajas 6×24, 14×24, sin caja, 24×24 en vez de las de `families.ts`), así que el redibujo queda bypasseado y sus bornes siguen fuera de grilla. Sumar `2001`/`2002`, que `polesDevice()` no cubre y hoy usan la geometría vieja sin caja declarada.\n- Toroide del diferencial y vástago/bracket del pulsador.\n- Barrido visual con render real de los 10 PNG, no solo estructural.",
+      "project": "rea-ing-inversa",
+      "scope": "project",
+      "topic_key": "odd/polos-cadesimu/tasks",
+      "revision_count": 3,
+      "duplicate_count": 1,
+      "last_seen_at": "2026-11-09 11:26:12",
+      "review_after": "2027-11-09 11:26:12",
+      "created_at": "2026-11-09 11:26:12",
+      "updated_at": "2026-11-10 08:06:05.919144000",
+      "pinned": false
+    },
+    {
+      "id": 1855,
+      "sync_id": "obs-55ac9ecfb0324662",
+      "session_id": "01a1bff9-85f6-7230-8ca3-b55a358a9cb4",
+      "type": "discovery",
+      "title": "Diagnosticar precedencia de packs en resolveSymbol de símbolos",
+      "content": "**What**: Diagnóstico de la precedencia de packs en `resolveSymbol()`: para varios códigos devuelve geometría de un conjunto importado en lugar del `SymbolDef` propio de `app/src/symbols/families.ts`, con su propia caja y sus propios bornes.\n\n**Why**: Explica por qué el redibujo de `families.ts` no tiene efecto visible en esos códigos y por qué sus bornes siguen fuera de la grilla de CADeSimu.\n\n**Where**: `app/src/symbols/library.ts` (merge `ALL` / `BY_CODE` y `getPack()` de `app/src/symbols/pack.ts`).\n\n**Learned**: Medido con `resolveSymbol(code, [])`:\n- `5000` → caja **6×24** (families declara 12×15), bornes en `y=24`, o sea el borde inferior y no `h−3=21`: fuera de grilla.\n- `8000` → caja **14×24** (families 6×15): fuera de grilla.\n- `8001` → **sin caja** (`size: undefined`), cae al símbolo genérico.\n- `9000` → caja **24×24** (families 15×15): fuera de grilla.\n- En cambio `1000`, `6000`, `6003`, `6007`, `6009`, `6016`, `6018` sí devuelven el dibujo propio y están en grilla.\n- `2001` devuelve `size: undefined` con bornes `left/right` en `ny` 0.18/0.5/0.82: es la geometría vieja de `library.ts`, porque `polesDevice()` no lo cubre (solo 2000, 2003, 2004, 2006, 2007).\n\n**Consecuencia**: no es un defecto del dibujo sino del orden de resolución. Antes de seguir redibujando hay que decidir qué pack gana por código y garantizar que ningún símbolo quede con `size` sin declarar.",
+      "project": "rea-ing-inversa",
+      "scope": "project",
+      "topic_key": "electro-simulador/simbolos/precedencia-packs",
+      "revision_count": 1,
+      "duplicate_count": 1,
+      "last_seen_at": "2026-11-10 07:44:40",
+      "review_after": "2027-05-10 07:44:40",
+      "created_at": "2026-11-10 07:44:40",
+      "updated_at": "2026-11-10 07:44:40",
+      "pinned": false
+    },
+    {
+      "id": 1856,
+      "sync_id": "obs-a77582a218e8c04f",
+      "session_id": "01a1bff9-85f6-7230-8ca3-b55a358a9cb4",
+      "type": "session_summary",
+      "title": "Session summary",
+      "content": "**Goal**: Revisar la skill de símbolos UNE y corregir los componentes de Electro-Simulador para que se vean como CADeSimu, con 100% de compatibilidad de formato y sin migrar los `.cade` viejos.\n\n**Instructions**:\n- Prioridad del usuario: compatibilidad con CADeSimu por encima de todo; los `.cade` viejos no importan.\n- No vectorizar los PNG: son referencia, no insumo de build.\n- No tocar el trabajo en curso del usuario en `app/test/` (4 archivos sin commitear).\n- Commits solo del trabajo propio, en rama aparte.\n\n**Discoveries**:\n- La skill de `data/simbolos-electricos-une-svg` no transforma PNG a SVG: es un procedimiento de redibujo asistido, y no estaba registrada en ninguna parte.\n- La grilla real de CADeSimu, medida en archivos reales: columnas `x = 0, 6, 12, 18…`, filas `y = 0` y `y = alto − 3`.\n- `app/src/symbols/` tenía el modelo rotado 90°: `poles()` ponía los impares a la izquierda y los pares a la derecha.\n- La caja declarada es la grilla de bornes; el dibujo puede desbordarla (`templates.ts` usa `-21 -3 18 24`).\n- El `.cade` guarda **nombres** de borne, no coordenadas, y en el orden `1 3 5 2 4 6`.\n- `attachPoints()` deriva los bornes de los cables de un `.cade` importado, no de la librería: por eso los archivos viejos no se rompen al cambiar la geometría.\n- `resolveSymbol()` devuelve geometría de otro pack para `5000`, `8000`, `8001` y `9000`: precedencia, no dibujo.\n\n**Accomplished**:\n- Diagnóstico completo de los 10 componentes contra sus PNG.\n- Feature documentado y entregado: T1, T2, T3, T4 y T6 en la rama `feat/simbolos-verticales-cadesimu`.\n- 4 commits: `docs(odd)`, `feat(symbols)`, `docs(components)`, `fix(docs)`.\n- `tsc` limpio, `symbol-grid.test.ts` 16/16, suite 253/5 (las 5 fallas son del WIP del usuario).\n- Memory exportado a `docs/engram/rea-ing-inversa.json` para continuar en otra máquina.\n\n**Next Steps**:\n- T7: resolver la precedencia de packs para `5000`, `8000`, `8001`, `9000` y cubrir `2001`/`2002` con `polesDevice`, que hoy usan la geometría vieja de `library.ts` sin caja declarada.\n- Toroide del diferencial y vástago/bracket del pulsador.\n- Barrido visual con render real de los 10 PNG, no solo estructural.\n- Las 5 fallas del WIP del usuario: `8102` con glifo propio, `8101-8103` con slot de color, presionable, pulsador NC, y `2006`/`8018` como contactos (`visual.ts:82` resuelve por `CONTACT.has(rec.code)` y `2006` no está en el conjunto).\n\n**Relevant Files**: `odd/tasks/polos-cadesimu.md`, `app/src/symbols/draw.ts`, `app/src/symbols/families.ts`, `app/src/symbols/library.ts`, `app/src/symbols/pack.ts`, `app/test/symbol-grid.test.ts`, `app/scripts/make-component-docs.ts`, `docs/cade-format.md`, `docs/futuro-catalogo-simbolos.md`, `docs/engram/rea-ing-inversa.json`, `data/simbolos-electricos-une-svg/SKILL.md`, `data/samples/components_png/`",
+      "project": "rea-ing-inversa",
+      "scope": "project",
+      "revision_count": 1,
+      "duplicate_count": 1,
+      "last_seen_at": "2026-11-10 07:44:50",
+      "created_at": "2026-11-10 07:44:50",
+      "updated_at": "2026-11-10 07:44:50",
+      "pinned": false
     }
   ],
   "prompts": [
@@ -1946,6 +2209,134 @@
       "content": "documenta todo este informe, dime si hace falta pasar otra vuelta de REA, o con la informacion de la decompilacion de rea que tenemos es suficiente, mi idea es guardar toda la info posible ahora que estoy en windows, hacer commit y push y continuar en otro ordenador mac que es mas potente y trabajar mas comodo",
       "project": "rea-ing-inversa",
       "created_at": "2026-11-06 11:08:04"
+    },
+    {
+      "id": 3497,
+      "sync_id": "prompt-379ad411bc774fec",
+      "session_id": "ses_e40678efdffeq1icbMUV1dxADP",
+      "content": "[!!]  opencode:managed_profile       Gentle AI could not verify that new login shells run the managed OpenCode launcher: cannot verify PATH order: /Users/fitoji/.zshrc contains a source of \"${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh\" whose target cannot be resolved, which may change PATH after /Users/fitoji/.gentle-ai/bin is added; in a new login shell, run `command -v opencode` and confirm it prints /Users/fitoji/.gentle-ai/bin/opencode\n       Remedy: In a new login shell, run `command -v opencode`; it should print /Users/fitoji/.gentle-ai/bin/opencode. If it does not, add export PATH='/Users/fitoji/.gentle-ai/bin':\"$PATH\" as the last PATH change in your shell startup files, then start a new login shell\n  [ok]  pi:mcp                         no configured Pi MCP servers blocked by -builtin:mcp without pi-mcp-adapter",
+      "project": "rea-ing-inversa",
+      "created_at": "2026-11-09 09:16:41"
+    },
+    {
+      "id": 3498,
+      "sync_id": "prompt-6bf9527a34e3333c",
+      "session_id": "ses_e40678efdffeq1icbMUV1dxADP",
+      "content": "y esto: [!!]  tool:opencode                  opencode resolved to /opt/homebrew/bin/opencode; /opt/homebrew/bin/opencode precedes the Gentle AI managed launcher /Users/fitoji/.gentle-ai/bin/opencode on PATH, so bare opencode bypasses the launcher that delegates to it (copies in PATH order: /opt/homebrew/bin/opencode, /Users/fitoji/.gentle-ai/bin/opencode)\n       Remedy: Move /Users/fitoji/.gentle-ai/bin ahead of /opt/homebrew/bin in PATH, then open a new terminal; keep both files, since the launcher delegates to /opt/homebrew/bin/opencode. On Windows, machine PATH entries come before user PATH entries, so reorder or remove the machine entry.",
+      "project": "rea-ing-inversa",
+      "created_at": "2026-11-09 09:21:34"
+    },
+    {
+      "id": 3501,
+      "sync_id": "prompt-3b5bc3727384f2a5",
+      "session_id": "01a1bfd6-0dce-7675-9376-fdca096c084a",
+      "content": "actualiza gentle shell a su ultima version",
+      "project": "rea-ing-inversa",
+      "created_at": "2026-11-09 10:24:37"
+    },
+    {
+      "id": 3503,
+      "sync_id": "prompt-ec8ea126294cfd64",
+      "session_id": "ses_e401be84dffehnfxKpxxomdKGb",
+      "content": "actualize gentle-shell y ahora no carga el path",
+      "project": "rea-ing-inversa",
+      "created_at": "2026-11-09 10:39:19"
+    },
+    {
+      "id": 3504,
+      "sync_id": "prompt-05b7038c36bb2850",
+      "session_id": "01a1bfd6-0dce-7675-9376-fdca096c084a:resume:2",
+      "content": "echo \"PATH=$PATH\"; echo \"HOME=$HOME\"; which opencode node fnm 2\u003e\u00261",
+      "project": "rea-ing-inversa",
+      "created_at": "2026-11-09 10:40:45"
+    },
+    {
+      "id": 3505,
+      "sync_id": "prompt-d6329079d6f107bf",
+      "session_id": "01a1bfd6-0dce-7675-9376-fdca096c084a:resume:3",
+      "content": "echo PATH=$PATH; echo HOME=$HOME; which opencode node",
+      "project": "rea-ing-inversa",
+      "created_at": "2026-11-09 10:41:22"
+    },
+    {
+      "id": 3506,
+      "sync_id": "prompt-c92e08021305d7e7",
+      "session_id": "01a1bfe7-034c-778d-9bef-c153744f1293",
+      "content": "echo PATH=$PATH; which opencode node gentle-shell",
+      "project": "rea-ing-inversa",
+      "created_at": "2026-11-09 10:42:31"
+    },
+    {
+      "id": 3507,
+      "sync_id": "prompt-adfde27588ff34e7",
+      "session_id": "01a1bfed-b728-774c-bcb8-8ebceacb94fa",
+      "content": "run this command: echo hello; which brew node opencode",
+      "project": "rea-ing-inversa",
+      "created_at": "2026-11-09 10:49:50"
+    },
+    {
+      "id": 3508,
+      "sync_id": "prompt-8f944a22340d0ec4",
+      "session_id": "01a1bff5-c451-771c-a768-aff171187227",
+      "content": "actualiza:  Package Updates Available\n Package updates are available. Run pi update --extensions\n Packages:\n - gentle-engram\n - pi-web-access",
+      "project": "rea-ing-inversa",
+      "created_at": "2026-11-09 10:59:31"
+    },
+    {
+      "id": 3510,
+      "sync_id": "prompt-7a48611a44d4cb8d",
+      "session_id": "01a1bff9-85f6-7230-8ca3-b55a358a9cb4",
+      "content": "revisa en /simbolos-electricos-une-svg tengo una skill que transforma los componentes png a svg",
+      "project": "rea-ing-inversa",
+      "created_at": "2026-11-09 11:05:59"
+    },
+    {
+      "id": 3512,
+      "sync_id": "prompt-125f670c8add8d14",
+      "session_id": "01a1bff9-85f6-7230-8ca3-b55a358a9cb4",
+      "content": "ok, entonces seria mejor hacer otro proyecto que haga esto, seria mucho lio para la app actual ,no?",
+      "project": "rea-ing-inversa",
+      "created_at": "2026-11-09 11:10:42"
+    },
+    {
+      "id": 3513,
+      "sync_id": "prompt-769480e8945decfb",
+      "session_id": "01a1bff9-85f6-7230-8ca3-b55a358a9cb4",
+      "content": "ok , dejalo apuntado como posible futura feature o un proyecto aparte para el futuro, lo que si revisa los componentes que tenemos en electro-simulador , con los pngs que tenemos como samples, ya que los png estan correctos y los componentes como disyuntor en nuestra app los tenemos mal",
+      "project": "rea-ing-inversa",
+      "created_at": "2026-11-09 11:14:36"
+    },
+    {
+      "id": 3514,
+      "sync_id": "prompt-850d4ccfa4960bfb",
+      "session_id": "01a1bff9-85f6-7230-8ca3-b55a358a9cb4",
+      "content": "sigue con los 9 restantes",
+      "project": "rea-ing-inversa",
+      "created_at": "2026-11-09 11:17:49"
+    },
+    {
+      "id": 3518,
+      "sync_id": "prompt-e76d5291590b82e6",
+      "session_id": "01a1bff9-85f6-7230-8ca3-b55a358a9cb4",
+      "content": "lo importante es mantener 100% compatibilidad con CADeSimu, no me importa que pasa con los cade viejos, quiero que los componentes se vean como en cadesimu",
+      "project": "rea-ing-inversa",
+      "created_at": "2026-11-09 11:24:57"
+    },
+    {
+      "id": 3549,
+      "sync_id": "prompt-f7355703639a3b62",
+      "session_id": "01a1bff9-85f6-7230-8ca3-b55a358a9cb4",
+      "content": "y luego push, guarda en engram todo lo aprendido y hecho, y luego haz commit y push subiendo engram, para pode trabajar en otro ordenador con este proyecto",
+      "project": "rea-ing-inversa",
+      "created_at": "2026-11-10 07:42:12"
+    },
+    {
+      "id": 3550,
+      "sync_id": "prompt-22e5cc39058c6bbf",
+      "session_id": "01a1bff9-85f6-7230-8ca3-b55a358a9cb4",
+      "content": "ok, guarda todo en engram, luego commit y push , recuerda de comitear archivos engram y pushearlos",
+      "project": "rea-ing-inversa",
+      "created_at": "2026-11-10 08:05:53"
     }
   ],
   "relations": [

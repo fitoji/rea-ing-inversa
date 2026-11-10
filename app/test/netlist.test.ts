@@ -5,7 +5,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from '../src/format/cade.ts';
 import { buildProject } from '../src/model/project.ts';
-import { buildNetlist, partKey, kindOf } from '../src/sim/netlist.ts';
+import { buildNetlist, partKey, kindOf, isProtectionCode } from '../src/sim/netlist.ts';
 
 const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
 
@@ -99,4 +99,28 @@ test('clasificación de códigos en tipos de aparato', () => {
   assert.equal(kindOf(1000), 'motor');
   assert.equal(kindOf(3005), 'terminal');
   assert.equal(kindOf(12345), 'unknown');
+});
+
+test('clasificación: los códigos que el ComponentSpec corrige', () => {
+  // 8100 era pulsable en la UI y unknown acá: el clic se perdía.
+  assert.equal(kindOf(8100), 'pushbutton');
+  // 2002 era CONTACT en visual y unknown en el solver.
+  assert.equal(kindOf(2002), 'contact');
+  // 8101/8102/8103 tienen glifo de lámpara pero nunca fueron lamp.
+  assert.equal(kindOf(8101), 'lamp');
+  assert.equal(kindOf(8102), 'lamp');
+  assert.equal(kindOf(8103), 'lamp');
+  // 9004-9007 siguen siendo bobinas, ahora temporizadas.
+  assert.equal(kindOf(9004), 'coil');
+  assert.equal(kindOf(9007), 'coil');
+});
+
+test('isProtectionCode se deriva del ComponentSpec', () => {
+  assert.equal(isProtectionCode(6000), true);
+  assert.equal(isProtectionCode(6007), true);
+  assert.equal(isProtectionCode(6999), true);
+  assert.equal(isProtectionCode(8017), true);
+  assert.equal(isProtectionCode(8000), false);
+  assert.equal(isProtectionCode(8100), false);
+  assert.equal(isProtectionCode(12345), false);
 });
