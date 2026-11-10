@@ -65,19 +65,260 @@ export function contact(w: number, y: number, nc: boolean): Shape[] {
   return shapes;
 }
 
-/** Tres contactos de potencia apilados (contactor / interruptor). */
-export function threePole(w: number, h: number, nc = false): Shape[] {
-  const ys = spread(3).map((n) => n * h);
-  return ys.flatMap((y) => contact(w, y, nc));
+/** Tres polos de potencia verticales (contactor / interruptor). */
+export function threePole(w: number, h: number, _nc = false): Shape[] {
+  return verticalPoles(w, h, 3);
 }
 
-/** Bornes de un aparato multipolar: 1-3-5 arriba, 2-4-6 abajo. */
-export function poles(n: number): SymbolPin[] {
-  const ys = spread(n);
+/**
+ * Grilla de conexión de CADeSimu, medida en archivos reales
+ * (`docs/cade-format.md:183-186`): columnas cada 6 unidades desde el borde
+ * izquierdo de la caja, y fila inferior tres unidades adentro del borde.
+ */
+export const GRID = 6;
+
+export const BOTTOM_INSET = 3;
+
+/** `y` de la fila inferior de bornes de una caja de alto `h`. */
+export const gridBottom = (h: number): number => h - BOTTOM_INSET;
+
+/**
+ * Columnas de bornes de una caja. Multipolar avanza de a 6 unidades desde el
+ * borde izquierdo; unipolar va centrado.
+ */
+export function poleColumns(n: number, w: number): number[] {
+  return Array.from({ length: n }, (_, i) => (n === 1 ? w / 2 : i * GRID));
+}
+
+/**
+ * Bornes de un aparato multipolar sobre la grilla de CADeSimu: los impares en
+ * la fila superior y los pares en la inferior, cada polo en su columna.
+ */
+export function poles(n: number, size: { w: number; h: number }): SymbolPin[] {
+  const { w, h } = size;
+  const bottom = gridBottom(h);
+  return poleColumns(n, w).flatMap((x, i) => [
+    { name: String(1 + i * 2), nx: x / w, ny: 0, side: 'top' as const },
+    { name: String(2 + i * 2), nx: x / w, ny: bottom / h, side: 'bottom' as const },
+  ]);
+}
+
+/** Ángulo de la cuchilla abierta respecto de la vertical. */
+const BLADE_DEG = 22;
+
+/**
+ * Polo vertical de aparamenta: conductor superior, cuchilla oblicua hasta el
+ * pivote y conductor inferior en la misma `x`. La cuchilla mide el hueco hasta
+ * el extremo del borne, así que al girar a la vertical lo toca exactamente
+ * (`data/simbolos-electricos-une-svg/SKILL.md:41`).
+ */
+export function verticalPole(x: number, h: number): Shape[] {
+  const yTop = h * 0.2;
+  const yPivot = h * 0.55;
+  const bottom = gridBottom(h);
+  const run = yPivot - yTop;
+  const rad = (BLADE_DEG * Math.PI) / 180;
   return [
-    ...ys.map((ny, i) => left(ny, String(1 + i * 2))),
-    ...ys.map((ny, i) => right(ny, String(2 + i * 2))),
+    { d: line(x, 0, x, yTop) },
+    {
+      d: line(x, yPivot, x - run * Math.sin(rad), yPivot - run * Math.cos(rad)),
+      thin: true,
+      blade: { px: x, py: yPivot, deg: BLADE_DEG },
+    },
+    { d: line(x, yPivot, x, bottom) },
   ];
+}
+
+/** Todos los polos de un aparato, sobre las columnas de la grilla. */
+export function verticalPoles(w: number, h: number, n = 3): Shape[] {
+  return poleColumns(n, w).flatMap((x) => verticalPole(x, h));
+}
+
+/** Radio de la cuchilla abierta (`BLADE_DEG`). */
+const BLADE_RAD = (BLADE_DEG * Math.PI) / 180;
+
+/**
+ * Cuadrado relleno sobre la cuchilla de un automático.
+ *
+ * Se dibuja girado con la cuchilla (mismo ángulo y mismo centro), porque es el
+ * elemento que distingue un aparato automático de un interruptor manual
+ * (`interruptor proteccion contra cortocircuitos monofasico.png`).
+ *
+ * No lleva metadata `blade`: el lienzo rota cada forma con `Shape.blade` sobre
+ * su caja envolvente, y eso alcanza para un trazo recto pero no para un
+ * polígono girado. El cuadrado ya sale dibujado con el ángulo de la cuchilla.
+ *
+ * Las fracciones del alto replican las de `verticalPole()`, que no se toca.
+ */
+export function filledSquareOnBlade(x: number, h: number, side?: number): Shape[] {
+  const s = side ?? Math.min(h * 0.16, GRID * 0.4);
+  const yTop = h * 0.2;
+  const yPivot = h * 0.55;
+  const run = yPivot - yTop;
+  const cx = x - (run * Math.sin(BLADE_RAD)) / 2;
+  const cy = (yTop + yPivot) / 2;
+  // Semiejes del cuadrado: uno sobre la cuchilla y otro perpendicular a ella.
+  const ax = (s / 2) * Math.sin(BLADE_RAD);
+  const ay = (s / 2) * Math.cos(BLADE_RAD);
+  const bx = (s / 2) * Math.cos(BLADE_RAD);
+  const by = (-s / 2) * Math.sin(BLADE_RAD);
+  const pt = (dx: number, dy: number): string => `${round(cx + dx)} ${round(cy + dy)}`;
+  return [
+    {
+      d: `M${pt(-ax + bx, -ay + by)}L${pt(ax + bx, ay + by)}L${pt(ax - bx, ay - by)}L${pt(-ax - bx, -ay - by)}Z`,
+      fill: true,
+    },
+  ];
+}
+
+/** Margen del cuerpo a cada lado del aparato: media columna de la grilla. */
+const BODY_MARGIN = GRID / 2;
+
+/** Banda del cuerpo en fracción del alto: arranca debajo del pivote de la cuchilla. */
+const BODY_TOP = 0.58;
+const BODY_BOTTOM = 0.78;
+
+interface BodyFrame {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+}
+
+/**
+ * Caja del cuerpo de un aparato de `n` polos: abarca desde media columna antes
+ * del primer polo hasta media columna después del último, sin salirse de la
+ * caja declarada, y ocupa la banda que queda entre el pivote y la fila inferior.
+ */
+function bodyFrame(w: number, h: number, n: number): BodyFrame {
+  const cols = poleColumns(n, w);
+  const first = cols[0] ?? 0;
+  const last = cols[cols.length - 1] ?? 0;
+  return {
+    left: Math.max(0, first - BODY_MARGIN),
+    right: Math.min(w, last + BODY_MARGIN),
+    top: h * BODY_TOP,
+    bottom: h * BODY_BOTTOM,
+  };
+}
+
+/**
+ * Cuerpo del aparato: un rectángulo exterior y un tabique compartido por cada
+ * polo interior, de modo que quede una celda por polo (`rele termico.png`).
+ *
+ * Con `rows > 1` agrega el tabique horizontal que separa las filas, así el
+ * cuerpo del disyuntor queda como una cuadrícula de celdas y no como una banda
+ * (`disyuntor trifasico.png`: gancho arriba, triángulo abajo).
+ */
+export function cellBody(w: number, h: number, n: number, rows = 1): Shape[] {
+  const f = bodyFrame(w, h, n);
+  const cols = poleColumns(n, w);
+  const out: Shape[] = [{ d: rect(f.left, f.top, f.right - f.left, f.bottom - f.top) }];
+  for (let i = 1; i < n; i++) {
+    const x = cols[i];
+    if (x !== undefined && x > f.left + 0.01 && x < f.right - 0.01) {
+      out.push({ d: line(x, f.top, x, f.bottom), thin: true });
+    }
+  }
+  for (let i = 1; i < rows; i++) {
+    const y = bodyRow(h, rows, i).top;
+    out.push({ d: line(f.left, y, f.right, y), thin: true });
+  }
+  return out;
+}
+
+/** Fila `i` de `rows` dentro de la banda del cuerpo. */
+function bodyRow(h: number, rows: number, i: number): { top: number; bottom: number } {
+  const top = h * BODY_TOP;
+  const rowHeight = (h * (BODY_BOTTOM - BODY_TOP)) / rows;
+  return { top: top + rowHeight * i, bottom: top + rowHeight * (i + 1) };
+}
+
+/**
+ * Gancho térmico `⊐` de un polo: el conductor hace un codo rectangular hacia
+ * un lado dentro de su celda (`rele termico.png`).
+ */
+export function thermalHook(x: number, h: number, rows = 1, row = 0): Shape[] {
+  const r = bodyRow(h, rows, row);
+  const span = (r.bottom - r.top) * 0.6;
+  const cy = (r.top + r.bottom) / 2;
+  const reach = Math.min(GRID * 0.4, span * 1.4);
+  return [
+    {
+      d: `M${round(x)} ${round(cy - span / 2)}H${round(x + reach)}V${round(cy + span / 2)}H${round(x)}`,
+    },
+  ];
+}
+
+/**
+ * Triángulo magnético `▷` de un polo: lado vertical sobre el conductor y
+ * vértice hacia el interior de la celda (`disyuntor trifasico.png`).
+ */
+export function magneticTriangle(x: number, h: number, rows = 1, row = 0): Shape[] {
+  const r = bodyRow(h, rows, row);
+  const span = (r.bottom - r.top) * 0.65;
+  const cy = (r.top + r.bottom) / 2;
+  const reach = span * 0.8;
+  return [
+    {
+      d: `M${round(x)} ${round(cy - span / 2)}L${round(x + reach)} ${round(cy)}L${round(x)} ${round(cy + span / 2)}Z`,
+    },
+  ];
+}
+
+/**
+ * Tramo discontinuo del enlace mecánico: segmentos cortos con la proporción de
+ * trazo `4 3` que pide la convención UNE (`SKILL.md:41`).
+ */
+function dashed(x1: number, y1: number, x2: number, y2: number, dash: number, gap: number): Shape[] {
+  const len = Math.hypot(x2 - x1, y2 - y1);
+  if (len < dash) return [{ d: line(x1, y1, x2, y2), thin: true }];
+  const ux = (x2 - x1) / len;
+  const uy = (y2 - y1) / len;
+  const out: Shape[] = [];
+  for (let t = 0; t < len; t += dash + gap) {
+    const end = Math.min(t + dash, len);
+    out.push({ d: line(x1 + ux * t, y1 + uy * t, x1 + ux * end, y1 + uy * end), thin: true });
+  }
+  return out;
+}
+
+/**
+ * Accionamiento manual: cuadrado con cruz, palanca corta y enlace mecánico
+ * discontinuo hasta el cuerpo (`disyuntor trifasico.png`).
+ *
+ * Va a la **izquierda** del aparato, sobre el margen que la grilla de bornes
+ * deja libre: por eso arranca en `x < 0` y desborda la caja declarada, que es
+ * la grilla de conexión y no el bbox del dibujo (S2c, D3). El enlace lleva un
+ * pie por fila del cuerpo, así un aparato de dos filas se une en las dos.
+ */
+export function manualOperator(w: number, h: number, n: number, rows = 1): Shape[] {
+  const f = bodyFrame(w, h, n);
+  const side = Math.min(h * 0.16, GRID * 0.8);
+  // Columna del enlace: media columna de grilla antes del borde de la caja,
+  // que es donde el CAD dibuja el accionamiento.
+  const x = -GRID;
+  const cy = f.top - side;
+  const lever = x - side / 2 - side * 0.9;
+  const stubs = Array.from({ length: rows }, (_, i) => {
+    const r = bodyRow(h, rows, i);
+    return (r.top + r.bottom) / 2;
+  });
+  const out: Shape[] = [
+    { d: rect(x - side / 2, cy - side / 2, side, side) },
+    // Cruz que parte el cuadrado en cuatro paños.
+    { d: line(x, cy - side / 2, x, cy + side / 2), thin: true },
+    { d: line(x - side / 2, cy, x + side / 2, cy), thin: true },
+    // Palanca con su tope, del lado libre.
+    { d: line(lever, cy, x - side / 2, cy), thin: true },
+    { d: line(lever, cy - side * 0.45, lever, cy + side * 0.45), thin: true },
+  ];
+  // Enlace discontinuo desde el cuadrado hasta el último pie del cuerpo.
+  const bottom = cy + side / 2;
+  const last = Math.max(stubs[stubs.length - 1] ?? bottom, bottom);
+  out.push(...dashed(x, bottom, x, last, h * 0.045, h * 0.03));
+  for (const y of stubs) out.push({ d: line(x, y, f.left, y), thin: true });
+  return out;
 }
 
 /** Marca de reloj para contactos y bobinas temporizadas. */

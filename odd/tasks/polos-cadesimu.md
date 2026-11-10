@@ -74,6 +74,23 @@ solo grosor de trazo, sin `transform`, un `<g id>` por parte, nombre de archivo 
 | T4 | S3, S4, S5, S7 | Redibujar `families.ts`: motores, protección 5000–5008 y 6000–6020, mando 8000/8100, bobinas 9000. | `feat(symbols): redibujar familias verticales CADeSimu` |
 | T5 | S4, S5 | Verificación end-to-end: cada símbolo contra su PNG y su grilla de bornes. | `test(symbols): fidelidad de símbolos y bornes` |
 
+## Delivery
+
+Rama: `feat/simbolos-verticales-cadesimu` (desde `main`).
+
+Límites de slice, en orden de commit:
+
+- **Slice A** — este documento y `docs/futuro-catalogo-simbolos.md`. Commit `docs(odd)`.
+- **Slice B** — la geometría: `app/src/symbols/draw.ts`, `families.ts`, `library.ts` y
+  `app/test/symbol-grid.test.ts`. Commit `feat(symbols)`. Es una unidad aunque supere las 400
+  líneas: los tests no existen sin las primitivas y las primitivas no tienen sentido sin ellos.
+- **Slice C** — `docs/componentes.md` y `docs/img/componentes/**` regenerados. Commit
+  `docs(components)`.
+- **Pendiente** — T5 (verificación visual contra los PNG) y T6 (viewBox de las miniaturas).
+
+Fuera de la feature: `app/test/visual.test.ts`, `lamp-color.test.ts`, `catalog.test.ts` y
+`component-spec.test.ts` son trabajo del usuario sin commitear y no entran en ningún slice.
+
 ## Log
 
 **L1** (pedido original, verbatim): «lo importante es mantener 100% compatibilidad con CADeSimu, no me importa que pasa con los cade viejos, quiero que los componentes se vean como en cadesimu»

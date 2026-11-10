@@ -26,7 +26,7 @@ export type SymbolGroup =
   | 'carga'
   | 'otro';
 
-import { circle, contact, left, line, pinsBoth, rect, right, threePole } from './draw.ts';
+import { circle, contact, left, line, pinsBoth, rect, right, round, threePole } from './draw.ts';
 import { FAMILY_SYMBOLS, LINE_SYMBOLS } from './families.ts';
 import { DXF_SYMBOLS } from './dxf.ts';
 import { getPack } from './pack.ts';
@@ -86,25 +86,49 @@ const genericPins = (names: string[]): SymbolPin[] =>
 
 // --- símbolos ---------------------------------------------------------------
 
+/**
+ * Motor trifásico.
+ *
+ * Los cuatro bornes salen por el borde superior, en una sola fila sobre la
+ * grilla de 6 (`U1` en 0, `V1` en 6, `W1` en 12, `PE` en 18 de una caja de 24).
+ * Es la disposición medida en los archivos reales (`docs/cade-format.md:183-186`,
+ * S3) y los nombres son el contrato que guarda el `.cade` (S4).
+ */
+const MOTOR_PINS: SymbolPin[] = [
+  { name: 'U1', nx: 0, ny: 0, side: 'top' },
+  { name: 'V1', nx: 0.25, ny: 0, side: 'top' },
+  { name: 'W1', nx: 0.5, ny: 0, side: 'top' },
+  { name: 'PE', nx: 0.75, ny: 0, side: 'top' },
+];
+
 const motor: SymbolDef = {
   code: 1000,
   name: 'Motor trifásico',
   group: 'motor',
-  pins: [left(0.28, 'U1'), left(0.5, 'V1'), left(0.72, 'W1'), { name: 'PE', nx: 0.5, ny: 1, side: 'bottom' }],
+  pins: MOTOR_PINS,
+  size: { w: 24, h: 24 },
   shapes(w, h) {
     const r = Math.min(w, h) * 0.42;
-    const cx = w / 2;
-    const cy = h / 2;
-    return [
-      { d: circle(cx, cy, r) },
-      { d: line(0, h * 0.28, cx - r, h * 0.28) },
-      { d: line(0, h * 0.5, cx - r, h * 0.5) },
-      { d: line(0, h * 0.72, cx - r, h * 0.72) },
-      { d: line(cx, cy + r, cx, h) },
-    ];
+    const cx = w * 0.375;
+    const cy = h * 0.54;
+    const out: Shape[] = [{ d: circle(cx, cy, r) }];
+    for (const p of MOTOR_PINS) {
+      const x = p.nx * w;
+      // La bajada de cada borne entra al círculo por donde la corta su columna.
+      const dy = Math.sqrt(Math.max(0, r * r - (x - cx) * (x - cx)));
+      out.push({ d: line(x, 0, x, cy - dy) });
+    }
+    // Marca de tierra del `PE`, al costado derecho del círculo.
+    const px = cx + r + Math.min(w, h) * 0.06;
+    const ear = Math.min(w, h) * 0.05;
+    out.push({ d: `M${round(px)} ${round(cy - ear)}a${round(ear)} ${round(ear)} 0 0 0 0 ${round(ear * 2)}`, thin: true });
+    return out;
   },
   labels(w, h) {
-    return [{ x: w / 2, y: h / 2, value: 'M', size: Math.min(w, h) * 0.34, anchor: 'middle' }];
+    return [
+      { x: w * 0.375, y: h * 0.4, value: 'M', size: Math.min(w, h) * 0.3, anchor: 'middle' },
+      { x: w * 0.375, y: h * 0.62, value: '3~', size: Math.min(w, h) * 0.2, anchor: 'middle' },
+    ];
   },
 };
 
