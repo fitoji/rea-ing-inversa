@@ -86,7 +86,15 @@ Límites de slice, en orden de commit:
   líneas: los tests no existen sin las primitivas y las primitivas no tienen sentido sin ellos.
 - **Slice C** — `docs/componentes.md` y `docs/img/componentes/**` regenerados. Commit
   `docs(components)`.
-- **Pendiente** — T5 (verificación visual contra los PNG) y T6 (viewBox de las miniaturas).
+- **Slice D** — `shapesBounds()` y el `viewBox` de las miniaturas, más el resultado de la
+  verificación T5. Commit `fix(docs)`.
+- **Slice E** — export de Engram (`docs/engram/rea-ing-inversa.json`). Commit `docs(engram)`.
+  Es el último: deja el conocimiento del proyecto en el repo para retomar desde otra máquina.
+- **Pendiente** — T7 (precedencia de packs), toroide y pulsador, y el barrido visual con render
+  real de los 10 PNG.
+
+Para reanudar en otra máquina: `git checkout feat/simbolos-verticales-cadesimu`, importar
+`docs/engram/rea-ing-inversa.json` si hace falta recuperar la memoria, y arrancar por T7.
 
 Fuera de la feature: `app/test/visual.test.ts`, `lamp-color.test.ts`, `catalog.test.ts` y
 `component-spec.test.ts` son trabajo del usuario sin commitear y no entran en ningún slice.
