@@ -46,6 +46,24 @@ arriba.
 
 **S7.** Los nombres de borne del archivo no cambian: son el contrato que guarda el `.cad`.
 
+**S8.** Los **cables** se dibujan con el color que les da CADeSimu por conductor, no todos del
+mismo gris. En la captura de la hoja el tramo `4009` (del borne N al automático) va **azul**, el
+`4000` de cabecera (del borne L) va **negro** y los `4000` de retorno van **rojos**. Hay que
+determinar la regla real (tipo de cable o número de cable) contra más capturas antes de
+implementarla.
+
+**S9.** La **cuchilla de la familia de protecciones** usa la geometría medida en CADeSimu
+(`draw.ts:cadesimuPole`): 3 unidades de desplazamiento horizontal y el cuadro de disparo
+inclinado. Hoy sólo la tiene el 6001; el 6000, 6002, 6003, 6004 y 6007 conservan la de T8 (22°,
+5,25 unidades) con el rombo simétrico.
+
+**S10.** El **grosor del trazo** de los conductores: en la captura de CADeSimu el cable mide una
+pixel de ancho sobre 6 px por unidad (0,17 unidades) y el nuestro 0,34 unidades.
+
+**S11.** El resto del catálogo (contactor, relé térmico, motor, pulsadores) ya cae sobre sus
+bornes, pero **sin validación visual** contra una captura de CADeSimu: no hay PNG de referencia
+para ellos en el repo.
+
 ## Tasks
 
 | ID | Specs | Ruta | Estado | Commit |
@@ -56,6 +74,10 @@ arriba.
 | T4 | S5 | inline | hecho | ídem |
 | T5 | S6 | inline | hecho | ídem |
 | T6 | S1-S7 | inline | hecho | ídem |
+| T7 | S8 | inline | pendiente | — |
+| T8 | S9 | inline | pendiente | — |
+| T9 | S10 | inline | pendiente | — |
+| T10 | S11 | pendiente | pendiente | — |
 
 ## Log
 
@@ -110,10 +132,21 @@ para que se puedan verificar con un test (el lienzo no se renderiza en los tests
 build OK, catálogo regenerado (238 SVG). Comparación pixel a pixel con la captura de CADeSimu:
 los símbolos caen en los mismos píxeles (el automático, la lámpara y los terminales).
 
-**L12.** Pendiente para la próxima tanda:
-- El **color de los cables**: CADeSimu colorea por conductor (el 4009 azul, el 4000 negro/rojo) y
-  nosotros los dibujamos todos en gris.
-- La familia de protecciones (6000, 6002, 6003, 6004, 6007) todavía usa la cuchilla de T8 (22°,
-  5,25) y el cuadrado como rombo simétrico; la geometría medida es la del 6001.
-- El resto del catálogo (contactor, térmico, motor, pulsadores) sigue con la geometría de caja,
-  que ya cae sobre sus bornes, pero sin la validación visual contra CADeSimu.
+**L12.** Pendiente para la próxima tanda, anotado como tareas T7-T10:
+- **T7 (S8)**: el color de los cables. En la captura el `4009` va azul, el `4000` de cabecera
+  negro y los `4000` de retorno rojos. Antes de implementarlo hay que determinar la regla real
+  (tipo de cable o número de cable) con más capturas: en este fixture el `4009` es azul y los
+  `4000` son de dos colores distintos, así que no alcanza con el tipo.
+- **T8 (S9)**: la cuchilla de la familia de protecciones (6000, 6002, 6003, 6004, 6007) todavía
+  es la de T8 (22°, 5,25 unidades, rombo simétrico); la medida es la del 6001 y ya está escrita
+  en `draw.ts:cadesimuPole`.
+- **T9 (S10)**: el grosor del trazo del conductor (0,34 unidades contra 0,17 de CADeSimu).
+- **T10 (S11)**: validación visual del resto del catálogo: el contactor, el térmico, el motor y
+  los pulsadores ya caen sobre sus bornes, pero no hay PNG de referencia de CADeSimu para ellos
+  en el repo.
+
+**L13.** El fixture del usuario (`data/samples/tests01/test01_termomag_lampara.cad`) y su captura
+(`test01.png`) viven en `data/`, que está en `.gitignore` a propósito (material de ingeniería
+inversa). Para que los tests no dependan de un archivo que no viaja, se copió el fixture a
+`app/test/fixtures/test01-termomag-lampara.cad`; la captura se usa como criterio de aceptación
+visual, no como insumo de test.
