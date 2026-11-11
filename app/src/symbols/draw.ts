@@ -421,6 +421,27 @@ export function manualOperator(w: number, h: number, n: number, rows = 1): Shape
   return out;
 }
 
+/**
+ * Operación de pulsador: bracket `E` con enlace mecánico discontinuo hacia el
+ * polo, tal como lo dibuja CADe_SIMU (`pulsador no.png`). El bracket desborda
+ * la caja por la izquierda (S2c), igual que el accionamiento manual.
+ *
+ * La columna del polo está en `x = 0`: los bornes del pulsador caen sobre el
+ * borde izquierdo de la caja (medido en `arranque-paro-motor-3f.cad`).
+ */
+export function pushOperator(h: number): Shape[] {
+  const cy = h / 2;
+  const x = -GRID;
+  const s = Math.min(h * 0.22, 4.8);
+  return [
+    { d: line(x, cy - s, x, cy + s), thin: true },
+    { d: line(x, cy - s, x + s * 0.7, cy - s), thin: true },
+    { d: line(x, cy, x + s * 0.7, cy), thin: true },
+    { d: line(x, cy + s, x + s * 0.7, cy + s), thin: true },
+    ...dashed(x + s * 0.7, cy, 0, cy, s * 0.3, s * 0.24),
+  ];
+}
+
 /** Marca de reloj para contactos y bobinas temporizadas. */
 export function clock(w: number, h: number): Shape[] {
   const r = Math.min(w, h) * 0.12;

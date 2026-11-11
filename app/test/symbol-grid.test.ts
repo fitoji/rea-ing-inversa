@@ -208,6 +208,32 @@ test('los bornes dibujados de la aparamenta caen en la grilla de CADeSimu', () =
   assert.deepEqual(off, [], `bornes fuera de la grilla:\n  ${off.join('\n  ')}`);
 });
 
+test('pulsadores y bobina redibujados usan la caja medida en archivos reales', () => {
+  // Medido en `arranque-paro-motor-3f.cad`: 8000/8001 son 6×15 con bornes
+  // sobre el borde izquierdo, y 9000 es 9×15 con A1 arriba y A2 abajo.
+  const expected: Array<[number, string, string]> = [
+    [8000, '13', '14'],
+    [8001, '11', '12'],
+    [9000, 'A1', 'A2'],
+    [7018, 'A1', 'A2'],
+  ];
+  for (const [code, top, bottom] of expected) {
+    const sym = symbolFor(code);
+    assert.ok(sym, `${code} debe tener símbolo propio`);
+    assert.ok(sym.size, `${code} debe declarar caja (para que QET no lo pise)`);
+    assert.deepEqual(sym.pins.map((p) => p.name), [top, bottom], `${code}`);
+    assert.equal(sym.pins[0]!.nx * sym.size.w, 0, `${code}: bornes sobre el borde izquierdo`);
+    const y = sym.pins.map((p) => p.ny * sym.size!.h);
+    assert.ok(Math.abs(y[0]!) < EPS, `${code}: el primer borne está en y=0`);
+    assert.ok(Math.abs(y[1]! - (sym.size.h - BOTTOM_INSET)) < EPS, `${code}: el segundo, en y=h-3`);
+  }
+  // El contactor de potencia 2001, hoy geometría vieja de library.ts sin caja,
+  // pasa al redibujo vertical con el orden de bornes del registro real.
+  const km = symbolFor(2001)!;
+  assert.deepEqual(km.size, { w: 18, h: 15 }, '2001: caja medida 18×15');
+  assert.deepEqual(km.pins.map((p) => p.name), ['1', '3', '5', '2', '4', '6'], '2001: orden del CAD');
+});
+
 test('un aparato de tres polos lleva 1-3-5 arriba y 2-4-6 abajo', () => {
   const sym = devices.find((s) => s.code === 2004);
   const size = sym?.size;

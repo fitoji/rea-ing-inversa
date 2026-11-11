@@ -27,10 +27,12 @@ import {
   manualOperator,
   poles,
   poleColumns,
+  pushOperator,
   rect,
   right,
   spread,
   thermalHook,
+  verticalPole,
   verticalPoles,
 } from './draw.ts';
 
@@ -143,6 +145,57 @@ const resistor = (code: number, count: number): SymbolDef => {
 const polesDevice = (code: number, n: number, group: SymbolGroup, letter?: string): SymbolDef => {
   const size = { w: n === 1 ? 12 : n * 6, h: 15 };
   return defPoles(code, group, n, (w, h) => verticalPoles(w, h, n), size, letter ? motorLabel(letter) : undefined);
+};
+
+/**
+ * Polos de potencia del contactor (2001 «III», 2002 «IIII»).
+ *
+ * El `.cade` real los mide con caja `n·6 × 15` y bornes en el orden del
+ * registro (`1 3 5 2 4 6`, `arranque-paro-motor-3f.cad`); la geometría vieja
+ * de `library.ts` era horizontal y no declaraba caja.
+ */
+const contactorPoles = (code: number, n: number): SymbolDef => {
+  const size = { w: n * 6, h: 15 };
+  return def(code, 'potencia', polesInCadeOrder(n, size), (w, h) => verticalPoles(w, h, n), size);
+};
+
+/**
+ * Pulsador vertical con su operación `E` (`pulsador no.png` / `pulsador nc.png`).
+ *
+ * El `.cade` real mide 6×15 con los bornes sobre el borde izquierdo de la caja:
+ * `13/14` para el NA y `11/12` para el NC. En reposo se dibuja abierto y la
+ * hoja gira al cerrar, igual que en la aparamenta de protección.
+ */
+const pushDevice = (code: number, rest: 'NO' | 'NC'): SymbolDef => {
+  const size = { w: 6, h: 15 };
+  const pins: SymbolPin[] = [
+    { name: rest === 'NC' ? '11' : '13', nx: 0, ny: 0, side: 'top' },
+    { name: rest === 'NC' ? '12' : '14', nx: 0, ny: 12 / 15, side: 'bottom' },
+  ];
+  return def(code, 'mando', pins, (_w, h) => [...verticalPole(0, h), ...pushOperator(h)], size);
+};
+
+/**
+ * Bobina vertical: rectángulo con A1 arriba y A2 abajo
+ * (`bobina rele de contactor.png`).
+ *
+ * El `.cade` real mide 9×15 con los bornes sobre el borde izquierdo; el cuerpo
+ * arranca en la fila superior de la grilla y cierra en la inferior.
+ */
+const coilVertical = (code: number): SymbolDef => {
+  const size = { w: 9, h: 15 };
+  const pins: SymbolPin[] = [
+    { name: 'A1', nx: 0, ny: 0, side: 'top' },
+    { name: 'A2', nx: 0, ny: 12 / 15, side: 'bottom' },
+  ];
+  const labels = (_w: number, h: number) => [
+    { x: -0.5, y: h * 0.16, value: 'A1', size: 3, anchor: 'end' as const },
+    { x: -0.5, y: h - 1.2, value: 'A2', size: 3, anchor: 'end' as const },
+  ];
+  return def(code, 'mando', pins, (w, h) => [
+    { d: line(0, 0, 0, h * 0.2) },
+    { d: rect(0, h * 0.2, w, h * 0.6) },
+  ], size, labels);
 };
 
 /**
@@ -350,6 +403,10 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
   polesDevice(2004, 3, 'potencia'),
   polesDevice(2006, 1, 'potencia'),
   polesDevice(2007, 1, 'potencia'),
+  contactorPoles(2001, 3),
+  // 2002 («Contactor IIII») se queda en la geometría de `library.ts`: cuatro
+  // polos serían 8 bornes y el registro guarda 7 como máximo, así que ningún
+  // `.cade` real lo escribe así y no hay muestra que verifique el redibujo.
 
   // alimentación y fuentes
   def(3009, 'alimentacion', [], (w, h) => [{ d: line(w * 0.35, 0, w * 0.35, h), thin: true }], { w: 12, h: 12 },
@@ -419,12 +476,14 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
   contactDevice(7013, 'NC', 'mando', true),
   contactDevice(7014, 'NANC', 'mando', true, { w: 6, h: 18 }),
   contactDevice(7015, 'CO', 'mando', true),
-  def(7018, 'mando', [left(0.5, 'A1'), right(0.5, 'A2')], (w, h) => [{ d: rect(w * 0.2, h * 0.2, w * 0.6, h * 0.6) }], { w: 9, h: 15 }, motorLabel('KM')),
+  coilVertical(7018),
   def(7019, 'mando', PINS.NANC, (w, h) => contactShapes('NANC', w, h), { w: 6, h: 15 }),
   contactDevice(7020, 'NA', 'mando', true),
   contactDevice(7021, 'NA', 'mando', true),
 
   // señalización y pulsadores
+  pushDevice(8000, 'NO'),
+  pushDevice(8001, 'NC'),
   contactDevice(8003, 'CO', 'senalizacion'),
   contactDevice(8006, 'NANC', 'senalizacion', false, { w: 6, h: 18 }),
   contactDevice(8007, 'CO', 'senalizacion'),
@@ -447,6 +506,7 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
   soundDevice(9013),
 
   // bobinas y temporizadores
+  coilVertical(9000),
   coilDevice(9001, 'K'),
   def(9002, 'mando', [left(0.3, 'A1'), right(0.3, 'A2'), left(0.7, '1'), right(0.7, '2')], (w, h) => [
     { d: rect(w * 0.1, h * 0.1, w * 0.8, h * 0.8) },

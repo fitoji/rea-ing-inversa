@@ -696,10 +696,13 @@ const ALL: SymbolDef[] = [
 
 const BY_CODE = new Map<number, SymbolDef>(ALL.map((s) => [s.code, s]));
 
-// Los símbolos normalizados de EN 60617 pisan el dibujo a mano del mismo código.
+// La fidelidad CADeSimu manda: una definición propia con caja declarada es la
+// grilla de conexión medida en archivos reales y gana sobre el elemento
+// importado de EN 60617. QET sólo pisa las definiciones viejas que no declaran
+// caja (geometría horizontal sin grilla), que es lo que venía haciendo.
 for (const [code, qet] of Object.entries(QET_SYMBOLS)) {
   const sym = BY_CODE.get(Number(code));
-  if (sym) BY_CODE.set(Number(code), withQetGeometry(sym, qet));
+  if (sym && sym.size === undefined) BY_CODE.set(Number(code), withQetGeometry(sym, qet));
 }
 
 export function symbolFor(code: number): SymbolDef | undefined {
