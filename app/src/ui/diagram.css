@@ -204,6 +204,12 @@
   stroke: var(--warn);
 }
 
+/* Corriente contra el sentido del trazo: los guiones corren al revés, así el
+   retorno se lee yendo hacia el neutro y no saliendo de él. */
+.wire.live.rev {
+  animation-direction: reverse;
+}
+
 .wire.sel {
   stroke: var(--select);
   stroke-width: 0.46;

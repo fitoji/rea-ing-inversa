@@ -33,6 +33,8 @@ interface Props {
   states: Map<number, VisualState>;
   /** ids de registro de cable con tensión durante la simulación */
   liveWires: Set<number>;
+  /** ids de cables cuya corriente va contra el sentido del trazo */
+  reversedWires?: Set<number>;
   /** ids de componentes cuyo contacto está cerrado durante la simulación */
   closedContacts: Set<number>;
   /** Durante la simulación, un clic sobre un pulsador ya seleccionado lo aprieta. */
@@ -80,6 +82,7 @@ export function Canvas(props: Props): JSX.Element {
     live,
     states,
     liveWires,
+    reversedWires,
     closedContacts,
     simulating,
     highlight,
@@ -457,7 +460,15 @@ export function Canvas(props: Props): JSX.Element {
 
           {records.map((rec) => {
             if (rec.kind === 'connection')
-              return <Wire key={rec.id} rec={rec} selected={selection.has(rec.id)} live={liveWires.has(rec.id)} />;
+              return (
+                <Wire
+                  key={rec.id}
+                  rec={rec}
+                  selected={selection.has(rec.id)}
+                  live={liveWires.has(rec.id)}
+                  reverse={reversedWires?.has(rec.id) ?? false}
+                />
+              );
             if (rec.kind !== 'component') return null;
             return (
               <Component
@@ -600,7 +611,7 @@ function Component({
   );
 }
 
-function Wire({ rec, selected, live }: { rec: CadeRecordModel; selected: boolean; live: boolean }): JSX.Element | null {
+function Wire({ rec, selected, live, reverse }: { rec: CadeRecordModel; selected: boolean; live: boolean; reverse?: boolean }): JSX.Element | null {
   const pts = wirePoints(rec);
   if (!pts) return null;
   if (pts.x1 === pts.x2 && pts.y1 === pts.y2) {
@@ -611,7 +622,7 @@ function Wire({ rec, selected, live }: { rec: CadeRecordModel; selected: boolean
     <path
       data-id={rec.id}
       data-wire={rec.id}
-      className={selected ? 'wire sel' : live ? 'wire live' : `wire${rec.code === 4019 ? ' alt' : ''}`}
+      className={selected ? 'wire sel' : live ? `wire live${reverse ? ' rev' : ''}` : `wire${rec.code === 4019 ? ' alt' : ''}`}
       d={`M${pts.x1} ${pts.y1}L${pts.x2} ${pts.y2}`}
     />
   );

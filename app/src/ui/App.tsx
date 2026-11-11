@@ -57,6 +57,7 @@ import { blankDocument } from '../format/blank.ts';
 import { DEFAULT_FILE_NAME, cadFileName } from '../format/filename.ts';
 import { circuitFrom } from '../sim/circuit.ts';
 import { simulate } from '../sim/solver.ts';
+import { currentFlow } from '../sim/flow.ts';
 import { visualStatesOf } from '../sim/visual.ts';
 import { isProtectionCode, partKey } from '../sim/netlist.ts';
 import { Button } from '@/components/ui/button';
@@ -302,25 +303,16 @@ export function App(): JSX.Element {
   }, [simulation, project]);
 
   /**
-   * Tramos con corriente: los que tocan una red viva y también los del retorno
-   * cuando una carga está cerrada. Sin eso el flujo se corta en la lámpara y no
-   * se ve el circuito completo.
+   * Tramos con tensión y sentido de la corriente: lazo completo desde la fase,
+   * a través de la carga energizada, de vuelta por el retorno hasta el neutro.
+   * `reversed` marca los tramos cuya corriente va contra el sentido del trazo,
+   * para que el dibujo lea "fase -> carga -> neutro" y no dos flujos que
+   * entran a la carga desde los dos lados.
    */
-  const liveWires = useMemo(() => {
-    const out = new Set<number>();
-    if (!simulation || !built) return out;
-    const carrying = new Set<number>(simulation.liveNets);
-    for (const id of simulation.loads) {
-      const device = built.circuit.devices.find((d) => d.id === id);
-      if (!device) continue;
-      carrying.add(device.a);
-      carrying.add(device.b);
-    }
-    for (const [recordId, nets] of built.recordNets) {
-      if (nets.some((net) => carrying.has(net))) out.add(recordId);
-    }
-    return out;
-  }, [simulation, built]);
+  const { carrying: liveWires, reversed: reversedWires } = useMemo(() => {
+    if (!simulation || !built) return { carrying: new Set<number>(), reversed: new Set<number>() };
+    return currentFlow(project?.records ?? [], built, simulation);
+  }, [simulation, built, project]);
 
   /** Estado visual por componente para animar el lienzo. */
   const visualStates = useMemo(
@@ -793,6 +785,7 @@ export function App(): JSX.Element {
             live={live}
             states={visualStates}
             liveWires={liveWires}
+            reversedWires={reversedWires}
             closedContacts={closedContacts}
             simulating={running}
             highlight={highlight}
