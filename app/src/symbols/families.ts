@@ -37,6 +37,7 @@ import {
   right,
   round,
   spread,
+  straightPoles,
   thermalHook,
   torus,
   verticalPole,
@@ -232,6 +233,21 @@ const coilVertical = (code: number): SymbolDef => {
 };
 
 /**
+ * En qué polos va el cuadro de disparo del automático.
+ *
+ * - `first`: sólo en el primer polo. Medido en el automático IN (6001) de la
+ *   captura real: el segundo polo no lo lleva.
+ * - `all`: en todos los polos. Medido en el monofásico (6000) y en el tripolar
+ *   (6003) de `components_png`.
+ *
+ * Los dos datos conviven porqueCADeSimu dibuja el cuadro sobre cada polo de
+ * un automático trifásico y sólo sobre el primero de uno bipolar: es una
+ * diferencia observada, no una regla deducida. Para los códigos sin medida
+ * (6002 y 6004) se hereda la del aparato más cercano por número de polos.
+ */
+type TripSquare = 'first' | 'all' | 'none';
+
+/**
  * Aparato de protección: cuerpo con celdas y los elementos de disparo que
  * pide S6.
  *
@@ -243,6 +259,11 @@ const coilVertical = (code: number): SymbolDef => {
  * arriba, pares abajo) en vez del orden espacial de `poles()`; lo usan los
  * códigos que tienen plantilla real o duplicado en `library.ts`, para que un
  * componente sintetizado escriba los mismos bornes en el mismo orden.
+ *
+ * `cadesimu` dibuja los polos con la geometría medida en CADeSimu
+ * (`draw.ts:cadesimuPole`): cuchilla de tres unidades de recorrido horizontal
+ * y cuadro de disparo inclinado. `straight` dibuja la conductora recta, sin
+ * cuchilla: el relé térmico no la tiene (`rele termico.png`).
  */
 const protectionDevice = (
   code: number,
@@ -260,13 +281,31 @@ const protectionDevice = (
     /** disparador del diferencial, con el toroide */
     trip?: boolean;
     cadeOrder?: boolean;
+    /** polo con la geometría medida en CADeSimu */
+    cadesimu?: boolean;
+    /** en qué polos va el cuadro de disparo */
+    tripSquare?: TripSquare;
+    /** conductora recta, sin cuchilla */
+    straight?: boolean;
   } = {},
 ): SymbolDef => {
   const rows = opts.hook && opts.triangle ? 2 : 1;
   const pins = opts.cadeOrder ? polesInCadeOrder(n, size) : poles(n, size);
   return def(code, 'proteccion', pins, (w, h) => {
     const cols = poleColumns(n, w);
-    const out: Shape[] = [...verticalPoles(w, h, n)];
+    const out: Shape[] = [];
+    if (opts.straight) {
+      out.push(...straightPoles(w, h, n));
+    } else if (opts.cadesimu) {
+      const square = opts.tripSquare ?? 'first';
+      out.push(
+        ...cols.flatMap((x, i) =>
+          cadesimuPole(x, h, square === 'all' || (square === 'first' && i === 0)),
+        ),
+      );
+    } else {
+      out.push(...verticalPoles(w, h, n));
+    }
     if (opts.body) out.push(...cellBody(w, h, n, rows));
     if (opts.hook || opts.triangle) {
       for (const x of cols) {
@@ -502,17 +541,18 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
   //
   // «IIIN» se dibuja tripolar: el registro guarda 7 bornes como máximo y un
   // cuarto polo necesita 8 (ver `4017` en la lista de regletas).
-  protectionDevice(6000, 1, { w: 12, h: 15 }, { square: true, cadeOrder: true }),
+  protectionDevice(6000, 1, { w: 12, h: 15 }, { cadesimu: true, tripSquare: 'all', cadeOrder: true }), // medido
   cadesimuBreaker(6001, 2, { w: 12, h: 15 }), // medido sobre la captura de CADeSimu
-  protectionDevice(6002, 2, { w: 12, h: 15 }, { square: true, cadeOrder: true }), // medido
-  protectionDevice(6003, 3, { w: 18, h: 15 }, { square: true, cadeOrder: true }), // medido
-  protectionDevice(6004, 3, { w: 18, h: 15 }, { square: true, cadeOrder: true }),
+  protectionDevice(6002, 2, { w: 12, h: 15 }, { cadesimu: true, tripSquare: 'first', cadeOrder: true }), // medido
+  protectionDevice(6003, 3, { w: 18, h: 15 }, { cadesimu: true, tripSquare: 'all', cadeOrder: true }), // medido
+  protectionDevice(6004, 3, { w: 18, h: 15 }, { cadesimu: true, tripSquare: 'all', cadeOrder: true }), // medido
   // Diferencial: toroide cruzando los polos por abajo y disparador arriba a la
   // izquierda, sin celdas ni botón de ensayo (`rele diferencial.png`).
   protectionDevice(6005, 2, { w: 12, h: 15 }, { torus: true, trip: true, cadeOrder: true }),
   protectionDevice(6006, 3, { w: 18, h: 15 }, { torus: true, trip: true, cadeOrder: true }),
-  // El térmico dibuja el gancho de cada polo en su celda (`rele termico.png`).
-  protectionDevice(6007, 3, { w: 21, h: 15 }, { body: true, hook: true, cadeOrder: true }), // medido
+  // El térmico dibuja el gancho de cada polo en su celda (`rele termico.png`):
+  // sus conductores son rectos, no llevan cuchilla.
+  protectionDevice(6007, 3, { w: 21, h: 15 }, { body: true, hook: true, straight: true, cadeOrder: true }), // medido
   protectionDevice(6008, 2, { w: 12, h: 15 }, { body: true, hook: true, cadeOrder: true }),
   // Disyuntor III: caja de dos filas, gancho arriba y triángulo abajo, con el
   // accionamiento manual a la izquierda (`disyuntor trifasico.png`).

@@ -444,8 +444,13 @@ test('el automático 6003 dibuja un cuadrado relleno en cada polo, sobre su colu
   }
   assert.deepEqual(off, [], `cuadrados fuera de su polo:\n  ${off.join('\n  ')}`);
 
-  // Y cada uno está apoyado en su cuchilla, no suelto.
-  const blades = shapes.filter((s) => s.blade).map((s) => points(s.d) as [Pt, Pt]);
+  // Y cada uno está montado sobre su cuchilla, no suelto. La cuchilla es la
+  // diagonal medida en CADeSimu: de (x − 3, +3,6) a (x, +9,7). No es una
+  // cuchilla móvil (no lleva `blade`): en CADeSimu el automático se dibuja
+  // siempre abierto.
+  const blades = shapes
+    .map((s) => points(s.d))
+    .filter((p): p is [Pt, Pt] => p.length === 2 && p[0].x !== p[1].x && p[0].y !== p[1].y);
   assert.equal(blades.length, 3, `se esperaban 3 cuchillas, hay ${blades.length}`);
   for (const c of centres) {
     const dist = Math.min(
@@ -455,7 +460,9 @@ test('el automático 6003 dibuja un cuadrado relleno en cada polo, sobre su colu
         return Math.abs((c.x - a.x) * vy - (c.y - a.y) * vx) / Math.hypot(vx, vy);
       }),
     );
-    assert.ok(dist < 0.5, `el cuadrado en (${c.x}, ${c.y}) no está sobre una cuchilla, está a ${dist.toFixed(2)}`);
+    // El cuadro no está centrado en la cuchilla: la cuchilla lo cruza. Su
+    // media diagonal es 1,55 unidades, así que tiene que atravesarlo.
+    assert.ok(dist < 1.55, `el cuadrado en (${c.x}, ${c.y}) no está sobre una cuchilla, está a ${dist.toFixed(2)}`);
   }
 });
 

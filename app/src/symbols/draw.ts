@@ -34,6 +34,11 @@ export const circle = (cx: number, cy: number, r: number): string =>
  * El detalle de disparo (cuadrado negro inclinado) va SÓLO en el primer polo:
  * en la captura de la hoja el segundo polo no lo lleva, aunque el automático
  * tripolar de `components_png` lo lleva en los tres.
+ *
+ * La media diagonal del cuadro se midió por área en dos referencias
+ * independientes: la captura de la hoja (127 px de tinta, con 6 px por unidad)
+ * y el monofásico de `components_png` (1.090 px, con 17,2 px por unidad). Las
+ * dos dan 1,35 unidades.
  */
 export function cadesimuPole(x: number, h: number, withTrip: boolean): Shape[] {
   const bottom = gridBottom(h);
@@ -43,7 +48,7 @@ export function cadesimuPole(x: number, h: number, withTrip: boolean): Shape[] {
     { d: line(x - 1.5, 5, x + 0.3, 5), thin: true },
     { d: line(x, 9.7, x, bottom) },
   ];
-  if (withTrip) out.push({ d: tiltedSquare(x - 2.95, 5.9, 1.55, 18), fill: true });
+  if (withTrip) out.push({ d: tiltedSquare(x - 2.95, 5.9, 1.35, 18), fill: true });
   return out;
 }
 
@@ -200,6 +205,18 @@ export function verticalPole(x: number, h: number): Shape[] {
 /** Todos los polos de un aparato, sobre las columnas de la grilla. */
 export function verticalPoles(w: number, h: number, n = 3): Shape[] {
   return poleColumns(n, w).flatMap((x) => verticalPole(x, h));
+}
+
+/**
+ * Conductora vertical recta, sin cuchilla.
+ *
+ * No todos los aparatos de protección llevan cuchilla: el relé térmico
+ * (`rele termico.png`) dibuja sus conductores rectos, con el cuerpo y el gancho
+ * encima. La cuchilla es del interruptor, no del Aparato.
+ */
+export function straightPoles(w: number, h: number, n = 3): Shape[] {
+  const bottom = gridBottom(h);
+  return poleColumns(n, w).map((x) => ({ d: line(x, 0, x, bottom) }));
 }
 
 /**

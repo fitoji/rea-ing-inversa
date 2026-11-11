@@ -47,15 +47,17 @@ arriba.
 **S7.** Los nombres de borne del archivo no cambian: son el contrato que guarda el `.cad`.
 
 **S8.** Los **cables** se dibujan con el color que les da CADeSimu por conductor, no todos del
-mismo gris. En la captura de la hoja el tramo `4009` (del borne N al automático) va **azul**, el
-`4000` de cabecera (del borne L) va **negro** y los `4000` de retorno van **rojos**. Hay que
-determinar la regla real (tipo de cable o número de cable) contra más capturas antes de
-implementarla.
+mismo gris. La regla real, medida sobre la captura: el conductor toma el color de la
+**alimentación que su red toca** — negro si la red toca el terminal de fase (3000), azul si toca
+el de neutro (3001) y granate si no toca ninguna. No es el código del cable (el `4000` sale
+negro en un tramo y granate en otros) ni su número (los cables 1, 2, 4 y 5 son negro, granate,
+granate y azul). Un cable con quiebres es un solo conductor y se pinta entero del mismo color.
 
 **S9.** La **cuchilla de la familia de protecciones** usa la geometría medida en CADeSimu
 (`draw.ts:cadesimuPole`): 3 unidades de desplazamiento horizontal y el cuadro de disparo
-inclinado. Hoy sólo la tiene el 6001; el 6000, 6002, 6003, 6004 y 6007 conservan la de T8 (22°,
-5,25 unidades) con el rombo simétrico.
+inclinado. La llevan el **6000**, el **6002**, el **6003** y el **6004**. El **6007** (relé
+térmico) es la excepción: `rele termico.png` muestra sus conductores **rectos**, sin cuchilla y
+sin cuadro.
 
 **S10.** El **grosor del trazo** de los conductores: en la captura de CADeSimu el cable mide una
 pixel de ancho sobre 6 px por unidad (0,17 unidades) y el nuestro 0,34 unidades.
@@ -63,6 +65,17 @@ pixel de ancho sobre 6 px por unidad (0,17 unidades) y el nuestro 0,34 unidades.
 **S11.** El resto del catálogo (contactor, relé térmico, motor, pulsadores) ya cae sobre sus
 bornes, pero **sin validación visual** contra una captura de CADeSimu: no hay PNG de referencia
 para ellos en el repo.
+
+**S12.** La **geometría interna del polo** (`cadesimuPole`) tiene las medidas finas corridas: el
+cuadro de disparo mide 1,35 de media diagonal (no 1,55), la conductora superior termina en +2,9
+(no +4,2), la cuchilla va de (−3, +3) a (0, +9) (no (−3, +3,6) a (0, +9,7)) y el guion va a +6
+(no +5). En el automático de dos polos de la captura, el guion del **segundo** polo va del lado
+opuesto al del primero. Queda pendiente re-medir el polo completo contra la captura.
+
+**S13.** El **unipolar de la familia de protecciones** (6000, 5000, 5005, 6010, 6017, 6019,
+6020) se dibuja **centrado en su caja** de 12 unidades, pero en el archivo el primer borne está
+en el origen del registro: el polo queda 6 unidades a la derecha del cable. Los multipolares no
+tienen el problema (arrancan en el borde izquierdo).
 
 ## Tasks
 
@@ -74,10 +87,12 @@ para ellos en el repo.
 | T4 | S5 | inline | hecho | ídem |
 | T5 | S6 | inline | hecho | ídem |
 | T6 | S1-S7 | inline | hecho | ídem |
-| T7 | S8 | inline | pendiente | — |
-| T8 | S9 | inline | pendiente | — |
-| T9 | S10 | inline | pendiente | — |
-| T10 | S11 | pendiente | pendiente | — |
+| T7 | S8 | inline | hecho | commit de la tanda del color |
+| T8 | S9 | inline | hecho | ídem |
+| T9 | S10 | inline | hecho | ídem |
+| T10 | S11 | inline | pendiente | — |
+| T11 | S12 | inline | pendiente | — |
+| T12 | S13 | inline | pendiente | — |
 
 ## Log
 
@@ -150,3 +165,77 @@ los símbolos caen en los mismos píxeles (el automático, la lámpara y los ter
 inversa). Para que los tests no dependan de un archivo que no viaja, se copió el fixture a
 `app/test/fixtures/test01-termomag-lampara.cad`; la captura se usa como criterio de aceptación
 visual, no como insumo de test.
+
+---
+
+## Tanda 2: color del conductor, grosor del trazo y familia de protecciones
+
+**L14.** "ok, hagamos lo que podemos con la info que tenemos". Con una sola captura y los diez
+PNG de `components_png` se cierra: T7 (color), T9 (grosor) y T8 (cuchillas). T7 y T9 quedaron
+cerrados con medición; T8 quedó con dos códigos sin referencia y una corrección de evidencia
+(el 6007 no tiene cuchilla).
+
+**L15. El color del conductor NO es por código ni por número de cable.** Medido sobre la
+captura: el `4000` de la cabecera de fase va negro y los `4000` de la lámpara van granate; los
+cables 1, 2, 4 y 5 son negro, granate, granate y azul. Lo que sí lo explica es la
+**alimentación que la red toca**: el tramo que sale del terminal 3000 (Alimentación L) va negro,
+el que sale del 3001 (Alimentación N) va azul, y los que no tocan ninguna alimentación van
+granate. La regla quedó en `app/src/editor/conductor.ts`, que calcula las redes con la
+proyección de `network.ts` y reparte el rol por cable (un cable con quiebres son varios
+registros y se pintan del mismo color).
+
+**L16.** La regla se validó contra los siete planos del repo: en `inversion-giro-cej.cade` el
+mismo `4000` aparece con los tres roles, así que ninguna regla por código o por número puede
+explicar el color. En el fixture de aceptación el reparto sale exacto: 1 tramo negro, 3 azules
+y 4 granates, que son los de la captura.
+
+**L17. Colores medidos en la captura**: negro `#000000`, azul `#0000ff`, granate `#800000`.
+Entraron como tokens `--wire-fase`, `--wire-neutro` y `--wire-otro`: exactos en el paquete
+`cadesimu` y con tonos del tema en el resto. El conductor `4019` (variante de cable) deja de
+tener color propio: el color lo decide el rol, como en CADeSimu.
+
+**L18. El grosor del conductor es de un píxel.** Sobre 6 px por unidad, el cable de la captura
+mide 1 px: 0,17 unidades. Ours iba 0,34 (el doble). Los cables energizados y los seleccionados
+pasaron de 0,46 a 0,34 para mantener la jerarquía visual.
+
+**L19. El 6007 (relé térmico) no tiene cuchilla.** `rele termico.png` muestra tres conductores
+rectos con el cuerpo y el gancho encima, sin cuchilla ni rombo. La app le dibujaba la cuchilla
+de T8. Ahora usa `straightPoles`.
+
+**L20. Dónde va el cuadro de disparo.** Medido: el 6000 (monofásico) lo lleva en su único polo,
+el 6003 (tripolar) en los tres, y el 6001 (el automático IN de la captura) **sólo en el
+primero**. Las dos cosas son verdad y no salen de una misma regla: se dejó el comportamiento
+medido por código y se heredó el del aparato más cercano por número de polos para el 6002
+(bipolar, como el 6001) y el 6004 (tripolar, como el 6003).
+
+**L21. Con la migración, la cuchilla de los automáticos deja de ser móvil** (no lleva `blade`):
+en CADeSimu el automático se dibuja siempre abierto. El disparo se sigue leyendo por el color
+del cuerpo, como ya pasaba con el 6001.
+
+**L22. Verificación.** 285/285 tests (8 nuevos: `test/protection-symbols.test.ts` y
+`test/conductor-roles.test.ts`), `tsc` limpio. Además se renderizó el fixture con los módulos
+de la app y se comparó contra la captura: el neutro azul coincide al **99,6%** (1 px de la
+captura sin cubrir) y el granate al **97,1%**; la lámpara y los terminales coinciden con 4 a 12
+píxeles de diferencia por caja, que son los rótulos que el render de medición no dibuja.
+
+**L23. El cuadro de disparo se achicó a 1,35 de media diagonal** (era 1,55). Medido por área en
+dos referencias independientes: la captura de la hoja (127 px de tinta a 6 px por unidad) y el
+monofásico de `components_png` (1.090 px a 17,2 px por unidad). Las dos dan 1,35.
+
+**L24. Lo que quedó sin cerrar y por qué (S12).** La geometría interna del polo tiene las
+medidas finas corridas contra la captura: la conductora superior termina en +2,9 y no en +4,2;
+la cuchilla va de (−3, +3) a (0, +9) y no de (−3, +3,6) a (0, +9,7); el guion va a +6 y no a +5;
+y en el automático de dos polos de la captura el guion del **segundo** polo va del lado opuesto
+al del primero. Corregir el modelo compartido sin resolver antes la regla del guion espejado
+era más riesgo que beneficio: quedó como T11 con las medidas anotadas.
+
+**L25. El unipolar de la familia queda corrido (S13).** `poleColumns(1, w)` centra el polo en
+la caja de 12 unidades, pero en el archivo el primer borne está en el origen: el 6000 se
+dibuja 6 unidades a la derecha de su cable. Los multipolares no tienen el problema. No se
+tocó `poleColumns` porque mueve todos los unipolares del catálogo (fusibles, interruptores) y
+eso es una decisión de convención, no de esta tanda: quedó como T12.
+
+**L26. La regla de color sale de UNA captura.** Cierra el criterio de aceptación del fixture,
+pero no alcanza para las alimentaciones trifásicas, el PE ni la continua: esos quedan en
+`otro` (granate) hasta que haya una captura que los fije. Con capturas de un cuadro con
+alimentación trifásica se cierra el caso.

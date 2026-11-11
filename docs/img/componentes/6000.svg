@@ -1,10 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="45" height="54" viewBox="-1.5 -1.5 15 18" role="img">
 <title>Automático I</title>
 <rect x="-1.5" y="-1.5" width="15" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
-<path d="M6 0L6 3" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M6 8.25L4.03 3.38" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M6 8.25L6 12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M5.68 4.06L6.58 6.29L4.35 7.19L3.45 4.96Z" stroke="#3d4a5c" stroke-width="0.38" fill="#3d4a5c" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6 0L6 4.2" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M3 3.6L6 9.7" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.5 5L6.3 5" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6 9.7L6 12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.33 6.32L2.63 7.18L1.77 5.48L3.47 4.62Z" stroke="#3d4a5c" stroke-width="0.38" fill="#3d4a5c" stroke-linecap="round" stroke-linejoin="round"/>
 <circle cx="6" cy="0" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
 <circle cx="6" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
 </svg>

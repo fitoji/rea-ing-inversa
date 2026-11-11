@@ -43,8 +43,9 @@ test('el automático IN tiene dos polos sobre los bornes y el disparo sólo en e
   assert.equal(sym.anchor, 'origin');
   const ink = shapesBounds(sym.shapes(12, 15));
   // La cuchilla sale 3 unidades a la izquierda del polo; el segundo polo está
-  // 6 unidades a la derecha. El cuadrado de disparo llega a 4,42 a la izquierda.
-  assert.ok(near(ink.minX, -4.42), `el automático llega a ${ink.minX}`);
+  // 6 unidades a la derecha. El cuadrado de disparo (media diagonal 1,35,
+  // inclinado 18°) llega a 4,24 a la izquierda.
+  assert.ok(near(ink.minX, -4.24), `el automático llega a ${ink.minX}`);
   assert.ok(near(ink.maxX, 6.3), `el automático llega a ${ink.maxX}`);
   assert.ok(near(ink.minY, 0) && near(ink.maxY, 12), `el automático mide ${ink.minY}..${ink.maxY}`);
 

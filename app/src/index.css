@@ -85,6 +85,15 @@
   --warn: #b97d05;
   --select: #2f6fd0;
 
+  /*
+   * Color del conductor por rol eléctrico. La fase conserva el verde del
+   * conductor del tema; el neutro y el resto se distinguen para que se lea qué
+   * alimenta qué, como en CADeSimu.
+   */
+  --wire-fase: #0f9d63;
+  --wire-neutro: #2563eb;
+  --wire-otro: #b45309;
+
   /* Tono por familia, sólo para la paleta: el lienzo sigue siendo técnico. */
   --tone-alimentacion: #2f7fc4;
   --tone-motor: #2f6fd0;
@@ -108,7 +117,6 @@
   --grid-minor: #e3e9f1;
   --grid-major: #cfd8e4;
   --handle-hover: #dce7f7;
-  --wire-alt: #0f8f86;
 
   /*
    * Color de la señalización óptica. El archivo guarda un índice 0..4; estos
@@ -154,6 +162,10 @@
   --warn: #f0b429;
   --select: #5b9dff;
 
+  --wire-fase: #3fbf8f;
+  --wire-neutro: #60a5fa;
+  --wire-otro: #fbbf24;
+
   --tone-alimentacion: #6bb6f0;
   --tone-motor: #7aa9ff;
   --tone-potencia: #b794f6;
@@ -176,7 +188,6 @@
   --grid-minor: #1a1f28;
   --grid-major: #232a35;
   --handle-hover: #1b2a3d;
-  --wire-alt: #35a89b;
 
   --lamp-verde: #4ade80;
   --lamp-rojo: #ff6b6b;
@@ -275,9 +286,17 @@
  */
 [data-pack='cadesimu'] {
   --wire: #141414;
-  --wire-alt: #141414;
   --warn: #d40000;
   --select: #0050c8;
+
+  /*
+   * Colores del conductor, medidos sobre la captura real de CADeSimu
+   * (`data/samples/tests01/test01.png`): el de la fase va negro, el del
+   * neutro azul y el de los que no tocan ninguna alimentación granate.
+   */
+  --wire-fase: #000000;
+  --wire-neutro: #0000ff;
+  --wire-otro: #800000;
 
   --ink: #141414;
   --ink-soft: #3a3a3a;
@@ -305,7 +324,7 @@
 }
 
 [data-pack='cadesimu'] .wire {
-  stroke-width: 0.32;
+  stroke-width: 0.17;
 }
 
 [data-pack='cadesimu'] .body {

@@ -175,15 +175,36 @@
   stroke: none;
 }
 
+/*
+ * Conductor.
+ *
+ * El grosor es el de CADeSimu: un pelo de un píxel sobre la captura real
+ * (`data/samples/tests01/test01.png`, 6 px por unidad del archivo) son 0,17
+ * unidades de plano. Antes se dibujaba con 0,34, el doble.
+ */
 .wire {
   stroke: var(--wire);
-  stroke-width: 0.34;
+  stroke-width: 0.17;
   stroke-linecap: round;
   fill: none;
 }
 
-.wire.alt {
-  stroke: var(--wire-alt);
+/*
+ * Color del conductor por su rol eléctrico, como lo pinta CADeSimu: el negro
+ * es el que sale de la alimentación de fase, el azul el del neutro y el granate
+ * el de los que no tocan ninguna alimentación. El rol lo decide la red, no el
+ * código del cable (`editor/conductor.ts`).
+ */
+.wire.fase {
+  stroke: var(--wire-fase);
+}
+
+.wire.neutro {
+  stroke: var(--wire-neutro);
+}
+
+.wire.otro {
+  stroke: var(--wire-otro);
 }
 
 /*
@@ -192,7 +213,7 @@
  */
 .wire.live {
   stroke: var(--warn);
-  stroke-width: 0.46;
+  stroke-width: 0.34;
   stroke-dasharray: 1.8 1.6;
   animation: wire-flow 0.8s linear infinite;
 }
@@ -230,7 +251,7 @@
 
 .wire.sel {
   stroke: var(--select);
-  stroke-width: 0.46;
+  stroke-width: 0.34;
 }
 
 .junction {
