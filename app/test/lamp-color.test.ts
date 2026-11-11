@@ -80,6 +80,19 @@ test('8016 no tiene slot de color: bornes 97/98 y color nulo', () => {
   assert.deepEqual(lamps[0]!.pins, ['97', '98']);
 });
 
+test('8101, 8102 y 8103 llevan el slot de color como el resto de las lámparas (S4)', () => {
+  // Tenían glifo de lámpara pero nunca fueron `lamp`: el índice de color que
+  // cierra la cabecera se les quedaba dentro de los bornes.
+  const text = readFileSync(join(LUCES, 'luz_verde.cad'), 'latin1');
+  for (const code of [8101, 8102, 8103]) {
+    const lamps = componentsOf(buildProject(parse(text.replace('*0*9008#', `*0*${code}#`))));
+    assert.equal(lamps.length, 1);
+    assert.equal(lamps[0]!.code, code);
+    assert.equal(lamps[0]!.lampColor, 0, `${code}: el índice 0 es verde`);
+    assert.deepEqual(lamps[0]!.pins, ['X1', 'X2'], `${code}: el color no es un borne`);
+  }
+});
+
 test('una lámpara insertada desde la paleta no inventa color', () => {
   const raw = templateForPlacement(9008);
   assert.ok(raw);

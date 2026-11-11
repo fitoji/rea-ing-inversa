@@ -44,6 +44,7 @@ import {
 } from '../editor/state.ts';
 import { buildNetwork, validate } from '../editor/network.ts';
 import { roundTrips } from '../model/project.ts';
+import { isPushable } from '../model/component-spec.ts';
 import type { Point } from '../editor/pins.ts';
 import { Canvas } from './Canvas.tsx';
 import { Palette } from './Palette.tsx';
@@ -83,9 +84,6 @@ import { getPack, setPack, subscribePack, type SymbolPack } from '../symbols/pac
 import { getScope, setScope, subscribeScope } from '../symbols/scope.ts';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-
-/** Pulsadores que la simulación puede apretar. */
-const PUSH_CODES = new Set([8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8008, 8009, 8010, 8011, 8012, 8013, 8014, 8015, 8100]);
 
 const MODE_KEY = 'simuelectro:mode';
 
@@ -370,7 +368,7 @@ export function App(): JSX.Element {
     if (running && ids.length === 1) {
       const id = ids[0]!;
       const code = projectOf(state!).records.find((r) => r.id === id)?.code ?? -1;
-      if (PUSH_CODES.has(code)) {
+      if (isPushable(code)) {
         setPressedRecords((prev) => (prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]));
         return;
       }

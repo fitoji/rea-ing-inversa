@@ -43,6 +43,12 @@ export interface ComponentSpec {
   timer?: 'on' | 'off' | 'both';
   /** bobina biestable: mantiene su estado tras desenergizarse */
   latching?: boolean;
+  /**
+   * El registro cierra su cabecera con el índice de color del vidrio
+   * (`LAMP_COLORS`): el token no es un borne. 8016 no lo lleva: sus bornes
+   * son 97/98 y su color es nulo.
+   */
+  colorSlot?: boolean;
 }
 
 const UNKNOWN_SPEC: ComponentSpec = { kind: 'unknown', rest: 'open', pressable: false, protection: false };
@@ -114,14 +120,15 @@ function buildTable(): Readonly<Record<number, ComponentSpec>> {
   }
 
   // Señalización óptica. 8016 ya era lamp en el solver; 8101/8102/8103
-  // tenían glifo de lámpara (o ni glifo) pero nunca fueron lamp.
+  // tenían glifo de lámpara (o ni glifo) pero nunca fueron lamp. Todas
+  // menos 8016 cierran la cabecera con el índice de color del vidrio.
   const lamp: ComponentSpec = { kind: 'lamp', rest: 'open', pressable: false, protection: false };
   one(8016, lamp);
-  one(8101, lamp);
-  one(8102, lamp);
-  one(8103, lamp);
-  one(9008, lamp);
-  one(9009, lamp);
+  one(8101, { ...lamp, colorSlot: true });
+  one(8102, { ...lamp, colorSlot: true });
+  one(8103, { ...lamp, colorSlot: true });
+  one(9008, { ...lamp, colorSlot: true });
+  one(9009, { ...lamp, colorSlot: true });
 
   // Bobinas: lo que se energiza. 9000 monoestable, 9001 biestable, 7018 la de
   // contactor. 9004-9007 son temporizadores: el TIMER_COIL de visual esperaba
@@ -159,6 +166,11 @@ export function isPushable(code: number): boolean {
 
 export function isLamp(code: number): boolean {
   return specOf(code).kind === 'lamp';
+}
+
+/** El registro cierra su cabecera con el índice de color del vidrio. */
+export function hasColorSlot(code: number): boolean {
+  return specOf(code).colorSlot ?? false;
 }
 
 /** Protecciones que el usuario puede abrir/disparar en simulación. */

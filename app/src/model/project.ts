@@ -20,6 +20,7 @@
 
 import { parse } from '../format/cade.ts';
 import type { CadeDocument, CadeRecord } from '../format/cade.ts';
+import { hasColorSlot } from './component-spec.ts';
 import { CATALOG } from '../symbols/catalog.ts';
 
 export type RecordKind = 'component' | 'connection' | 'text' | 'sheet-title' | 'config' | 'unknown';
@@ -48,9 +49,6 @@ export const LAMP_COLORS = ['verde', 'rojo', 'amarillo', 'azul', 'gris'] as cons
 
 export type LampColor = 0 | 1 | 2 | 3 | 4;
 
-/** Códigos que llevan el slot de color: lámpara fija e intermitente. */
-const LAMP_CODES = new Set([9008, 9009]);
-
 export interface CadeRecordModel {
   id: number;
   code: number;
@@ -60,9 +58,9 @@ export interface CadeRecordModel {
   /** bornes en orden de aparición, sin vacíos. Puede estar vacío. */
   pins: string[];
   /**
-   * Color guardado de una lámpara (9008/9009). `null` en todo lo demás, y
-   * también cuando el archivo trae un valor fuera de rango: preferimos no
-   * pintar antes que inventar un color.
+   * Color guardado de una lámpara con slot de color (`hasColorSlot`). `null`
+   * en todo lo demás, y también cuando el archivo trae un valor fuera de
+   * rango: preferimos no pintar antes que inventar un color.
    */
   lampColor: LampColor | null;
   /** 24 números de geometría; [] si el registro no tiene bloque de geometría */
@@ -163,10 +161,11 @@ export function modelOfRecord(rec: CadeRecord, sheet = 0): CadeRecordModel {
   if (geoPrefix !== '') headerFields.push(geoPrefix);
   const header = headerFields.filter((p) => p !== '');
 
-  // Las lámparas cierran su cabecera con el índice de color. Ese token no es un
-  // borne: si se deja en `pins`, el editor dibuja un pin fantasma al lado de X1
-  // y X2. El mínimo de tres tokens protege a un registro sin bornes.
-  if (LAMP_CODES.has(rec.code) && header.length >= 3) {
+  // Las lámparas con slot de color cierran su cabecera con el índice de color
+  // (lo declara ComponentSpec): ese token no es un borne. Si se deja en `pins`,
+  // el editor dibuja un pin fantasma al lado de X1 y X2. El mínimo de tres
+  // tokens protege a un registro sin bornes.
+  if (hasColorSlot(rec.code) && header.length >= 3) {
     const last = header.at(-1)!.trim();
     if (/^\d+$/.test(last)) {
       const color = Number(last);

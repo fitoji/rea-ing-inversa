@@ -94,8 +94,12 @@ test('selectores 8012-8015: presionables, NC en 8013 y 8015', () => {
 });
 
 test('lámparas: 9008 y 9009, más 8016 y las 8101-8103 que nunca fueron lamp', () => {
-  for (const code of [8016, 9008, 9009, 8101, 8102, 8103]) {
-    assert.deepEqual(specOf(code), { kind: 'lamp', rest: 'open', pressable: false, protection: false }, `${code}`);
+  const lamp = { kind: 'lamp', rest: 'open', pressable: false, protection: false };
+  // 8016 no lleva slot de color: sus bornes son 97/98 y el color es nulo.
+  assert.deepEqual(specOf(8016), lamp, '8016');
+  // Todas las demás lámparas cierran la cabecera con el índice de color.
+  for (const code of [9008, 9009, 8101, 8102, 8103]) {
+    assert.deepEqual(specOf(code), { ...lamp, colorSlot: true }, `${code}`);
   }
 });
 
@@ -120,8 +124,8 @@ test('códigos sin semántica reciben el spec unknown exacto', () => {
   const unknown = { kind: 'unknown', rest: 'open', pressable: false, protection: false };
   // 5000-5009: «fusible/seccionador» del catálogo que no conduce, fuera de
   // alcance declarado (L3). 2000/2003: interruptores que el solver nunca
-  // modeló. 9002/9003: fuera del kindOf original. 12345: no existe.
-  for (const code of [2000, 2003, 5000, 5009, 9002, 9003, 12345]) {
+  // modeló. 9002: telerruptor sin modelar. 12345: no existe.
+  for (const code of [2000, 2003, 5000, 5009, 9002, 12345]) {
     assert.deepEqual(specOf(code), unknown, `${code}`);
   }
 });
