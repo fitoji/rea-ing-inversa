@@ -439,6 +439,7 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
   // lámparas y avisos
   signalLamp(9008, 'senalizacion'),
   lampDevice(8101, 'senalizacion'),
+  lampDevice(8102, 'senalizacion'),
   lampDevice(8103, 'senalizacion'),
   lampDevice(9009, 'senalizacion', true),
   soundDevice(9010),

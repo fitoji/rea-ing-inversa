@@ -11,7 +11,7 @@ import { parse } from '../src/format/cade.ts';
 import { buildProject } from '../src/model/project.ts';
 import { CATALOG, CATALOG_CODES } from '../src/symbols/catalog.ts';
 import { TEMPLATES, TEMPLATE_CODES } from '../src/symbols/templates.ts';
-import { symbolList, type SymbolDef } from '../src/symbols/library.ts';
+import { symbolFor, symbolList, type SymbolDef } from '../src/symbols/library.ts';
 import { synthesize, templateForPlacement } from '../src/symbols/place.ts';
 
 /** Reconstruye un registro real como si lo hubiera sintetizado `synthesize`. */
@@ -80,4 +80,16 @@ test('los códigos con plantilla real no pierden sus bytes', () => {
 
 test('el catálogo cubre más componentes que los fixtures', () => {
   assert.ok(CATALOG_CODES.length > TEMPLATE_CODES.length * 4, 'el catálogo debería superar ampliamente a los fixtures');
+});
+
+test('8102 tiene glifo propio: ya no cae al símbolo genérico (S4)', () => {
+  // «Botonera» es lámpara como 8101/8103: mismo glifo, mismo grupo.
+  const sym = symbolFor(8102);
+  assert.ok(sym, 'symbolFor(8102) debe devolver un glifo dedicado');
+  assert.equal(sym.group, 'senalizacion');
+  assert.equal(sym.name, CATALOG[8102]!.name);
+  assert.deepEqual(sym.pins.map((p) => p.name), ['X1', 'X2']);
+  // El vidrio marcado se pinta con el color guardado en el archivo.
+  const glass = sym.shapes(sym.size!.w, sym.size!.h).filter((s) => s.lamp);
+  assert.ok(glass.length > 0, 'el vidrio de la lámpara queda marcado');
 });
