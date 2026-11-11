@@ -20,7 +20,10 @@ import {
   circle,
   clock,
   contact,
+  differentialTrip,
   filledSquareOnBlade,
+  gridBottom,
+  GRID,
   left,
   line,
   magneticTriangle,
@@ -30,8 +33,10 @@ import {
   pushOperator,
   rect,
   right,
+  round,
   spread,
   thermalHook,
+  torus,
   verticalPole,
   verticalPoles,
 } from './draw.ts';
@@ -166,13 +171,36 @@ const contactorPoles = (code: number, n: number): SymbolDef => {
  * `13/14` para el NA y `11/12` para el NC. En reposo se dibuja abierto y la
  * hoja gira al cerrar, igual que en la aparamenta de protección.
  */
+/**
+ * Pulsador vertical con su operación `E` (`pulsador no.png` / `pulsador nc.png`).
+ *
+ * El `.cade` real mide 6×15 con los bornes sobre el borde izquierdo de la caja:
+ * `13/14` para el NA y `11/12` para el NC. El NA usa el polo estándar; en el NC
+ * la cuchilla cuelga de un tope en `L` y gira hasta vertical al cerrar.
+ */
 const pushDevice = (code: number, rest: 'NO' | 'NC'): SymbolDef => {
   const size = { w: 6, h: 15 };
   const pins: SymbolPin[] = [
     { name: rest === 'NC' ? '11' : '13', nx: 0, ny: 0, side: 'top' },
     { name: rest === 'NC' ? '12' : '14', nx: 0, ny: 12 / 15, side: 'bottom' },
   ];
-  return def(code, 'mando', pins, (_w, h) => [...verticalPole(0, h), ...pushOperator(h)], size);
+  const shapes = (_w: number, h: number): Shape[] => {
+    if (rest === 'NO') return [...verticalPole(0, h), ...pushOperator(h, rest)];
+    // NC: tramo superior, tope en `L` hacia la izquierda y cuchilla colgando
+    // del extremo del tope, que gira hasta la vertical al accionar.
+    const yL = h * 0.2;
+    const yPivot = h * 0.55;
+    const xL = -GRID * 0.3;
+    const deg = round((Math.atan2(-xL, yPivot - yL) * 180) / Math.PI);
+    return [
+      { d: line(0, 0, 0, yL) },
+      { d: line(xL, yL, 0, yL) },
+      { d: line(xL, yL, 0, yPivot), thin: true, blade: { px: 0, py: yPivot, deg } },
+      { d: line(0, yPivot, 0, gridBottom(h)) },
+      ...pushOperator(h, rest),
+    ];
+  };
+  return def(code, 'mando', pins, shapes, size);
 };
 
 /**
@@ -193,8 +221,11 @@ const coilVertical = (code: number): SymbolDef => {
     { x: -0.5, y: h - 1.2, value: 'A2', size: 3, anchor: 'end' as const },
   ];
   return def(code, 'mando', pins, (w, h) => [
-    { d: line(0, 0, 0, h * 0.2) },
-    { d: rect(0, h * 0.2, w, h * 0.6) },
+    // Conductora vertical completa: A1 arriba, A2 abajo, como la línea que
+    // atraviesa el rectángulo en `bobina rele de contactor.png`.
+    { d: line(0, 0, 0, gridBottom(h)) },
+    // Rectángulo de la bobina cruzando la conductora, en el tramo medio.
+    { d: rect(-GRID * 0.3, h * 0.24, w + GRID * 0.3, h * 0.34) },
   ], size, labels);
 };
 
@@ -222,6 +253,10 @@ const protectionDevice = (
     square?: boolean;
     manual?: boolean;
     test?: boolean;
+    /** toroide del diferencial (6005/6006) */
+    torus?: boolean;
+    /** disparador del diferencial, con el toroide */
+    trip?: boolean;
     cadeOrder?: boolean;
   } = {},
 ): SymbolDef => {
@@ -239,6 +274,8 @@ const protectionDevice = (
     }
     if (opts.square) out.push(...cols.flatMap((x) => filledSquareOnBlade(x, h)));
     if (opts.manual) out.push(...manualOperator(w, h, n, rows));
+    if (opts.torus) out.push(...torus(w, h, n));
+    if (opts.trip) out.push(...differentialTrip(w, h, n));
     if (opts.test) out.push(...testButton(w, h));
     return out;
   }, size);
@@ -446,8 +483,10 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
   protectionDevice(6002, 2, { w: 12, h: 15 }, { square: true, cadeOrder: true }), // medido
   protectionDevice(6003, 3, { w: 18, h: 15 }, { square: true, cadeOrder: true }), // medido
   protectionDevice(6004, 3, { w: 18, h: 15 }, { square: true, cadeOrder: true }),
-  protectionDevice(6005, 2, { w: 12, h: 15 }, { body: true, test: true, cadeOrder: true }),
-  protectionDevice(6006, 3, { w: 18, h: 15 }, { body: true, test: true, cadeOrder: true }),
+  // Diferencial: toroide cruzando los polos por abajo y disparador arriba a la
+  // izquierda, sin celdas ni botón de ensayo (`rele diferencial.png`).
+  protectionDevice(6005, 2, { w: 12, h: 15 }, { torus: true, trip: true, cadeOrder: true }),
+  protectionDevice(6006, 3, { w: 18, h: 15 }, { torus: true, trip: true, cadeOrder: true }),
   // El térmico dibuja el gancho de cada polo en su celda (`rele termico.png`).
   protectionDevice(6007, 3, { w: 21, h: 15 }, { body: true, hook: true, cadeOrder: true }), // medido
   protectionDevice(6008, 2, { w: 12, h: 15 }, { body: true, hook: true, cadeOrder: true }),

@@ -422,23 +422,33 @@ export function manualOperator(w: number, h: number, n: number, rows = 1): Shape
 }
 
 /**
- * Operación de pulsador: bracket `E` con enlace mecánico discontinuo hacia el
- * polo, tal como lo dibuja CADe_SIMU (`pulsador no.png`). El bracket desborda
- * la caja por la izquierda (S2c), igual que el accionamiento manual.
+ * Operación de pulsador: bracket `E` con enlace mecánico hacia el polo, tal
+ * como lo dibuja CADe_SIMU (`pulsador no.png` / `pulsador nc.png`). En el NA
+ * el bracket va pegado al polo y el enlace es sólido; en el NC queda más lejos
+ * y el enlace es discontinuo. La línea muere con un tick vertical junto a la
+ * cuchilla. El bracket desborda la caja por la izquierda (S2c).
  *
  * La columna del polo está en `x = 0`: los bornes del pulsador caen sobre el
  * borde izquierdo de la caja (medido en `arranque-paro-motor-3f.cad`).
  */
-export function pushOperator(h: number): Shape[] {
+export function pushOperator(h: number, rest: 'NO' | 'NC' = 'NO'): Shape[] {
   const cy = h / 2;
-  const x = -GRID;
-  const s = Math.min(h * 0.22, 4.8);
+  const xb = rest === 'NC' ? -GRID * 0.75 : -GRID * 0.3;
+  const arm = GRID * 0.16;
+  const y0 = cy - GRID * 0.28;
+  const y1 = cy + GRID * 0.28;
+  const linkEnd = -GRID * 0.05;
+  const link: Shape[] =
+    rest === 'NC'
+      ? dashed(xb + arm, cy, linkEnd, cy, GRID * 0.3, GRID * 0.22)
+      : [{ d: line(xb + arm, cy, linkEnd, cy), thin: true }];
   return [
-    { d: line(x, cy - s, x, cy + s), thin: true },
-    { d: line(x, cy - s, x + s * 0.7, cy - s), thin: true },
-    { d: line(x, cy, x + s * 0.7, cy), thin: true },
-    { d: line(x, cy + s, x + s * 0.7, cy + s), thin: true },
-    ...dashed(x + s * 0.7, cy, 0, cy, s * 0.3, s * 0.24),
+    { d: line(xb, y0, xb, y1), thin: true },
+    { d: line(xb, y0, xb + arm, y0), thin: true },
+    { d: line(xb, cy, xb + arm, cy), thin: true },
+    { d: line(xb, y1, xb + arm, y1), thin: true },
+    ...link,
+    { d: line(linkEnd, cy - GRID * 0.09, linkEnd, cy + GRID * 0.09), thin: true },
   ];
 }
 
@@ -450,5 +460,53 @@ export function clock(w: number, h: number): Shape[] {
   return [
     { d: circle(cx, cy, r), thin: true },
     { d: line(cx, cy, cx, cy - r * 0.7), thin: true },
+  ];
+}
+
+/**
+ * Toroide del diferencial (6005/6006): cápsula horizontal con extremos
+ * redondeados que cruza el tramo inferior de los polos, justo encima de los
+ * bornes pares, tal como la dibuja `rele diferencial.png`.
+ */
+export function torus(w: number, h: number, n: number): Shape[] {
+  const cols = poleColumns(n, w);
+  const x1 = cols[0]! - GRID * 0.25;
+  const x2 = cols[cols.length - 1]! + GRID * 0.25;
+  const cy = gridBottom(h) - GRID * 0.45;
+  const r = GRID * 0.25;
+  return [
+    { d: `M${round(x1)} ${round(cy - r)}H${round(x2)}`, thin: true },
+    { d: `M${round(x1)} ${round(cy + r)}H${round(x2)}`, thin: true },
+    { d: `M${round(x1)} ${round(cy + r)}a${round(r)} ${round(r)} 0 0 1 0 ${round(-2 * r)}`, thin: true },
+    { d: `M${round(x2)} ${round(cy - r)}a${round(r)} ${round(r)} 0 0 1 0 ${round(2 * r)}`, thin: true },
+  ];
+}
+
+/**
+ * Disparador del diferencial: bracket `⊢` a la izquierda con una línea fina a
+ * la altura de la cuchilla que atraviesa una caja de dos celdas y muere en el
+ * primer polo; un conector discontinuo en `L` baja hasta el extremo izquierdo
+ * del toroide (`rele diferencial.png`).
+ */
+export function differentialTrip(w: number, h: number, n: number): Shape[] {
+  const cols = poleColumns(n, w);
+  const px = cols[0]!;
+  const x1 = px - GRID * 0.25;
+  const r = GRID * 0.25;
+  const cy = gridBottom(h) - GRID * 0.45;
+  const y = h * 0.42;
+  const s = GRID * 0.22;
+  const boxR = px - GRID * 0.3;
+  const boxL = boxR - 2 * s;
+  const xb = boxL - GRID * 0.15;
+  const xr = px - GRID * 0.13;
+  const xL = boxL + s * 0.4;
+  return [
+    { d: line(xb, y - s, xb, y + s), thin: true },
+    { d: line(xb, y, xr, y), thin: true },
+    { d: rect(boxL, y - s, 2 * s, 2 * s), thin: true },
+    { d: line(boxL + s, y - s, boxL + s, y + s), thin: true },
+    ...dashed(xL, y + s, xL, cy, GRID * 0.3, GRID * 0.22),
+    ...dashed(xL, cy, x1 - r, cy, GRID * 0.3, GRID * 0.22),
   ];
 }

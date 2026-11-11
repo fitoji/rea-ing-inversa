@@ -267,7 +267,8 @@ test('el aparato con disparo térmico dibuja un gancho por polo', () => {
 
 test('el cuerpo de n polos tiene n - 1 tabiques internos', () => {
   const bodies = [
-    { code: 6005, n: 2 },
+    // 6005/6006 (diferencial) ya no llevan cuerpo: su PNG muestra el toroide
+    // cruzando los polos sin celdas (fidelidad S5).
     { code: 6015, n: 3 },
     { code: 6016, n: 3 },
     { code: 6018, n: 2 },
