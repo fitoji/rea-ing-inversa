@@ -47,9 +47,9 @@ Fuente: `docs/auditoria-v0.3.md` (P1-1) y el reconocimiento de tablas del 2026-1
 | --- | --- | --- | --- | --- |
 | T1 | `app/src/model/component-spec.ts`: tabla `SPEC` por código + `specOf` + predicados derivados (`isPushable`, `isLamp`, `restStateOf`, `timerOf`, `isProtection`) y test de paridad contra las tablas actuales | S1, S5, S6 | worker | `feat(model): single ComponentSpec table` |
 | T2 | `sim/netlist.ts` y `sim/circuit.ts` derivan `kind`, polaridad, temporizador y protección de `SPEC`; cierra `8100`, `8016`, `2002`, `8018`, `9004-9007` | S1, S3, S6 | worker | `refactor(sim): derive solver semantics from ComponentSpec` |
-| T3 | `sim/visual.ts` deriva sus sets de `SPEC`; cierra `8005` y la polaridad de reposo | S1, S2, S5 | inline | `refactor(sim): derive visual states from ComponentSpec` |
-| T4 | `ui/App.tsx` (`PUSH_CODES`) y `model/project.ts` (`LAMP_CODES`) derivan de `SPEC` | S1, S4 | inline | `refactor(ui): derive pressable and lamp codes from ComponentSpec` |
-| T5 | Glifo para `8102` en `symbols/families.ts` | S4 | inline | `feat(symbols): draw 8102 lamp` |
+| T3 | `sim/visual.ts` deriva sus sets de `SPEC`; cierra `8005` y la polaridad de reposo | S1, S2, S5 | inline | `a44c77b` |
+| T4 | `ui/App.tsx` (`PUSH_CODES`) y `model/project.ts` (`LAMP_CODES`) derivan de `SPEC` | S1, S4 | inline | `a44c77b` |
+| T5 | Glifo para `8102` en `symbols/families.ts` | S4 | inline | `85818f6` |
 
 ## Log
 
@@ -59,3 +59,12 @@ Fuente: `docs/auditoria-v0.3.md` (P1-1) y el reconocimiento de tablas del 2026-1
 - **L4** — `4009`/`4010` tienen nombre de catálogo («Cable neutro» / «Cable PE») distinto del tipo inferido en `circuit.ts:36-42` (mando / neutro). Se mantiene el tipo inferido y no se toca en esta tanda.
 - **L5** — T1+T2 entregados por worker y **corregidos en revisión**. Dos defectos de la entrega: (1) `8100` quedó como `contact`, pero `CATALOG` lo lista como «Pulsador» con designador `-S`; como contacto el cierre dependía de una bobina homónima y el clic seguía perdido, o sea S3 no se cerraba. Ahora es `pushbutton` y el test compara que reemplazar `8000` por `8100` sea indistinguible para el solver. (2) Los temporizados `7005/7009/7013` quedaron NA «para congelar paridad», pero `solver.ts:155-172` sí conmuta `contactNC` temporizado y ningún fixture usa esos códigos: la tabla decía lo contrario de lo que dibuja `TIMED_NC`. Ahora son `rest: 'closed'`.
 - **L6** — Verificación de T1+T2: suite **235/235**, `tsc --noEmit` limpio y diferencial **end-to-end** contra `551e1da` sobre los 6 fixtures (kinds, modos de temporizador, estado en reposo y efecto de presionar cada dispositivo accionable): **idéntico**. Nada de lo que ya funcionaba cambió.
+- **L7** — T3, T4 y T5 entregados (2026-11-11, rama `feat/parity-cadesimu`): `visual.ts` ya no
+  lleva sets propios (LAMP/COIL/PUSHER/CONTACT/TIMED_*) y despacha por `specOf`; `App.tsx`
+  usa `isPushable(code)` en el clic de simulación; `project.ts` usa el predicado nuevo
+  `hasColorSlot(code)`, respaldado por el campo opcional `colorSlot` en `ComponentSpec`
+  (9008/9009/8101/8102/8103 lo llevan; 8016 no). Evidencia: suite **259/259**, `tsc` limpio,
+  y los 5 tests WIP del usuario en verde sin cambiar sus expectativas. Paridad de códigos
+  viejos intacta: los sets eliminados eran subconjuntos exactos de SPEC; las únicas
+  diferencias son los códigos pedidos por S2/S3/S4 (8002-8011, 8014, 8015, 2006, 8018,
+  7018, 8101-8103). La tanda queda **cerrada**; fuera de alcance siguen L3 y L4.
