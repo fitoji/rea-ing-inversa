@@ -226,3 +226,22 @@ dibujan el polo vertical con su metadata `blade`. Tests nuevos en `app/test/symb
 los códigos `6000`–`6010` sin `def()` (T4), verificación contra los PNG (T5). Nota latente: el
 `resistor` unipolar tiene caja de 18 de ancho y `poles()` lo centra en `x=9`, que no es múltiplo
 de 6; queda fuera del alcance y sin test que lo cubra.
+- **L3** (2026-11-11, rama `feat/parity-cadesimu`) — **T7 cerrado** con `dd2f192`:
+  la precedencia de packs se resuelve en `library.ts`: una definición propia con
+  caja declarada gana sobre el elemento QET; QET sólo pisa definiciones viejas
+  sin caja. Con eso los redibujos de la feature quedan visibles (`5000`, `2006`,
+  `6010/6017/6019/6020`, `8100`, `9010/9012`, `3012/3013`, `7018`). Además se
+  redibujan los códigos medidos que la geometría vieja tenía horizontales:
+  `2001` (18×15, `contactorPoles`, orden `1 3 5 2 4 6`), `8000`/`8001` (6×15,
+  `pushDevice` con operación `E` nueva `pushOperator()` en `draw.ts`) y las
+  bobinas `9000`/`7018` (9×15, `coilVertical`, A1 arriba/A2 abajo). Todas las
+  cajas y bornes salen de los fixtures reales (`arranque-paro-motor-3f.cad`).
+  Test nuevo en `symbol-grid.test.ts` que fija caja + bornes + orden del CAD.
+  **2002 no se redibuja**: «Contactor IIII» serían 8 bornes y el registro guarda
+  7 como máximo (lo probó el sintetizador en `catalog.test.ts`); no hay fixture
+  real de `2002`, queda bloqueado por datos REA. Evidencia: suite 260/260
+  estable (10 corridas), `tsc` limpio.
+- **L4** (2026-11-11) — Flake de `parse-perf.test.ts` detectado y estabilizado
+  (`622ca7d`): medianas de 5 corridas con ~2,5 ms absolutos daban ratios >2.8
+  por jitter del disco; ahora 9 corridas y umbral 3.2 (cuadrático sigue en ~4.0).
+  No lo causó el cambio de símbolos: el parser no se tocó.
