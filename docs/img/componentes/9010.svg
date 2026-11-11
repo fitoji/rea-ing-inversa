@@ -1,10 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="81" height="81" viewBox="-1.5 -1.5 27 27" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" width="59" height="54" viewBox="-3 -1.5 19.5 18" role="img">
 <title>Timbre</title>
-<rect x="-1.5" y="-1.5" width="27" height="27" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
-<path d="M0 12L24 12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M6 12L6 24" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M18 12L18 24" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M24 12L23.9 10.44L23.59 8.9L23.09 7.42L22.39 6L21.53 4.7L20.5 3.5L19.3 2.47L18 1.61L16.58 0.91L15.1 0.41L13.56 0.1L12 0L10.44 0.1L8.9 0.41L7.42 0.91L6 1.61L4.7 2.47L3.5 3.5L2.47 4.7L1.61 6L0.91 7.42L0.41 8.9L0.1 10.44L0 12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="6" cy="24" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<circle cx="18" cy="24" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<rect x="-3" y="-1.5" width="19.5" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M0 7.5L3 7.5" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 7.5L15 7.5" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M3 7.5a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M5.7 9.075a4.05 4.05 0 0 1 3.6 0" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="0" cy="7.5" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="15" cy="7.5" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
 </svg>

@@ -9,7 +9,7 @@ Catálogo de componentes eléctricos que ofrece la paleta del editor: cómo se d
 - **Los grupos y los nombres de familia** son los de la paleta (`app/src/ui/Palette.tsx`).
 - **Los bornes** son una convención IEC elegida al dibujar cada símbolo, no un dato que venga en el archivo: el formato los guarda por registro y acá se listan los que la app asigna por defecto. En la miniatura se ven como círculos.
 
-Totales: **270 códigos** en el catálogo generado, **235 componentes dibujados**, **47 códigos del catálogo caen al fallback** (un rectángulo con el código adentro).
+Totales: **270 códigos** en el catálogo generado, **240 componentes dibujados**, **46 códigos del catálogo caen al fallback** (un rectángulo con el código adentro).
 
 Hay **3 componentes dibujados que no figuran en el catálogo**: `8016` (Lámpara de señalización), `8017` (Contacto del térmico), `8018` (Contacto auxiliar NC doble). No salen del menú del CAD pero aparecen en archivos reales, así que su plantilla se generó desde los fixtures y el dibujo se escribió a mano. Por eso no tienen designador de catálogo.
 
@@ -58,7 +58,7 @@ De los 270 códigos, **125 no traen designador** en el catálogo: el menú del C
 | ![Motor cc. ex. indepen.](img/componentes/1007.svg) | `1007` | Motor cc. ex. indepen. | `-M` | A1 · A2 · E1 · E2 |
 | ![Motor trifásico como monofásico](img/componentes/1010.svg) | `1010` | Motor trifásico como monofásico | `-M` | L · N |
 
-## Potencia (15)
+## Potencia (16)
 
 | Dibujo | Código | Nombre | Designador | Bornes |
 | --- | --- | --- | --- | --- |
@@ -72,6 +72,7 @@ De los 270 códigos, **125 no traen designador** en el catálogo: el menú del C
 | ![Variador velocidad cc.](img/componentes/1058.svg) | `1058` | Variador velocidad cc. | `-G` | L+ · L- · M+ · M- |
 | ![Relé 1 canal](img/componentes/1076.svg) | `1076` | Relé 1 canal | `-K` | A1 · A2 · 11 · 14 |
 | ![Contactor II](img/componentes/2000.svg) | `2000` | Contactor II | `-KM` | 1 · 2 · 3 · 4 |
+| ![Contactor III](img/componentes/2001.svg) | `2001` | Contactor III | `-KM` | 1 · 3 · 5 · 2 · 4 · 6 |
 | ![Contactor III](img/componentes/2001.svg) | `2001` | Contactor III | `-KM` | 1 · 3 · 5 · 2 · 4 · 6 |
 | ![Interruptor II](img/componentes/2003.svg) | `2003` | Interruptor II | `-S` | 1 · 2 · 3 · 4 |
 | ![Interruptor III](img/componentes/2004.svg) | `2004` | Interruptor III | `-S` | 1 · 2 · 3 · 4 · 5 · 6 |
@@ -116,7 +117,7 @@ De los 270 códigos, **125 no traen designador** en el catálogo: el menú del C
 | ![Interruptor](img/componentes/6019.svg) | `6019` | Interruptor | `-S` | 1 · 2 |
 | ![Interruptor](img/componentes/6020.svg) | `6020` | Interruptor | `-S` | 1 · 2 |
 
-## Mando (48)
+## Mando (51)
 
 | Dibujo | Código | Nombre | Designador | Bornes |
 | --- | --- | --- | --- | --- |
@@ -142,12 +143,15 @@ De los 270 códigos, **125 no traen designador** en el catálogo: el menú del C
 | ![Contactos ON Delay](img/componentes/7020.svg) | `7020` | Contactos ON Delay | `-KM` | 13 · 14 |
 | ![Contactos OFF Delay](img/componentes/7021.svg) | `7021` | Contactos OFF Delay | `-KM` | 13 · 14 |
 | ![Contacto pulsador NA](img/componentes/8000.svg) | `8000` | Contacto pulsador NA | `-S` | 13 · 14 |
+| ![Contacto pulsador NA](img/componentes/8000.svg) | `8000` | Contacto pulsador NA | `-S` | 13 · 14 |
+| ![Contacto pulsador NC](img/componentes/8001.svg) | `8001` | Contacto pulsador NC | `-S` | 11 · 12 |
 | ![Contacto pulsador NC](img/componentes/8001.svg) | `8001` | Contacto pulsador NC | `-S` | 11 · 12 |
 | ![Contacto final de carrera NA](img/componentes/8012.svg) | `8012` | Contacto final de carrera NA | `-S` | 13 · 14 |
 | ![Contacto final de carrera NC](img/componentes/8013.svg) | `8013` | Contacto final de carrera NC | `-S` | 11 · 12 |
 | ![Lámpara de señalización](img/componentes/8016.svg) | `8016` | Lámpara de señalización | — | 97 · 98 |
 | ![Contacto del térmico](img/componentes/8017.svg) | `8017` | Contacto del térmico | — | 95 · 96 |
 | ![Contacto auxiliar NC doble](img/componentes/8018.svg) | `8018` | Contacto auxiliar NC doble | — | 95 · 97 · 96 · 98 |
+| ![Bobina monoestable](img/componentes/9000.svg) | `9000` | Bobina monoestable | `-EV` | A1 · A2 |
 | ![Bobina monoestable](img/componentes/9000.svg) | `9000` | Bobina monoestable | `-EV` | A1 · A2 |
 | ![Bobina biestable](img/componentes/9001.svg) | `9001` | Bobina biestable | `-EV` | A1 · A2 |
 | ![Telerruptor](img/componentes/9002.svg) | `9002` | Telerruptor | `-EV` | A1 · A2 · 1 · 2 |
@@ -169,7 +173,7 @@ De los 270 códigos, **125 no traen designador** en el catálogo: el menú del C
 | ![Motor neumático reversible](img/componentes/10509.svg) | `10509` | Motor neumático reversible | `-M` | A · B |
 | ![Actuador lineal eléctrico](img/componentes/10550.svg) | `10550` | Actuador lineal eléctrico | `-M` | A |
 
-## Señalización y pulsadores (22)
+## Señalización y pulsadores (23)
 
 | Dibujo | Código | Nombre | Designador | Bornes |
 | --- | --- | --- | --- | --- |
@@ -187,6 +191,7 @@ De los 270 códigos, **125 no traen designador** en el catálogo: el menú del C
 | ![Contacto final de carrera conmutado](img/componentes/8015.svg) | `8015` | Contacto final de carrera conmutado | `-S` | 11 · 12 · 14 |
 | ![Pulsador](img/componentes/8100.svg) | `8100` | Pulsador | `-S` | 13 · 14 |
 | ![Piloto](img/componentes/8101.svg) | `8101` | Piloto | `-H` | X1 · X2 |
+| ![Botonera](img/componentes/8102.svg) | `8102` | Botonera | `-H` | X1 · X2 |
 | ![LED](img/componentes/8103.svg) | `8103` | LED | `-H` | X1 · X2 |
 | ![Señalización óptica](img/componentes/9008.svg) | `9008` | Señalización óptica | `-H` | 97 · 98 |
 | ![Señalización óptica](img/componentes/9008.svg) | `9008` | Señalización óptica | `-H` | 97 · 98 |
@@ -304,7 +309,7 @@ De los 270 códigos, **125 no traen designador** en el catálogo: el menú del C
 | ![Regleta redonda 2](img/componentes/4015.svg) | `4015` | Regleta redonda 2 | — | 1 · 2 · 3 · 4 |
 | ![Regleta redonda 3](img/componentes/4016.svg) | `4016` | Regleta redonda 3 | — | 1 · 2 · 3 · 4 · 5 · 6 |
 
-## Códigos sin símbolo dedicado (47)
+## Códigos sin símbolo dedicado (46)
 
 No tienen dibujo propio: el lienzo los pinta con el fallback, un rectángulo con el código adentro y los bornes que declare el archivo. Siguen siendo válidos para abrir y guardar sin pérdida; lo que falta es el dibujo, así que no llevan miniatura acá.
 
@@ -323,7 +328,6 @@ Lo mismo pasa con cualquier código que no esté en el catálogo, por ejemplo `2
 | `4018` | Cable + | — |
 | `5004` | Fusible IIIN | `-F` |
 | `5009` | Seccionador IIIN | `-F` |
-| `8102` | Botonera | `-H` |
 | `10000` | Función lógica AND 2 | `-U` |
 | `10001` | Función lógica AND 3 | — |
 | `10002` | Función lógica AND 4 | — |

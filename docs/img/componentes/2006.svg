@@ -1,10 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="27" height="81" viewBox="-1.5 -1.5 9 27" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" width="45" height="54" viewBox="-1.5 -1.5 15 18" role="img">
 <title>Contactor I</title>
-<rect x="-1.5" y="-1.5" width="9" height="27" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
-<path d="M6 7.99L6 0" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M6 16.01L6 24" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M6 16.01L0 6.79" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M6 6.19L5.75 6.22L5.51 6.24L5.28 6.29L5.06 6.34L4.86 6.41L4.67 6.5L4.51 6.6L4.37 6.7L4.27 6.82L4.19 6.94L4.14 7.08L4.13 7.2L4.14 7.32L4.19 7.46L4.27 7.58L4.37 7.7L4.51 7.8L4.67 7.9L4.86 7.99L5.06 8.06L5.28 8.11L5.51 8.16L5.75 8.18L6 8.21" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="6" cy="24" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<rect x="-1.5" y="-1.5" width="15" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M6 0L6 3" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6 8.25L4.03 3.38" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6 8.25L6 12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <circle cx="6" cy="0" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="6" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
 </svg>
