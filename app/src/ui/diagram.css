@@ -190,21 +190,23 @@
 }
 
 /*
- * Color del conductor por su rol eléctrico, como lo pinta CADeSimu: el negro
- * es el que sale de la alimentación de fase, el azul el del neutro y el granate
- * el de los que no tocan ninguna alimentación. El rol lo decide la red, no el
- * código del cable (`editor/conductor.ts`).
+ * Color del conductor por su tipo en el archivo, como lo pinta CADeSimu: el
+ * conductor común va granate, el 4009 azul y el 4010 (la tierra) verde y
+ * punteado. El color lo trae el tipo de conductor, no el papel eléctrico del
+ * tramo (`editor/conductor.ts`).
  */
-.wire.fase {
-  stroke: var(--wire-fase);
+.wire.conductor {
+  stroke: var(--wire-conductor);
 }
 
 .wire.neutro {
   stroke: var(--wire-neutro);
 }
 
-.wire.otro {
-  stroke: var(--wire-otro);
+/* La tierra va punteada: raya y hueco de 0,75 unidades, medido en la captura. */
+.wire.tierra {
+  stroke: var(--wire-tierra);
+  stroke-dasharray: 0.75 0.75;
 }
 
 /*

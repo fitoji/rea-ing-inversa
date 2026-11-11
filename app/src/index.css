@@ -86,13 +86,12 @@
   --select: #2f6fd0;
 
   /*
-   * Color del conductor por rol eléctrico. La fase conserva el verde del
-   * conductor del tema; el neutro y el resto se distinguen para que se lea qué
-   * alimenta qué, como en CADeSimu.
+   * Color del conductor por su tipo, como en CADeSimu: el conductor común va
+   * granate, el 4009 azul y la tierra verde.
    */
-  --wire-fase: #0f9d63;
+  --wire-conductor: #b45309;
   --wire-neutro: #2563eb;
-  --wire-otro: #b45309;
+  --wire-tierra: #16a34a;
 
   /* Tono por familia, sólo para la paleta: el lienzo sigue siendo técnico. */
   --tone-alimentacion: #2f7fc4;
@@ -162,9 +161,9 @@
   --warn: #f0b429;
   --select: #5b9dff;
 
-  --wire-fase: #3fbf8f;
+  --wire-conductor: #fbbf24;
   --wire-neutro: #60a5fa;
-  --wire-otro: #fbbf24;
+  --wire-tierra: #4ade80;
 
   --tone-alimentacion: #6bb6f0;
   --tone-motor: #7aa9ff;
@@ -290,13 +289,13 @@
   --select: #0050c8;
 
   /*
-   * Colores del conductor, medidos sobre la captura real de CADeSimu
-   * (`data/samples/tests01/test01.png`): el de la fase va negro, el del
-   * neutro azul y el de los que no tocan ninguna alimentación granate.
+   * Colores del conductor, medidos sobre las capturas reales de CADeSimu
+   * (`data/samples/tests01/test01.png` y `app/test_simu/PR1_Rodolfo_Giusti_03.png`):
+   * el conductor común va granate, el 4009 azul y la tierra (4010) verde.
    */
-  --wire-fase: #000000;
+  --wire-conductor: #800000;
   --wire-neutro: #0000ff;
-  --wire-otro: #800000;
+  --wire-tierra: #008000;
 
   --ink: #141414;
   --ink-soft: #3a3a3a;

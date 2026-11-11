@@ -47,11 +47,11 @@ arriba.
 **S7.** Los nombres de borne del archivo no cambian: son el contrato que guarda el `.cad`.
 
 **S8.** Los **cables** se dibujan con el color que les da CADeSimu por conductor, no todos del
-mismo gris. La regla real, medida sobre la captura: el conductor toma el color de la
-**alimentación que su red toca** — negro si la red toca el terminal de fase (3000), azul si toca
-el de neutro (3001) y granate si no toca ninguna. No es el código del cable (el `4000` sale
-negro en un tramo y granate en otros) ni su número (los cables 1, 2, 4 y 5 son negro, granate,
-granate y azul). Un cable con quiebres es un solo conductor y se pinta entero del mismo color.
+mismo gris. El color lo trae el **tipo de conductor** (el código del archivo), no el papel
+eléctrico del tramo: el `4000` va granate `#800000`, el `4009` azul `#0000ff` y el `4010`
+(la tierra) verde `#008000` y punteado. En el PR1 el tramo `4000` que cierra sobre la red del
+neutro va granate igual que todos los demás `4000`: si el color fuera por alimentación, ése
+sería azul.
 
 **S9.** La **cuchilla de la familia de protecciones** usa la geometría medida en CADeSimu
 (`draw.ts:cadesimuPole`): 3 unidades de desplazamiento horizontal y el cuadro de disparo
@@ -175,19 +175,15 @@ PNG de `components_png` se cierra: T7 (color), T9 (grosor) y T8 (cuchillas). T7 
 cerrados con medición; T8 quedó con dos códigos sin referencia y una corrección de evidencia
 (el 6007 no tiene cuchilla).
 
-**L15. El color del conductor NO es por código ni por número de cable.** Medido sobre la
-captura: el `4000` de la cabecera de fase va negro y los `4000` de la lámpara van granate; los
-cables 1, 2, 4 y 5 son negro, granate, granate y azul. Lo que sí lo explica es la
-**alimentación que la red toca**: el tramo que sale del terminal 3000 (Alimentación L) va negro,
-el que sale del 3001 (Alimentación N) va azul, y los que no tocan ninguna alimentación van
-granate. La regla quedó en `app/src/editor/conductor.ts`, que calcula las redes con la
-proyección de `network.ts` y reparte el rol por cable (un cable con quiebres son varios
-registros y se pintan del mismo color).
+**L15. PRIMERA REGLA (FALSA), CORREGIDA EN L27.** Con una sola captura se concluir que el color
+del conductor lo decide la alimentación que su red toca: el tramo que sale del terminal 3000
+(Alimentación L) va negro, el que sale del 3001 (Alimentación N) va azul, y los que no tocan
+ninguna van granate. Se implementó así y se publicó en v0.5.0.
 
-**L16.** La regla se validó contra los siete planos del repo: en `inversion-giro-cej.cade` el
-mismo `4000` aparece con los tres roles, así que ninguna regla por código o por número puede
-explicar el color. En el fixture de aceptación el reparto sale exacto: 1 tramo negro, 3 azules
-y 4 granates, que son los de la captura.
+**L16. La regla de L15 era una lectura equivocada de la captura.** En `test01.png` el cable del
+terminal de fase es `#800000` (granate), no negro: los 682 píxeles negros de esa captura son
+todos de símbolos y rótulos, ningún conductor es negro. La regla de L15 salió de leer la lista
+de columnas granates como si fuera la de negros.
 
 **L17. Colores medidos en la captura**: negro `#000000`, azul `#0000ff`, granate `#800000`.
 Entraron como tokens `--wire-fase`, `--wire-neutro` y `--wire-otro`: exactos en el paquete
@@ -239,3 +235,32 @@ eso es una decisión de convención, no de esta tanda: quedó como T12.
 pero no alcanza para las alimentaciones trifásicas, el PE ni la continua: esos quedan en
 `otro` (granate) hasta que haya una captura que los fije. Con capturas de un cuadro con
 alimentación trifásica se cierra el caso.
+
+---
+
+## Tanda 3: el PR1 como criterio de aceptación de la simulación
+
+**L27. CORRECCIÓN DE L15: el color del conductor lo trae su TIPO, no la alimentación.** Con las
+capturas del PR1 (`app/test_simu/`) se ve el error: en `PR1_Rodolfo_Giusti_03.png` el tramo
+`4000` que cierra sobre la red del neutro (la salida de H3) va **granate**, igual que todos
+los demás `4000`. Si el color fuera por alimentación, ése sería azul. La regla correcta es por
+código:
+
+| código | color | trazo |
+|---|---|---|
+| 4000 (conductor común) | granate `#800000` | continuo |
+| 4009 | azul `#0000ff` | continuo |
+| 4010 (la tierra) | verde `#008000` | punteado, raya y hueco de 0,75 unidades |
+
+La captura del PR1 **no** tiene un solo conductor negro: en CADeSimu el conductor común es
+granate. Cambiado `app/src/editor/conductor.ts` (de redes a códigos), los tokens
+(`--wire-conductor`, `--wire-neutro`, `--wire-tierra`) y el CSS (`.wire.tierra` punteado).
+Verificado contra la captura: granate 369 px nuestros contra 378 de la captura, con **0**
+píxeles nuestros fuera; azul 123 contra 126, con 1 fuera.
+
+**L28. El PR1 entra como criterio de aceptación de la simulación.** El usuario aporta cinco
+capturas de CADeSimu sobre `app/test_simu/PR1_Rodolfo_Giusti_03.cad`: el plano en reposo, el
+play sin nada actuado, con Q1 y F1 cerrada (se enciende H1, amarilla), con S1 o S2 cerrada (se
+enciende H3, verde) y con Q1 abierta por clic (se enciende H2, roja). Queda como tanda aparte:
+la simulación (qué se enciende, qué color toma cada conductor y qué se dibuja en cada estado)
+es un comportamiento que la app todavía no tiene verificado contra CADeSimu.

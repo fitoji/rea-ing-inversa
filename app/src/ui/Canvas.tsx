@@ -7,7 +7,7 @@ import { designatorAt, pinLabelAt } from './labels.ts';
 import type { DragOp, Rotation } from '../editor/state.ts';
 import { attachPoints, type Point } from '../editor/pins.ts';
 import { buildNetwork, cableSegments } from '../editor/network.ts';
-import { conductorRoles, type ConductorRole } from '../editor/conductor.ts';
+import { conductorToneOf, type ConductorTone } from '../editor/conductor.ts';
 import { SymbolGlyph } from './SymbolGlyph.tsx';
 import type { VisualState } from '../sim/visual.ts';
 
@@ -197,9 +197,6 @@ export function Canvas(props: Props): JSX.Element {
 
   const pins = useMemo(() => attachPoints(records), [records]);
   const network = useMemo(() => buildNetwork(records), [records]);
-  // Rol de cada conductor (fase / neutro / resto): el color con que CADeSimu
-  // los pinta sale de la alimentación que toca la red del cable.
-  const roles = useMemo(() => conductorRoles(records, network, pins), [records, network, pins]);
   // Hoja que se está dibujando: los registros llegan recortados a esta página.
   const sheet = records[0]?.sheet ?? 0;
   const pinList = useMemo(() => [...pins.values()].flat(), [pins]);
@@ -474,7 +471,7 @@ export function Canvas(props: Props): JSX.Element {
                   selected={selection.has(rec.id)}
                   live={liveWires.has(rec.id)}
                   reverse={reversedWires?.has(rec.id) ?? false}
-                  role={roles.get(rec.id) ?? 'otro'}
+                  tone={conductorToneOf(rec.code)}
                 />
               );
             if (rec.kind !== 'component') return null;
@@ -668,13 +665,13 @@ function Wire({
   selected,
   live,
   reverse,
-  role,
+  tone,
 }: {
   rec: CadeRecordModel;
   selected: boolean;
   live: boolean;
   reverse?: boolean;
-  role: ConductorRole;
+  tone: ConductorTone;
 }): JSX.Element | null {
   const pts = wirePoints(rec);
   if (!pts) return null;
@@ -682,10 +679,10 @@ function Wire({
     // Registro de unión (4001): geometría de longitud cero.
     return <circle className={selected ? 'junction sel' : live ? 'junction live' : 'junction'} cx={pts.x1} cy={pts.y1} r={1.15} />;
   }
-  // El rol va siempre en la clase: es el color con que CADeSimu pinta el
+  // El tono va siempre en la clase: es el color con que CADeSimu pinta el
   // conductor. Cuando el cable está seleccionado o energizado, mandan los
   // colores de estado.
-  const cls = ['wire', role];
+  const cls = ['wire', tone];
   if (selected) cls.push('sel');
   else if (live) {
     cls.push('live');
