@@ -245,3 +245,27 @@ de 6; queda fuera del alcance y sin test que lo cubra.
   (`622ca7d`): medianas de 5 corridas con ~2,5 ms absolutos daban ratios >2.8
   por jitter del disco; ahora 9 corridas y umbral 3.2 (cuadrático sigue en ~4.0).
   No lo causó el cambio de símbolos: el parser no se tocó.
+- **L5** (2026-11-11) — **T8 (toroide + vástago + barrido visual) cerrado** con
+  `3677389` y `99f458f`. Toroide del diferencial (`torus()` en `draw.ts`): cápsula
+  horizontal fina cruzando el tramo inferior de los polos, r=GRID·0.25 y
+  cy=gridBottom−GRID·0.45, medido contra `rele diferencial.png` con recorte
+  ampliado (`sips`): la primera versión (r=0.42, cy=−0.55) se superponía con la
+  zona de cuchillas y quedó corregida. Disparador (`differentialTrip()`): bracket
+  `⊢` + línea a la altura de la cuchilla atravesando una caja de dos celdas +
+  conector discontinuo en `L` hasta el extremo izquierdo del toroide — el PNG lo
+  muestra horizontal, no como los dos cuadraditos apilados del borrador. 6005/6006
+  van con `{ torus, trip }` sin cuerpo ni botón de ensayo (fidelidad S5); el test
+  de tabiques dejó de exigir cuerpo en 6005.
+  Vástago del pulsador: contra los PNG reales (`pulsador no.png`/`nc.png`) el NA
+  **no** lleva varilla superior (eso era el tramo superior del propio polo) —
+  `pushOperator()` quedó con bracket pegado al polo, enlace sólido en NA y
+  discontinuo en NC con tick vertical en la punta; el NC cuelga la cuchilla de un
+  tope en `L` (`pushDevice` dibuja su polo propio, pivote en h·0.55, rotación al
+  cerrar por metadata `blade`). Bobinas 9000/7018: la conductora ahora es completa
+  (A1 arriba, A2 abajo) y el rectángulo la cruza en el tramo medio, como
+  `bobina rele de contactor.png`; el dibujo anterior dejaba el borne A2 sin
+  conductor. Barrido visual con miniaturas rasterizadas (`qlmanage`): verificados
+  1000, 2001, 5000, 6000/6003, 6005/6006, 6007, 6009, 7016, 7018, 8000/8001/8004,
+  9000/9004/9005, 3012/3013, 9010/9012, 1050/1051 — sin diferencias estructurales
+  contra los 10 PNG de `data/samples/components_png/`. Evidencia: suite 260/260,
+  `tsc` limpio, miniaturas regeneradas (`docs/img/componentes/`, 240 SVG).
