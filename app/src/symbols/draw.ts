@@ -16,6 +16,74 @@ export const rect = (x: number, y: number, w: number, h: number): string =>
 export const circle = (cx: number, cy: number, r: number): string =>
   `M${round(cx - r)} ${round(cy)}a${round(r)} ${round(r)} 0 1 0 ${round(r * 2)} 0a${round(r)} ${round(r)} 0 1 0 ${round(-r * 2)} 0Z`;
 
+/**
+ * Polo del interruptor automático, con la geometría medida en CADeSimu.
+ *
+ * Unidades absolutas del archivo, relativas al borne de arriba del polo (que
+ * es el origen del registro). Medido en tres capturas independientes:
+ * `data/samples/tests01/test01.png` (el automático de dos polos de la hoja),
+ * `components_png/interruptor proteccion contra cortocircuitos monofasico.png`
+ * y `components_png/interruptor automatico de proteccion contra cortocircuitos
+ * y sobrecargas.png`.
+ *
+ * - la línea del polo baja del borne hasta +4,2;
+ * - la cuchilla va de (−3, +3,6) a (0, +9,7): tres unidades a la izquierda;
+ * - un guion horizontal de 1,8 unidades cruza el polo a +5;
+ * - la línea vuelve de +9,7 hasta el borne de abajo (+12).
+ *
+ * El detalle de disparo (cuadrado negro inclinado) va SÓLO en el primer polo:
+ * en la captura de la hoja el segundo polo no lo lleva, aunque el automático
+ * tripolar de `components_png` lo lleva en los tres.
+ */
+export function cadesimuPole(x: number, h: number, withTrip: boolean): Shape[] {
+  const bottom = gridBottom(h);
+  const out: Shape[] = [
+    { d: line(x, 0, x, 4.2) },
+    { d: line(x - 3, 3.6, x, 9.7) },
+    { d: line(x - 1.5, 5, x + 0.3, 5), thin: true },
+    { d: line(x, 9.7, x, bottom) },
+  ];
+  if (withTrip) out.push({ d: tiltedSquare(x - 2.95, 5.9, 1.55, 18), fill: true });
+  return out;
+}
+
+/**
+ * Lámpara de señalización de CADeSimu: círculo con aspa, con el círculo
+ * **centrado en el medio de sus dos bornes** (el de arriba es el origen) y las
+ * puntas de la aspa sobresaliendo un poco.
+ *
+ * Medido sobre `data/samples/tests01/test01.png`: radio 2,83 unidades, centro
+ * 6 unidades por debajo del borne de arriba (el de abajo está a 12) y las
+ * puntas de la aspa 0,25 unidades fuera del círculo.
+ */
+export function cadesimuLamp(): Shape[] {
+  const r = 2.83;
+  const cy = 6;
+  const k = (r + 0.25) / Math.SQRT2;
+  return [
+    { d: line(0, 0, 0, cy - r) },
+    { d: line(0, cy + r, 0, 12) },
+    { d: circle(0, cy, r), lamp: true },
+    { d: line(-k, cy - k, k, cy + k), thin: true, lamp: true },
+    { d: line(-k, cy + k, k, cy - k), thin: true, lamp: true },
+  ];
+}
+
+/**
+ * Cuadrado relleno girado: el detalle de disparo del automático, que en
+ * CADeSimu va inclinado y no como rombo simétrico.
+ *
+ * `half` es la media diagonal (del centro al vértice) y `firstAngle` el ángulo
+ * del primer vértice, en grados.
+ */
+export function tiltedSquare(cx: number, cy: number, half: number, firstAngle: number): string {
+  const pts = [0, 1, 2, 3].map((i) => {
+    const a = ((firstAngle + i * 90) * Math.PI) / 180;
+    return `${round(cx + half * Math.cos(a))} ${round(cy + half * Math.sin(a))}`;
+  });
+  return `M${pts.join('L')}Z`;
+}
+
 export const left = (ny: number, name: string): SymbolPin => ({ name, nx: 0, ny, side: 'left' });
 export const right = (ny: number, name: string): SymbolPin => ({ name, nx: 1, ny, side: 'right' });
 
@@ -210,17 +278,30 @@ export function shapesBounds(shapes: Shape[]): { minX: number; minY: number; max
         case 'a': {
           const rx = Math.abs(num());
           const ry = Math.abs(num());
-          num();
-          num();
-          num();
-          num();
+          num(); // rotación del eje x
+          num(); // flag de arco mayor
+          num(); // flag de barrido
           const dx = num();
           const dy = num();
           const nx = relative ? x + dx : dx;
           const ny = relative ? y + dy : dy;
-          const r = Math.max(rx, ry);
-          add(Math.min(x, nx) - r, Math.min(y, ny) - r);
-          add(Math.max(x, nx) + r, Math.max(y, ny) + r);
+          // La envolvente del arco: la cuerda y los dos extremos del arco. Para
+          // una semicircunferencia (que es como dibuja `circle()`) los extremos
+          // están en el punto medio de la cuerda, a un radio de distancia en
+          // perpendicular. Expandir por el radio en ambos ejes daba una caja
+          // mucho más grande que el círculo (y descentrada).
+          add(x, y);
+          add(nx, ny);
+          const len = Math.hypot(nx - x, ny - y);
+          if (len > 0) {
+            const r = Math.max(rx, ry);
+            const mx = (x + nx) / 2;
+            const my = (y + ny) / 2;
+            const px = (-(ny - y) / len) * r;
+            const py = ((nx - x) / len) * r;
+            add(mx + px, my + py);
+            add(mx - px, my - py);
+          }
           x = nx;
           y = ny;
           break;

@@ -16,6 +16,8 @@
 import { CATALOG } from './catalog.ts';
 import type { Shape, SymbolDef, SymbolGroup, SymbolPin } from './library.ts';
 import {
+  cadesimuLamp,
+  cadesimuPole,
   cellBody,
   circle,
   clock,
@@ -320,22 +322,44 @@ const lampDevice = (code: number, group: SymbolGroup, pulsed = false): SymbolDef
  * Señalización óptica: círculo con aspa, tal como la dibuja CADe_SIMU.
  *
  * No se toma de EN 60617: el elemento importado es sólo el aspa (sin cuerpo) y
- * acá el símbolo tiene que leerse como la lámpara del CAD.
+ * acá el símbolo tiene que leerse como la lámpara del CAD. Va anclada al
+ * origen: el círculo se dibuja centrado en el medio de sus dos bornes.
  */
-const signalLamp = (code: number, group: SymbolGroup): SymbolDef =>
-  def(code, group, [left(0.5, '97'), right(0.5, '98')], (w, h) => {
-    const r = Math.min(w, h) * 0.32;
-    const cx = w / 2;
-    const cy = h / 2;
-    const d = r * Math.SQRT1_2;
-    return [
-      { d: line(0, cy, cx - r, cy) },
-      { d: line(cx + r, cy, w, cy) },
-      { d: circle(cx, cy, r), lamp: true },
-      { d: line(cx - d, cy - d, cx + d, cy + d), lamp: true },
-      { d: line(cx - d, cy + d, cx + d, cy - d), lamp: true },
-    ];
-  }, { w: 15, h: 15 });
+const signalLamp = (code: number, group: SymbolGroup): SymbolDef => ({
+  code,
+  name: nameOf(code),
+  group,
+  pins: [left(0.5, '97'), right(0.5, '98')],
+  anchor: 'origin',
+  originPins: [
+    { name: '97', x: 0, y: 0 },
+    { name: '98', x: 0, y: 12 },
+  ],
+  size: { w: 9, h: 15 },
+  shapes: () => cadesimuLamp(),
+});
+
+/**
+ * Automático IN de dos polos, anclado al origen.
+ *
+ * Los polos caen sobre los bornes (el segundo a 6 unidades, la grilla de
+ * CADeSimu) y el detalle de disparo va sólo en el primer polo, como en la
+ * captura de la hoja (`data/samples/tests01/test01.png`).
+ */
+const cadesimuBreaker = (code: number, n: number, size: { w: number; h: number }): SymbolDef => ({
+  code,
+  name: nameOf(code),
+  group: 'proteccion',
+  pins: polesInCadeOrder(n, size),
+  anchor: 'origin',
+  originPins: Array.from({ length: n }, (_, i) => [
+    { name: String(1 + i * 2), x: i * GRID, y: 0 },
+    { name: String(2 + i * 2), x: i * GRID, y: gridBottom(size.h) },
+  ]).flat(),
+  size,
+  shapes: () =>
+    Array.from({ length: n }, (_, i) => cadesimuPole(i * GRID, size.h, i === 0)).flat(),
+});
 
 /** Aparato acústico: círculo con la boca. */
 const soundDevice = (code: number): SymbolDef =>
@@ -479,7 +503,7 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
   // «IIIN» se dibuja tripolar: el registro guarda 7 bornes como máximo y un
   // cuarto polo necesita 8 (ver `4017` en la lista de regletas).
   protectionDevice(6000, 1, { w: 12, h: 15 }, { square: true, cadeOrder: true }),
-  protectionDevice(6001, 2, { w: 12, h: 15 }, { square: true, cadeOrder: true }), // medido
+  cadesimuBreaker(6001, 2, { w: 12, h: 15 }), // medido sobre la captura de CADeSimu
   protectionDevice(6002, 2, { w: 12, h: 15 }, { square: true, cadeOrder: true }), // medido
   protectionDevice(6003, 3, { w: 18, h: 15 }, { square: true, cadeOrder: true }), // medido
   protectionDevice(6004, 3, { w: 18, h: 15 }, { square: true, cadeOrder: true }),

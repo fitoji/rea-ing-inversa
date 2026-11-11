@@ -120,10 +120,18 @@ function glyphSvg(input: SymbolDef): string {
   const viewW = maxX - minX + PAD * 2;
   const viewH = maxY - minY + PAD * 2;
   const labels = sym.labels?.(w, h) ?? [];
-  const pins = sym.pins.map(
-    (pin) =>
-      `<circle cx="${Math.round(pin.nx * w * 100) / 100}" cy="${Math.round(pin.ny * h * 100) / 100}" r="1.4" fill="${PIN_FILL}" stroke="${PIN_STROKE}" stroke-width="0.42"/>`,
-  );
+  // Un símbolo anclado al origen lleva sus bornes en unidades absolutas: los
+  // normalizados no dicen nada, porque el dibujo no está en la caja.
+  const pins =
+    sym.anchor === 'origin' && sym.originPins
+      ? sym.originPins.map(
+          (pin) =>
+            `<circle cx="${Math.round(pin.x * 100) / 100}" cy="${Math.round(pin.y * 100) / 100}" r="1.4" fill="${PIN_FILL}" stroke="${PIN_STROKE}" stroke-width="0.42"/>`,
+        )
+      : sym.pins.map(
+          (pin) =>
+            `<circle cx="${Math.round(pin.nx * w * 100) / 100}" cy="${Math.round(pin.ny * h * 100) / 100}" r="1.4" fill="${PIN_FILL}" stroke="${PIN_STROKE}" stroke-width="0.42"/>`,
+        );
   return [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(viewW * SCALE)}" height="${Math.round(viewH * SCALE)}" viewBox="${viewX} ${viewY} ${viewW} ${viewH}" role="img">`,
     `<title>${escapeXml(sym.name)}</title>`,

@@ -144,6 +144,24 @@
   stroke-width: 0.9;
 }
 
+/* Designador a la izquierda del símbolo, como lo dibuja CADeSimu. */
+.designator.left {
+  text-anchor: end;
+}
+
+/* Rótulo del borne, a la derecha del punto de conexión. */
+.pinlabel {
+  fill: var(--ink-soft);
+  font-family: var(--mono, ui-monospace, 'SF Mono', Menlo, monospace);
+  font-size: 2.4px;
+  text-anchor: start;
+  dominant-baseline: hanging;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: var(--background);
+  stroke-width: 0.8;
+}
+
 .sym.sel path {
   stroke: var(--select);
 }

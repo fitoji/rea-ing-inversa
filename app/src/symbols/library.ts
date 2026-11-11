@@ -26,7 +26,7 @@ export type SymbolGroup =
   | 'carga'
   | 'otro';
 
-import { circle, contact, left, line, pinsBoth, rect, right, round, threePole } from './draw.ts';
+import { cadesimuLamp, circle, contact, left, line, pinsBoth, rect, right, round, threePole } from './draw.ts';
 import { FAMILY_SYMBOLS, LINE_SYMBOLS } from './families.ts';
 import { DXF_SYMBOLS } from './dxf.ts';
 import { getPack } from './pack.ts';
@@ -73,8 +73,31 @@ export interface SymbolDef {
   pins: SymbolPin[];
   /** Tamaño con el que se inserta el componente (sólo si no hay plantilla real). */
   size?: { w: number; h: number };
+  /**
+   * Anclaje del dibujo respecto del registro.
+   *
+   * `box` (default) dibuja el símbolo dentro de la caja declarada, que es la
+   * grilla de conexión de 6 unidades. `origin` lo dibuja en el ORIGEN del
+   * registro, con geometría intrínseca en unidades del archivo: es el modelo de
+   * CADeSimu, donde la caja declarada es la grilla de conexión y no el marco
+   * del dibujo.
+   */
+  anchor?: 'box' | 'origin';
+  /**
+   * Bornes en unidades absolutas del archivo, relativos al origen, para los
+   * símbolos anclados al origen. El nombre del borne sigue siendo el del
+   * archivo: esto sólo dice DÓNDE se conecta.
+   */
+  originPins?: OriginPin[];
   shapes(w: number, h: number): Shape[];
   labels?(w: number, h: number): Label[];
+}
+
+/** Borne de un símbolo anclado al origen, en unidades del archivo. */
+export interface OriginPin {
+  name: string;
+  x: number;
+  y: number;
 }
 
 // --- helpers de dibujo -------------------------------------------------------
@@ -209,20 +232,20 @@ const thermalRelay: SymbolDef = {
   },
 };
 
-const circuitBreaker4: SymbolDef = {
-  code: 6001,
-  name: 'Automático IN',
+/**
+ * Automático II: dos polos con el detalle de disparo.
+ *
+ * El automático IN (6001) tiene su propia definición, anclada al origen y con
+ * la geometría medida en CADeSimu (`draw.ts:cadesimuPole`).
+ */
+const breaker4: SymbolDef = {
+  code: 6002,
+  name: 'Automático II',
   group: 'proteccion',
   pins: [left(0.3, '1'), left(0.7, '3'), right(0.3, '2'), right(0.7, '4')],
   shapes(w, h) {
     return [...threePole(w, h, false), ...tripDetail(w, h)];
   },
-};
-
-const breaker4: SymbolDef = {
-  ...circuitBreaker4,
-  code: 6002,
-  name: 'Automático II',
 };
 
 const coil: SymbolDef = {
@@ -323,22 +346,26 @@ const selectorNC: SymbolDef = {
   },
 };
 
+/**
+ * Lámpara de señalización, anclada al origen (el borne X1).
+ *
+ * El círculo va **centrado en el medio de los dos bornes** y las puntas de la
+ * X sobresalen un poco del círculo, como en CADeSimu. La geometría está
+ * medida en `draw.ts:cadesimuLamp()`.
+ */
 const lamp: SymbolDef = {
   code: 8016,
   name: 'Lámpara de señalización',
   group: 'mando',
   pins: [left(0.5, '97'), right(0.5, '98')],
-  shapes(w, h) {
-    const r = Math.min(w, h) * 0.32;
-    const cx = w / 2;
-    const cy = h / 2;
-    return [
-      { d: line(0, cy, cx - r, cy) },
-      { d: line(cx + r, cy, w, cy) },
-      { d: circle(cx, cy, r), lamp: true },
-      { d: line(cx - r * 0.7, cy - r * 0.7, cx + r * 0.7, cy + r * 0.7), thin: true, lamp: true },
-      { d: line(cx + r * 0.7, cy - r * 0.7, cx - r * 0.7, cy + r * 0.7), thin: true, lamp: true },
-    ];
+  anchor: 'origin',
+  originPins: [
+    { name: '97', x: 0, y: 0 },
+    { name: '98', x: 0, y: 12 },
+  ],
+  size: { w: 12, h: 15 },
+  shapes() {
+    return cadesimuLamp();
   },
 };
 
@@ -459,11 +486,37 @@ const feed = (code: number, name: string, pins: SymbolPin[], label?: string): Sy
   },
 });
 
-const feedL: SymbolDef = feed(3000, 'Alimentación L', [], 'L');
-const feedN: SymbolDef = feed(3001, 'Alimentación N', [], 'N');
+/**
+ * Terminal de alimentación de un solo conductor, anclado al origen.
+ *
+ * En CADeSimu es un círculo pequeño **tangente por encima** del extremo del
+ * cable, con la letra (L/N) encima. Medido sobre la captura real
+ * (`data/samples/tests01/test01.png`, 6 px por unidad del archivo): círculo de
+ * radio 1 unidad con el centro 3,2 unidades por encima del origen, y un hilo
+ * que baja desde el círculo hasta el origen.
+ *
+ * Antes se dibujaba como una barra vertical con la letra al lado, 3 unidades a
+ * la derecha del cable: ése era el error de anclaje, no de forma.
+ */
+const feedTerminal = (code: number, name: string, letter: string): SymbolDef => ({
+  code,
+  name,
+  group: 'alimentacion',
+  pins: [],
+  anchor: 'origin',
+  size: { w: 6, h: 3 },
+  shapes() {
+    return [{ d: circle(0, -3.2, 1) }, { d: line(0, -2.2, 0, 0) }];
+  },
+  labels() {
+    return [{ x: 0, y: -4.9, value: letter, size: 2.4, anchor: 'middle' }];
+  },
+});
+
+const feedL: SymbolDef = feedTerminal(3000, 'Alimentación L', 'L');
+const feedN: SymbolDef = feedTerminal(3001, 'Alimentación N', 'N');
 const feedLN: SymbolDef = feed(3003, 'Alimentación L N', [], 'L/N');
 const feed3PE: SymbolDef = feed(3005, 'Alimentación L1 L2 L3 PE', [], 'L123');
-
 const feedPE: SymbolDef = feed(3002, 'Alimentación PE', [right(0.5, 'PE')]);
 
 const feed3: SymbolDef = feed(3004, 'Alimentación L1 L2 L3', [
@@ -554,14 +607,6 @@ const timerOn: SymbolDef = {
   labels(w, h) {
     return [{ x: w / 2, y: h / 2, value: 'KT', size: Math.min(w, h) * 0.28, anchor: 'middle' }];
   },
-};
-
-const signalLamp: SymbolDef = {
-  ...lamp,
-  code: 9008,
-  name: 'Señalización óptica',
-  group: 'senalizacion',
-  size: { w: 12, h: 15 },
 };
 
 const buzzer: SymbolDef = {
@@ -660,7 +705,6 @@ const ALL: SymbolDef[] = [
   fuse,
   breaker,
   thermalRelay,
-  circuitBreaker4,
   breaker4,
   coil,
   auxContact,
@@ -684,7 +728,6 @@ const ALL: SymbolDef[] = [
   auxNANC,
   relayCoil,
   timerOn,
-  signalLamp,
   buzzer,
   pushNANC,
   mushroomNA,

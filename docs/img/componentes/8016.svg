@@ -1,11 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="71" height="63" viewBox="-4.02 -1.5 23.52 21" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" width="53" height="54" viewBox="-4.33 -1.5 17.83 18" role="img">
 <title>Lámpara de señalización</title>
-<rect x="-4.02" y="-1.5" width="23.52" height="21" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
-<path d="M0 9L3.24 9" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M14.76 9L18 9" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M3.24 9a5.76 5.76 0 1 0 11.52 0a5.76 5.76 0 1 0 -11.52 0Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M4.97 4.97L13.03 13.03" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M13.03 4.97L4.97 13.03" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="0" cy="9" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<circle cx="18" cy="9" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<rect x="-4.33" y="-1.5" width="17.83" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M0 0L0 3.17" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 8.83L0 12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-2.83 6a2.83 2.83 0 1 0 5.66 0a2.83 2.83 0 1 0 -5.66 0Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-2.18 3.82L2.18 8.18" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-2.18 8.18L2.18 3.82" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="0" cy="0" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="0" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
 </svg>

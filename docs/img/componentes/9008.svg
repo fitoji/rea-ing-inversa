@@ -1,11 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="60" height="54" viewBox="-3.5999999999999996 -1.5 20.1 18" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" width="44" height="54" viewBox="-4.33 -1.5 14.83 18" role="img">
 <title>Señalización óptica</title>
-<rect x="-3.5999999999999996" y="-1.5" width="20.1" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
-<path d="M0 7.5L2.7 7.5" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M12.3 7.5L15 7.5" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M2.7 7.5a4.8 4.8 0 1 0 9.6 0a4.8 4.8 0 1 0 -9.6 0Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M4.11 4.11L10.89 10.89" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M4.11 10.89L10.89 4.11" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="0" cy="7.5" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<circle cx="15" cy="7.5" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<rect x="-4.33" y="-1.5" width="14.83" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M0 0L0 3.17" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 8.83L0 12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-2.83 6a2.83 2.83 0 1 0 5.66 0a2.83 2.83 0 1 0 -5.66 0Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-2.18 3.82L2.18 8.18" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-2.18 8.18L2.18 3.82" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="0" cy="0" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="0" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
 </svg>

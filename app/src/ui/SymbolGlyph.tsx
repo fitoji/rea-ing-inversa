@@ -1,6 +1,7 @@
 import type { CSSProperties, JSX } from 'react';
 import { LAMP_COLORS, type LampColor } from '../model/project.ts';
 import { resolveSymbol } from '../symbols/library.ts';
+import { shapesBounds } from '../symbols/draw.ts';
 
 interface Props {
   code: number;
@@ -15,6 +16,16 @@ interface Props {
   lampColor?: LampColor | null;
   /** Componente energizado por la simulación (pinta el rotor del motor). */
   live?: boolean;
+  /**
+   * Dónde se dibuja el símbolo:
+   *
+   * - `center` (default): dentro de la caja `(w, h)`. Es lo que usan las
+   *   vistas previas de la paleta.
+   * - `origin`: en el origen del registro, que es donde lo dibuja CADeSimu.
+   *   Los símbolos anclados al origen (`SymbolDef.anchor`) traen su propia
+   *   geometría en unidades del archivo, así que no se escalan con la caja.
+   */
+  place?: 'center' | 'origin';
 }
 
 /**
@@ -40,7 +51,18 @@ function bladeStyle(d: string, blade: { px: number; py: number; deg: number }, c
 }
 
 /** Dibuja un símbolo en su caja local (0,0)–(w,h). */
-export function SymbolGlyph({ code, pinNames, w, h, rotation = 0, selected = false, closed = false, lampColor = null, live = false }: Props): JSX.Element {
+export function SymbolGlyph({
+  code,
+  pinNames,
+  w,
+  h,
+  rotation = 0,
+  selected = false,
+  closed = false,
+  lampColor = null,
+  live = false,
+  place = 'center',
+}: Props): JSX.Element {
   const sym = resolveSymbol(code, pinNames);
   const shapes = sym.shapes(w, h);
   const labels = sym.labels?.(w, h) ?? [];
@@ -51,11 +73,26 @@ export function SymbolGlyph({ code, pinNames, w, h, rotation = 0, selected = fal
   const arrow = `M ${cx - r * 0.55} ${cy - r * 1.12} A ${r * 0.92} ${r * 0.92} 0 0 1 ${cx + r * 0.55} ${cy - r * 1.12}`;
   const head = `M ${cx + r * 0.55} ${cy - r * 1.12} l ${-r * 0.22} ${-r * 0.14} M ${cx + r * 0.55} ${cy - r * 1.12} l ${-r * 0.02} ${r * 0.28}`;
 
+  // Un símbolo anclado al origen trae su geometría en unidades del archivo:
+  // en el lienzo se dibuja tal cual (el origen del registro es el 0,0) y en
+  // las vistas previas se centra en la caja.
+  const anchored = sym.anchor === 'origin';
+  const bounds = shapesBounds(shapes);
+  const inkCx = (bounds.minX + bounds.maxX) / 2;
+  const inkCy = (bounds.minY + bounds.maxY) / 2;
+  const shift =
+    anchored && place === 'origin'
+      ? { x: 0, y: 0 }
+      : anchored
+        ? { x: cx - inkCx, y: cy - inkCy }
+        : { x: 0, y: 0 };
+  const pivot = anchored ? { x: inkCx + shift.x, y: inkCy + shift.y } : { x: cx, y: cy };
+
   return (
     <g
       className={selected ? 'sym sel' : 'sym'}
       data-lamp={lampColor === null ? undefined : LAMP_COLORS[lampColor]}
-      transform={`rotate(${rotation} ${cx} ${cy})`}
+      transform={`translate(${shift.x} ${shift.y}) rotate(${rotation} ${pivot.x} ${pivot.y})`}
     >
       {shapes.map((s, i) => (
         <path
@@ -71,11 +108,17 @@ export function SymbolGlyph({ code, pinNames, w, h, rotation = 0, selected = fal
           <path className="motor-arrow" d={head} />
         </g>
       )}
-      {sym.pins.map((p) => (
-        <circle key={`p-${p.name}`} className="pin" cx={p.nx * w} cy={p.ny * h} r={1.4}>
-          <title>{p.name}</title>
-        </circle>
-      ))}
+      {anchored
+        ? (sym.originPins ?? []).map((p) => (
+            <circle key={`op-${p.name}`} className="pin" cx={p.x} cy={p.y} r={1.4}>
+              <title>{p.name}</title>
+            </circle>
+          ))
+        : sym.pins.map((p) => (
+            <circle key={`p-${p.name}`} className="pin" cx={p.nx * w} cy={p.ny * h} r={1.4}>
+              <title>{p.name}</title>
+            </circle>
+          ))}
       {labels.map((l, i) => (
         <text
           key={`t${i}`}

@@ -9,7 +9,7 @@ Catálogo de componentes eléctricos que ofrece la paleta del editor: cómo se d
 - **Los grupos y los nombres de familia** son los de la paleta (`app/src/ui/Palette.tsx`).
 - **Los bornes** son una convención IEC elegida al dibujar cada símbolo, no un dato que venga en el archivo: el formato los guarda por registro y acá se listan los que la app asigna por defecto. En la miniatura se ven como círculos.
 
-Totales: **270 códigos** en el catálogo generado, **240 componentes dibujados**, **46 códigos del catálogo caen al fallback** (un rectángulo con el código adentro).
+Totales: **270 códigos** en el catálogo generado, **238 componentes dibujados**, **46 códigos del catálogo caen al fallback** (un rectángulo con el código adentro).
 
 Hay **3 componentes dibujados que no figuran en el catálogo**: `8016` (Lámpara de señalización), `8017` (Contacto del térmico), `8018` (Contacto auxiliar NC doble). No salen del menú del CAD pero aparecen en archivos reales, así que su plantilla se generó desde los fixtures y el dibujo se escribió a mano. Por eso no tienen designador de catálogo.
 
@@ -79,7 +79,7 @@ De los 270 códigos, **125 no traen designador** en el catálogo: el menú del C
 | ![Contactor I](img/componentes/2006.svg) | `2006` | Contactor I | `-KM` | 1 · 2 |
 | ![Interruptor I](img/componentes/2007.svg) | `2007` | Interruptor I | `-S` | 1 · 2 |
 
-## Protección (33)
+## Protección (32)
 
 | Dibujo | Código | Nombre | Designador | Bornes |
 | --- | --- | --- | --- | --- |
@@ -93,7 +93,6 @@ De los 270 códigos, **125 no traen designador** en el catálogo: el menú del C
 | ![Seccionador III](img/componentes/5008.svg) | `5008` | Seccionador III | `-F` | 1 · 2 · 3 · 4 · 5 · 6 |
 | ![Automático I](img/componentes/6000.svg) | `6000` | Automático I | `-F` | 1 · 2 |
 | ![Automático I](img/componentes/6000.svg) | `6000` | Automático I | `-F` | 1 · 2 |
-| ![Automático IN](img/componentes/6001.svg) | `6001` | Automático IN | `-F` | 1 · 3 · 2 · 4 |
 | ![Automático IN](img/componentes/6001.svg) | `6001` | Automático IN | `-F` | 1 · 3 · 2 · 4 |
 | ![Automático II](img/componentes/6002.svg) | `6002` | Automático II | `-F` | 1 · 3 · 2 · 4 |
 | ![Automático II](img/componentes/6002.svg) | `6002` | Automático II | `-F` | 1 · 3 · 2 · 4 |
@@ -173,7 +172,7 @@ De los 270 códigos, **125 no traen designador** en el catálogo: el menú del C
 | ![Motor neumático reversible](img/componentes/10509.svg) | `10509` | Motor neumático reversible | `-M` | A · B |
 | ![Actuador lineal eléctrico](img/componentes/10550.svg) | `10550` | Actuador lineal eléctrico | `-M` | A |
 
-## Señalización y pulsadores (23)
+## Señalización y pulsadores (22)
 
 | Dibujo | Código | Nombre | Designador | Bornes |
 | --- | --- | --- | --- | --- |
@@ -193,7 +192,6 @@ De los 270 códigos, **125 no traen designador** en el catálogo: el menú del C
 | ![Piloto](img/componentes/8101.svg) | `8101` | Piloto | `-H` | X1 · X2 |
 | ![Botonera](img/componentes/8102.svg) | `8102` | Botonera | `-H` | X1 · X2 |
 | ![LED](img/componentes/8103.svg) | `8103` | LED | `-H` | X1 · X2 |
-| ![Señalización óptica](img/componentes/9008.svg) | `9008` | Señalización óptica | `-H` | 97 · 98 |
 | ![Señalización óptica](img/componentes/9008.svg) | `9008` | Señalización óptica | `-H` | 97 · 98 |
 | ![Señalización óptica intermitente](img/componentes/9009.svg) | `9009` | Señalización óptica intermitente | — | X1 · X2 |
 | ![Timbre](img/componentes/9010.svg) | `9010` | Timbre | — | X1 · X2 |

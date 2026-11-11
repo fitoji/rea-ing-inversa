@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { JSX } from 'react';
 import { GEOMETRY, boxOf, boundsOf, wirePoints, type CadeRecordModel } from '../model/project.ts';
+import { resolveSymbol } from '../symbols/library.ts';
+import { shapesBounds } from '../symbols/draw.ts';
+import { designatorAt, pinLabelAt } from './labels.ts';
 import type { DragOp, Rotation } from '../editor/state.ts';
 import { attachPoints, type Point } from '../editor/pins.ts';
 import { buildNetwork, cableSegments } from '../editor/network.ts';
@@ -583,27 +586,71 @@ function Component({
   const x = rec.geometry[GEOMETRY.x] ?? 0;
   const y = rec.geometry[GEOMETRY.y] ?? 0;
   const label = rec.designator;
+  const sym = resolveSymbol(rec.code, rec.pins);
 
-  // El símbolo se dibuja dentro de la caja con un margen, para que los puntos de
-  // conexión del borde queden libres y el cable se vea llegar al componente.
-  const inset = Math.min(2.2, box.width * 0.14, box.height * 0.14);
-  const iw = Math.max(0.1, box.width - inset * 2);
-  const ih = Math.max(0.1, box.height - inset * 2);
+  // El símbolo se dibuja con su caja apoyada en el ORIGEN del registro, que es
+  // donde CADeSimu pone el primer borne: la grilla de conexión de 6 unidades
+  // cuenta desde ahí, no desde un marco con margen. Antes se aplicaba un
+  // `inset` y todos los símbolos quedaban corridos respecto de sus cables.
+  const iw = box.width;
+  const ih = box.height;
+
+  // Un símbolo anclado al origen trae su geometría en unidades del archivo y se
+  // dibuja en el origen del registro, como en CADeSimu: la caja declarada es la
+  // grilla de conexión, no el marco del dibujo. Su marco propio es el de la
+  // tinta, para que la caja no quede descolgada del dibujo.
+  const anchored = sym.anchor === 'origin';
+  const ink = shapesBounds(sym.shapes(anchored ? box.width : iw, anchored ? box.height : ih));
+  const frame = anchored
+    ? { x: ink.minX, y: ink.minY, w: ink.maxX - ink.minX, h: ink.maxY - ink.minY }
+    : { x: 0, y: 0, w: box.width, h: box.height };
 
   return (
     <g data-id={rec.id} data-state={state} transform={`translate(${x} ${y})`} style={{ cursor: 'move' }}>
       <rect className="hitbox" x={0} y={0} width={box.width} height={box.height} />
-      <rect className={selected ? 'body sel' : bad ? 'body bad' : live ? 'body live' : 'body'} x={0} y={0} width={box.width} height={box.height} rx={0.6} />
-      <g transform={`translate(${inset} ${inset})`}>
+      <rect
+        className={selected ? 'body sel' : bad ? 'body bad' : live ? 'body live' : 'body'}
+        x={frame.x}
+        y={frame.y}
+        width={Math.max(frame.w, 0.1)}
+        height={Math.max(frame.h, 0.1)}
+        rx={0.6}
+      />
+      {anchored ? (
+        <SymbolGlyph
+          code={rec.code}
+          pinNames={rec.pins}
+          w={box.width}
+          h={box.height}
+          place="origin"
+          rotation={rotation}
+          selected={selected}
+          closed={closed}
+          lampColor={rec.lampColor}
+          live={live}
+        />
+      ) : (
         <SymbolGlyph code={rec.code} pinNames={rec.pins} w={iw} h={ih} rotation={rotation} selected={selected} closed={closed} lampColor={rec.lampColor} live={live} />
-      </g>
+      )}
 
       {pins.map((p, i) => (
         <circle key={`pin-${i}`} className={selected ? 'pin sel' : 'pin'} cx={p.x - x} cy={p.y - y} r={0.9} />
       ))}
 
+      {/* Rótulo del borne: a la derecha del punto de conexión, como en CADeSimu. */}
+      {pins.map((p, i) => {
+        const name = rec.pins[i];
+        if (!name) return null;
+        const at = pinLabelAt(p);
+        return (
+          <text key={`pinlabel-${i}`} className="pinlabel" x={at.x - x} y={at.y - y}>
+            {name}
+          </text>
+        );
+      })}
+
       {label !== '' && (
-        <text className="designator" x={box.width / 2} y={-0.9} dominantBaseline="text-after-edge">
+        <text className="designator left" x={designatorAt(frame).x} y={designatorAt(frame).y} dominantBaseline="middle">
           {label}
         </text>
       )}
