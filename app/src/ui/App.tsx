@@ -20,6 +20,7 @@ import {
   Undo2Icon,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import pkg from '../../package.json';
 import {
   createEditor,
   projectOf,
@@ -525,7 +526,7 @@ export function App(): JSX.Element {
         <header className="relative z-10 flex h-[46px] shrink-0 items-center gap-2 border-b border-border bg-card px-3 shadow-chrome-down">
           <div className="mr-0.5 flex shrink-0 items-baseline gap-1.5">
             <strong className="text-[13.5px] font-semibold tracking-tight">Electro-Simulador</strong>
-            <span className="font-mono text-[10.5px] text-muted-foreground">v0.3</span>
+            <span className="font-mono text-[10.5px] text-muted-foreground">v{pkg.version}</span>
           </div>
 
           <Menubar>
