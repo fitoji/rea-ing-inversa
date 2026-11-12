@@ -90,9 +90,9 @@ tienen el problema (arrancan en el borde izquierdo).
 | T7 | S8 | inline | hecho | commit de la tanda del color |
 | T8 | S9 | inline | hecho | ídem |
 | T9 | S10 | inline | hecho | ídem |
-| T10 | S11 | inline | pendiente | — |
-| T11 | S12 | inline | pendiente | — |
-| T12 | S13 | inline | pendiente | — |
+| T10 | S11 | inline | parcial | commit de la tanda |
+| T11 | S12 | inline | hecho | ídem |
+| T12 | S13 | inline | hecho | ídem |
 
 ## Log
 
@@ -264,3 +264,92 @@ play sin nada actuado, con Q1 y F1 cerrada (se enciende H1, amarilla), con S1 o 
 enciende H3, verde) y con Q1 abierta por clic (se enciende H2, roja). Queda como tanda aparte:
 la simulación (qué se enciende, qué color toma cada conductor y qué se dibuja en cada estado)
 es un comportamiento que la app todavía no tiene verificado contra CADeSimu.
+
+---
+
+## Tanda 4: el polo del automático, el unipolar en el origen y el catálogo
+
+**L29. T11 cerrado: la geometría del polo, re-medida contra DOS capturas (S12).** La captura
+de la hoja (`data/samples/tests01/test01.png`, 6 px por unidad) y el automático tripolar de
+`components_png/interruptor automatico de proteccion contra cortocircuitos y sobrecargas.png`
+(8,67 px por unidad) se midieron trazo por trazo, con el origen del registro identificado por
+la posición del borne y las columnas de la grilla. Las dos dan **las mismas medidas**:
+
+| elemento | medida | antes |
+|---|---|---|
+| conductora superior | del borne hasta **+2,9** | +4,2 |
+| cuchilla | de **(−3, +3)** a **(0, +9)** | (−3, +3,6) a (0, +9,7) |
+| guion | a **+6**, de −1,5 a +0,3 | a +5 |
+| conductora inferior | de **+9** al borne de abajo | de +9,7 |
+| cuadro de disparo | centro (x − 2,95, +5,9), media diagonal 1,35, inclinado 18° | igual |
+
+El cuadro de disparo **no** se movió: la primera estimación (centro a +5,1) estaba contaminada
+por la tinta de la cuchilla, que lo cruza; el tripolar, donde el cuadro se ve limpio, da +5,9.
+
+Las dos capturas coinciden en la cuchilla, la conductora superior y la inferior. Discrepan
+sólo en la altura del guion: en la hoja está en +6,0 y en el tripolar en +6,8, pero ahí la
+tinta del guion se mezcla con el cuadro de disparo, así que la hoja manda (es la referencia
+de la spec y la de la captura de la hoja, a 6 px por unidad).
+
+**L30. El guion del segundo polo va al revés.** En el automático de dos polos de la hoja el
+guion del primer polo cruza el conductor (de −1,5 a +0,3) y el del segundo queda a su
+izquierda (de −3,3 a −1,5). Los dos están a +6. Los dos polos abren la cuchilla hacia la
+izquierda, así que el guion apunta siempre hacia el centro del aparato: es el del primer polo
+el que va a la derecha y el del último a la izquierda. En el tripolar se ve lo mismo: el del
+primer polo se prolonga a la derecha y el del segundo queda dentro de la tinta del cuadro.
+
+**L31. T12 cerrado: el unipolar va en el origen, no en el centro de la caja (S13).** En el
+archivo el primer borne está en el origen del registro, así que el polo de un aparato de un
+polo tiene que dibujarse en el borde izquierdo de su caja, como el primer polo de los
+multipolares. `poleColumns()` dejó de centrar el unipolar: ahora devuelve `[0]` para `n = 1`.
+Como el pin y el dibujo salen de la misma columna, el cambio mueve los dos a la vez y el
+cable sigue tocando el polo. Afecta al 6000, 6010, 6017, 5005, 6019 y 6020.
+
+**L32. T10 parcial: el fusible estaba dibujado horizontal.** `components_png/fusible
+monofasico.png` lo dibuja **vertical**: un rectángulo de 2,5 unidades de ancho alrededor del
+conductor, de +2,3 a +9,3, con el borne '1' arriba y el '2' abajo. Nosotros lo dibujábamos
+horizontal, con los bornes arriba y abajo: el cuerpo no tocaba los pines. Corregido: el cuerpo
+se dibuja por polo, con los bornes en la columna del polo.
+
+**L33. T10 parcial: la cuchilla del pulsador NA.** `components_png/pulsador no.png` (22,5 px
+por unidad) muestra la conductora superior terminando en +3 y la cuchilla colgando del borne
+de abajo: de **(−3, +3)** a **(0, +9)**. La nuestra era la del polo genérico: de (−1,97,
++3,38) a (0, +8,25). Corregida, con su metadata de giro (pivote en +9, 26,57°): es la misma
+cuchilla del automático.
+
+**L34. Lo que queda de T10.** Medido y anotado, sin corregir todavía:
+
+- **El operador del pulsador.** En CADeSimu la `E` está mucho más a la izquierda y es más
+  grande que la nuestra: la barra vertical en −6,04 y las barras de 1,91 unidades, entre +4,44
+  y +7,38; el enlace al contacto es una barra a +6,02 que va de −3,07 a la cuchilla. La
+  nuestra es una `E` de 0,96 de brazo en −1,8 con un enlace de 0,54.
+- **El pulsador NC.** CADeSimu lo dibuja con la cuchilla colgando del tope (libre, sin tocar
+  el borne de abajo) y el tope a +6,02; el nuestro la apoya cerrada sobre el borne de abajo.
+  Es una diferencia de estado de reposo, no sólo de geometría: hay que decidir cuál manda.
+- **El 6000 (monofásico).** `components_png/interruptor proteccion contra cortocircuitos
+  monofasico.png` trae elementos que el 6001 no tiene (un tirador vertical a la derecha del
+  polo y una banda más gruesa en la cuchilla): es otro dibujo, no otra medida del mismo.
+- **La bobina, el motor, el diferencial y el disyuntor trifásico** quedan sin medir.
+- **El resistor (1050/1051)** quedó como estaba: su cuerpo es horizontal y sus
+  bornes van arriba y abajo en el centro de la caja, así que no usa la grilla de
+  los polos. No hay referencia de CADeSimu ni fixture con un resistor, así que no
+  se cambió de posición.
+- **Los unipolares de potencia (2006/2007)** sí se movieron al origen: son la
+  misma convención que la familia de protección (polo vertical en la columna del
+  primer borne) y no tienen otra referencia.
+
+**L35. Verificación.** 308/308 tests (6 nuevos: el guion del automático según el polo, el
+unipolar en el origen, la cuchilla del pulsador, el resistor intacto, los unipolares de
+potencia en el origen y los multipolares en la grilla), `tsc` limpio, build OK, catálogo
+regenerado (238 SVG).
+
+**L36. Verificación independiente (riesgo item 3: `poleColumns` es código compartido).** Un
+verificador read-only sobre el diff `ea656d6..8280b32`: **sin blockers**, S12 y S13 OK.
+Medió la captura otra vez y confirmó las cinco medidas del polo al píxel; comprobó que
+exactamente 17 símbolos cambian de dibujo (10 pedidos, 6 correcciones medidas y el 2006/2007)
+y que el resistor queda byte-idéntico al baseline. Recorrió los 640 pines declarados del
+catálogo: **0 pines rotos nuevos** y 16 pines del fusible arreglados (con el fusible
+horizontal no caían sobre el dibujo). Sus tres avisos: el 2006/2007 fuera de la lista de S13
+(convención, no rotura), el pivote de la cuchilla del pulsador (medido en +8,9 y 27°, no en
++9,9 y 23,5°: corregido a **+9** y 26,57°, que es la cuchilla del automático) y la altura
+del guion en el tripolar (+6,8 contra +6 de la hoja: la hoja manda).

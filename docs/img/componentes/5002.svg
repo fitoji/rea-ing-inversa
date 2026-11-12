@@ -1,10 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="45" height="54" viewBox="-1.5 -1.5 15 18" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" width="49" height="54" viewBox="-2.75 -1.5 16.25 18" role="img">
 <title>Fusible II</title>
-<rect x="-1.5" y="-1.5" width="15" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
-<path d="M0 7.5L2.88 7.5" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M2.88 5.55H9.12V9.45H2.88Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M2.88 7.5L9.12 7.5" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M9.12 7.5L12 7.5" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="-2.75" y="-1.5" width="16.25" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M0 0L0 2.3" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-1.25 2.3H1.25V9.3H-1.25Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 9.3L0 12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6 0L6 2.3" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.75 2.3H7.25V9.3H4.75Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6 9.3L6 12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <circle cx="0" cy="0" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
 <circle cx="0" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
 <circle cx="6" cy="0" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>

@@ -20,16 +20,21 @@ export const circle = (cx: number, cy: number, r: number): string =>
  * Polo del interruptor automático, con la geometría medida en CADeSimu.
  *
  * Unidades absolutas del archivo, relativas al borne de arriba del polo (que
- * es el origen del registro). Medido en tres capturas independientes:
- * `data/samples/tests01/test01.png` (el automático de dos polos de la hoja),
- * `components_png/interruptor proteccion contra cortocircuitos monofasico.png`
- * y `components_png/interruptor automatico de proteccion contra cortocircuitos
- * y sobrecargas.png`.
+ * es el origen del registro). Medido en dos capturas independientes que dan las
+ * mismas medidas: `data/samples/tests01/test01.png` (el automático de dos polos
+ * de la hoja, 6 px por unidad) y
+ * `components_png/interruptor automatico de proteccion contra cortocircuitos y
+ * sobrecargas.png` (el tripolar, 8,67 px por unidad).
  *
- * - la línea del polo baja del borne hasta +4,2;
- * - la cuchilla va de (−3, +3,6) a (0, +9,7): tres unidades a la izquierda;
- * - un guion horizontal de 1,8 unidades cruza el polo a +5;
- * - la línea vuelve de +9,7 hasta el borne de abajo (+12).
+ * - la conductora superior baja del borne hasta +2,9;
+ * - la cuchilla va de (−3, +3) a (0, +9): tres unidades a la izquierda;
+ * - un guion horizontal de 1,8 unidades cruza el polo a +6;
+ * - la conductora inferior sigue de +9 hasta el borne de abajo (+12).
+ *
+ * El guion va hacia el centro del aparato: en el automático de dos polos de la
+ * captura el del primer polo cruza el conductor (de −1,5 a +0,3) y el del
+ * segundo queda a su izquierda (de −3,3 a −1,5), porque la cuchilla de cada
+ * polo se abre siempre hacia la izquierda. Por eso `dashLeft`.
  *
  * El detalle de disparo (cuadrado negro inclinado) va SÓLO en el primer polo:
  * en la captura de la hoja el segundo polo no lo lleva, aunque el automático
@@ -40,13 +45,13 @@ export const circle = (cx: number, cy: number, r: number): string =>
  * y el monofásico de `components_png` (1.090 px, con 17,2 px por unidad). Las
  * dos dan 1,35 unidades.
  */
-export function cadesimuPole(x: number, h: number, withTrip: boolean): Shape[] {
+export function cadesimuPole(x: number, h: number, withTrip: boolean, dashLeft = false): Shape[] {
   const bottom = gridBottom(h);
   const out: Shape[] = [
-    { d: line(x, 0, x, 4.2) },
-    { d: line(x - 3, 3.6, x, 9.7) },
-    { d: line(x - 1.5, 5, x + 0.3, 5), thin: true },
-    { d: line(x, 9.7, x, bottom) },
+    { d: line(x, 0, x, 2.9) },
+    { d: line(x - 3, 3, x, 9) },
+    { d: dashLeft ? line(x - 3.3, 6, x - 1.5, 6) : line(x - 1.5, 6, x + 0.3, 6), thin: true },
+    { d: line(x, 9, x, bottom) },
   ];
   if (withTrip) out.push({ d: tiltedSquare(x - 2.95, 5.9, 1.35, 18), fill: true });
   return out;
@@ -157,20 +162,29 @@ export const gridBottom = (h: number): number => h - BOTTOM_INSET;
 
 /**
  * Columnas de bornes de una caja. Multipolar avanza de a 6 unidades desde el
- * borde izquierdo; unipolar va centrado.
+ * borde izquierdo; unipolar va en el origen.
+ *
+ * El unipolar va al **origen** y no al centro de la caja: en el archivo el
+ * primer borne está en el origen del registro, así que el polo se dibuja ahí
+ * (como el primer polo de los multipolares) y no seis unidades a la derecha
+ * del cable (S13).
  */
-export function poleColumns(n: number, w: number): number[] {
-  return Array.from({ length: n }, (_, i) => (n === 1 ? w / 2 : i * GRID));
+export function poleColumns(n: number): number[] {
+  return Array.from({ length: n }, (_, i) => (n === 1 ? 0 : i * GRID));
 }
 
 /**
  * Bornes de un aparato multipolar sobre la grilla de CADeSimu: los impares en
  * la fila superior y los pares en la inferior, cada polo en su columna.
+ *
+ * `centered` fuerza la columna al centro de la caja: lo usa el resistor, que
+ * dibuja un cuerpo horizontal y no va por la grilla de los polos.
  */
-export function poles(n: number, size: { w: number; h: number }): SymbolPin[] {
+export function poles(n: number, size: { w: number; h: number }, centered = false): SymbolPin[] {
   const { w, h } = size;
   const bottom = gridBottom(h);
-  return poleColumns(n, w).flatMap((x, i) => [
+  const cols = n === 1 && centered ? [w / 2] : poleColumns(n);
+  return cols.flatMap((x, i) => [
     { name: String(1 + i * 2), nx: x / w, ny: 0, side: 'top' as const },
     { name: String(2 + i * 2), nx: x / w, ny: bottom / h, side: 'bottom' as const },
   ]);
@@ -249,8 +263,8 @@ export function mechanicalLink(w: number, h: number): Shape[] {
 }
 
 /** Todos los polos de un aparato, sobre las columnas de la grilla. */
-export function verticalPoles(w: number, h: number, n = 3): Shape[] {
-  return poleColumns(n, w).flatMap((x) => verticalPole(x, h));
+export function verticalPoles(_w: number, h: number, n = 3): Shape[] {
+  return poleColumns(n).flatMap((x) => verticalPole(x, h));
 }
 
 /**
@@ -260,9 +274,9 @@ export function verticalPoles(w: number, h: number, n = 3): Shape[] {
  * (`rele termico.png`) dibuja sus conductores rectos, con el cuerpo y el gancho
  * encima. La cuchilla es del interruptor, no del Aparato.
  */
-export function straightPoles(w: number, h: number, n = 3): Shape[] {
+export function straightPoles(_w: number, h: number, n = 3): Shape[] {
   const bottom = gridBottom(h);
-  return poleColumns(n, w).map((x) => ({ d: line(x, 0, x, bottom) }));
+  return poleColumns(n).map((x) => ({ d: line(x, 0, x, bottom) }));
 }
 
 /**
@@ -435,7 +449,7 @@ interface BodyFrame {
  * caja declarada, y ocupa la banda que queda entre el pivote y la fila inferior.
  */
 function bodyFrame(w: number, h: number, n: number): BodyFrame {
-  const cols = poleColumns(n, w);
+  const cols = poleColumns(n);
   const first = cols[0] ?? 0;
   const last = cols[cols.length - 1] ?? 0;
   return {
@@ -456,7 +470,7 @@ function bodyFrame(w: number, h: number, n: number): BodyFrame {
  */
 export function cellBody(w: number, h: number, n: number, rows = 1): Shape[] {
   const f = bodyFrame(w, h, n);
-  const cols = poleColumns(n, w);
+  const cols = poleColumns(n);
   const out: Shape[] = [{ d: rect(f.left, f.top, f.right - f.left, f.bottom - f.top) }];
   for (let i = 1; i < n; i++) {
     const x = cols[i];
@@ -612,8 +626,8 @@ export function clock(w: number, h: number): Shape[] {
  * redondeados que cruza el tramo inferior de los polos, justo encima de los
  * bornes pares, tal como la dibuja `rele diferencial.png`.
  */
-export function torus(w: number, h: number, n: number): Shape[] {
-  const cols = poleColumns(n, w);
+export function torus(_w: number, h: number, n: number): Shape[] {
+  const cols = poleColumns(n);
   const x1 = cols[0]! - GRID * 0.25;
   const x2 = cols[cols.length - 1]! + GRID * 0.25;
   const cy = gridBottom(h) - GRID * 0.45;
@@ -632,8 +646,8 @@ export function torus(w: number, h: number, n: number): Shape[] {
  * primer polo; un conector discontinuo en `L` baja hasta el extremo izquierdo
  * del toroide (`rele diferencial.png`).
  */
-export function differentialTrip(w: number, h: number, n: number): Shape[] {
-  const cols = poleColumns(n, w);
+export function differentialTrip(_w: number, h: number, n: number): Shape[] {
+  const cols = poleColumns(n);
   const px = cols[0]!;
   const x1 = px - GRID * 0.25;
   const r = GRID * 0.25;

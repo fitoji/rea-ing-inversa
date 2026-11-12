@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="33" height="54" viewBox="-3.4699999999999998 -1.5 10.969999999999999 18" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="54" viewBox="-4.5 -1.5 12 18" role="img">
 <title>Contacto pulsador NA</title>
-<rect x="-3.4699999999999998" y="-1.5" width="10.969999999999999" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<rect x="-4.5" y="-1.5" width="12" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
 <path d="M0 0L0 3" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M0 8.25L-1.97 3.38" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M0 8.25L0 12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-3 3L0 9" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 9L0 12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M-1.8 5.82L-1.8 9.18" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M-1.8 5.82L-0.84 5.82" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M-1.8 7.5L-0.84 7.5" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>

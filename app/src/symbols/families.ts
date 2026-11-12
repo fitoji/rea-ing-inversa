@@ -40,7 +40,6 @@ import {
   straightPoles,
   thermalHook,
   torus,
-  verticalPole,
   verticalPoles,
 } from './draw.ts';
 
@@ -138,7 +137,10 @@ const motorDC: SymbolPin[] = [left(0.38, 'A1'), right(0.38, 'A2'), left(0.7, 'E1
 
 const resistor = (code: number, count: number): SymbolDef => {
   const size = { w: 18, h: count === 1 ? 12 : 24 };
-  const pins = poles(count, size);
+  // El resistor dibuja un cuerpo horizontal: sus bornes quedan arriba y abajo
+  // en el centro de la caja y no en la columna de los polos. No hay referencia
+  // de CADeSimu para el resistor, así que se deja como estaba (T10).
+  const pins = poles(count, size, true);
   return def(code, 'potencia', pins, (w, h) => {
     const rows = spread(count).map((n) => n * h);
     return rows.flatMap((y) => [
@@ -188,7 +190,22 @@ const pushDevice = (code: number, rest: 'NO' | 'NC'): SymbolDef => {
     { name: rest === 'NC' ? '12' : '14', nx: 0, ny: 12 / 15, side: 'bottom' },
   ];
   const shapes = (_w: number, h: number): Shape[] => {
-    if (rest === 'NO') return [...verticalPole(0, h), ...pushOperator(h, rest)];
+    if (rest === 'NO') {
+      // `pulsador no.png`: la conductora superior termina en +3 y la cuchilla
+      // cuelga del borne de abajo: va de (−3, +3) a (0, +9), con el hueco de
+      // contacto abierto entre la punta y la conductora superior. Es la misma
+      // cuchilla del automático.
+      const tipX = -3;
+      const tipY = 3;
+      const pivotY = 9;
+      const deg = round((Math.atan2(-tipX, pivotY - tipY) * 180) / Math.PI);
+      return [
+        { d: line(0, 0, 0, tipY) },
+        { d: line(tipX, tipY, 0, pivotY), thin: true, blade: { px: 0, py: pivotY, deg } },
+        { d: line(0, pivotY, 0, gridBottom(h)) },
+        ...pushOperator(h, rest),
+      ];
+    }
     // NC: tramo superior, tope en `L` hacia la izquierda y cuchilla colgando
     // del extremo del tope, que gira hasta la vertical al accionar.
     const yL = h * 0.2;
@@ -292,7 +309,7 @@ const protectionDevice = (
   const rows = opts.hook && opts.triangle ? 2 : 1;
   const pins = opts.cadeOrder ? polesInCadeOrder(n, size) : poles(n, size);
   return def(code, 'proteccion', pins, (w, h) => {
-    const cols = poleColumns(n, w);
+    const cols = poleColumns(n);
     const out: Shape[] = [];
     if (opts.straight) {
       out.push(...straightPoles(w, h, n));
@@ -300,7 +317,7 @@ const protectionDevice = (
       const square = opts.tripSquare ?? 'first';
       out.push(
         ...cols.flatMap((x, i) =>
-          cadesimuPole(x, h, square === 'all' || (square === 'first' && i === 0)),
+          cadesimuPole(x, h, square === 'all' || (square === 'first' && i === 0), i > (n - 1) / 2),
         ),
       );
     } else {
@@ -397,7 +414,9 @@ const cadesimuBreaker = (code: number, n: number, size: { w: number; h: number }
   ]).flat(),
   size,
   shapes: () =>
-    Array.from({ length: n }, (_, i) => cadesimuPole(i * GRID, size.h, i === 0)).flat(),
+    Array.from({ length: n }, (_, i) =>
+      cadesimuPole(i * GRID, size.h, i === 0, i > (n - 1) / 2),
+    ).flat(),
 });
 
 /** Aparato acústico: círculo con la boca. */
@@ -527,10 +546,10 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
   ], { w: 18, h: 15 }, motorLabel('V')),
 
   // protección
-  defPoles(5000, 'proteccion', 1, (w, h) => fuseBody(w, h), { w: 12, h: 15 }),
-  defPoles(5001, 'proteccion', 2, (w, h) => fuseBody(w, h), { w: 12, h: 15 }),
-  defPoles(5002, 'proteccion', 2, (w, h) => fuseBody(w, h), { w: 12, h: 15 }),
-  defPoles(5003, 'proteccion', 3, (w, h) => fuseBody(w, h), { w: 18, h: 15 }),
+  defPoles(5000, 'proteccion', 1, (w, h) => fuseBody(w, h, 1), { w: 12, h: 15 }),
+  defPoles(5001, 'proteccion', 2, (w, h) => fuseBody(w, h, 2), { w: 12, h: 15 }),
+  defPoles(5002, 'proteccion', 2, (w, h) => fuseBody(w, h, 2), { w: 12, h: 15 }),
+  defPoles(5003, 'proteccion', 3, (w, h) => fuseBody(w, h, 3), { w: 18, h: 15 }),
   defPoles(5005, 'proteccion', 1, (w, h) => verticalPoles(w, h, 1), { w: 12, h: 15 }),
   defPoles(5006, 'proteccion', 2, (w, h) => verticalPoles(w, h, 2), { w: 12, h: 15 }),
   defPoles(5007, 'proteccion', 2, (w, h) => verticalPoles(w, h, 2), { w: 12, h: 15 }),
@@ -672,15 +691,26 @@ export const LINE_SYMBOLS: SymbolDef[] = [4000, 4009, 4010, 4019].map((code) => 
   },
 }));
 
-function fuseBody(w: number, h: number): Shape[] {
-  const cy = h / 2;
-  const pad = w * 0.24;
-  return [
-    { d: line(0, cy, pad, cy) },
-    { d: rect(pad, cy - h * 0.13, w - pad * 2, h * 0.26) },
-    { d: line(pad, cy, w - pad, cy), thin: true },
-    { d: line(w - pad, cy, w, cy) },
-  ];
+/**
+ * Fusible: un rectángulo alrededor del conductor, como lo dibuja CADeSimu
+ * (`components_png/fusible monofasico.png`).
+ *
+ * Medido en ese PNG (19,25 px por unidad, con el polo de 12 unidades de alto):
+ * el cuerpo va de +2,3 a +9,3 y mide 2,5 unidades de ancho, centrado en el
+ * conductor. El borne de arriba es '1' y el de abajo '2'.
+ */
+function fuseBody(_w: number, h: number, n = 1): Shape[] {
+  const bottom = gridBottom(h);
+  const half = 1.25;
+  const top = 2.3;
+  const bot = 9.3;
+  const out: Shape[] = [];
+  for (const x of poleColumns(n)) {
+    out.push({ d: line(x, 0, x, top) });
+    out.push({ d: rect(x - half, top, half * 2, bot - top) });
+    out.push({ d: line(x, bot, x, bottom) });
+  }
+  return out;
 }
 
 function testButton(w: number, h: number): Shape[] {

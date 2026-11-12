@@ -1,10 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="63" height="54" viewBox="-1.5 -1.5 21 18" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" width="67" height="54" viewBox="-2.75 -1.5 22.25 18" role="img">
 <title>Fusible III</title>
-<rect x="-1.5" y="-1.5" width="21" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
-<path d="M0 7.5L4.32 7.5" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M4.32 5.55H13.68V9.45H4.32Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M4.32 7.5L13.68 7.5" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M13.68 7.5L18 7.5" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="-2.75" y="-1.5" width="22.25" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M0 0L0 2.3" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-1.25 2.3H1.25V9.3H-1.25Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 9.3L0 12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6 0L6 2.3" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.75 2.3H7.25V9.3H4.75Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6 9.3L6 12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 0L12 2.3" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M10.75 2.3H13.25V9.3H10.75Z" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12 9.3L12 12" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <circle cx="0" cy="0" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
 <circle cx="0" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
 <circle cx="6" cy="0" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>

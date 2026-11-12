@@ -507,6 +507,82 @@ test('el disyuntor 6009 dibuja un cuerpo de dos filas: gancho arriba, triángulo
   }
 });
 
+// --- pulsadores (T10) -------------------------------------------------------
+
+test('el pulsador NA dibuja la cuchilla que cuelga del borne de abajo', () => {
+  // `components_png/pulsador no.png`: la conductora superior termina en +3 y
+  // la cuchilla va de (−3, +3) a (0, +9), con la punta al mismo nivel que el
+  // final de la conductora superior.
+  const sym = FAMILY_SYMBOLS.find((s) => s.code === 8000);
+  assert.ok(sym?.size, 'el 8000 debe declarar caja');
+  const { w, h } = sym.size;
+  const shapes = shapesOf(8000, w, h);
+  const ds = shapes.map((s) => s.d);
+  assert.ok(ds.includes('M0 0L0 3'), 'la conductora superior termina en +3');
+  assert.ok(ds.includes('M-3 3L0 9'), 'falta la cuchilla medida');
+  assert.ok(ds.includes('M0 9L0 12'), 'la conductora inferior arranca en +9');
+
+  const blade = shapes.find((s) => s.blade);
+  assert.ok(blade, 'la cuchilla debe llevar metadata para girar al cerrar');
+  assert.deepEqual(blade.blade, { px: 0, py: 9, deg: 26.57 });
+});
+
+// --- el unipolar y la grilla de los polos ------------------------------------
+
+test('el resistor conserva sus bornes en la columna central', () => {
+  // El resistor dibuja un cuerpo horizontal: no va por la grilla de los polos.
+  // No hay referencia de CADeSimu para él, así que no se mueve.
+  const r1050 = symbolFor(1050);
+  assert.ok(r1050?.size);
+  assert.deepEqual(r1050.pins.map((p) => Math.round(p.nx * r1050.size!.w)), [9, 9]);
+
+  const r1051 = symbolFor(1051);
+  assert.ok(r1051?.size);
+  assert.deepEqual(r1051.pins.map((p) => Math.round(p.nx * r1051.size!.w)), [0, 0, 6, 6, 12, 12]);
+});
+
+test('los unipolares de potencia se anclan al origen, como la familia de protección', () => {
+  // Misma convención: en el archivo el primer borne es el origen del registro.
+  for (const code of [2006, 2007]) {
+    const sym = symbolFor(code);
+    assert.ok(sym?.size, `${code} debe declarar caja`);
+    const { w, h } = sym.size;
+    for (const p of sym.pins) {
+      assert.equal(p.nx * w, 0, `${code}: el borne ${p.name} tiene que caer en x=0`);
+    }
+    assert.ok(
+      sym.shapes(w, h).some((s) => s.d.startsWith('M0 0L0 ')),
+      `${code}: el polo tiene que dibujarse en el origen`,
+    );
+  }
+});
+
+test('los multipolares de la familia siguen en la grilla de 6 unidades', () => {
+  for (const [code, cols] of [
+    [5001, [0, 6]],
+    [5002, [0, 6]],
+    [5003, [0, 6, 12]],
+    [6001, [0, 6]],
+    [6002, [0, 6]],
+    [6003, [0, 6, 12]],
+    [6004, [0, 6, 12]],
+  ] as const) {
+    const sym = symbolFor(code);
+    assert.ok(sym?.size, `${code} debe declarar caja`);
+    const { w, h } = sym.size;
+    const top = sym.pins.filter((p) => p.side === 'top').map((p) => Math.round(p.nx * w));
+    const bottom = sym.pins.filter((p) => p.side === 'bottom').map((p) => Math.round(p.nx * w));
+    assert.deepEqual(top, cols, `${code}: los bornes de arriba no están en la grilla`);
+    assert.deepEqual(bottom, cols, `${code}: los bornes de abajo no están en la grilla`);
+    for (const x of cols) {
+      assert.ok(
+        sym.shapes(w, h).some((s) => s.d.startsWith(`M${x} 0L${x} `)),
+        `${code}: falta el polo ${x}`,
+      );
+    }
+  }
+});
+
 // --- motor en una sola fila de bornes (S3, S4) -------------------------------
 
 test('el motor 1000 toma U1 V1 W1 PE en una sola fila sobre el borde superior', () => {

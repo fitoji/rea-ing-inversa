@@ -44,9 +44,10 @@ test('el automático IN tiene dos polos sobre los bornes y el disparo sólo en e
   const ink = shapesBounds(sym.shapes(12, 15));
   // La cuchilla sale 3 unidades a la izquierda del polo; el segundo polo está
   // 6 unidades a la derecha. El cuadrado de disparo (media diagonal 1,35,
-  // inclinado 18°) llega a 4,24 a la izquierda.
+  // inclinado 18°) llega a 4,24 a la izquierda. El guion del segundo polo va
+  // hacia el centro, así que no sale por la derecha del segundo polo.
   assert.ok(near(ink.minX, -4.24), `el automático llega a ${ink.minX}`);
-  assert.ok(near(ink.maxX, 6.3), `el automático llega a ${ink.maxX}`);
+  assert.ok(near(ink.maxX, 6), `el automático llega a ${ink.maxX}`);
   assert.ok(near(ink.minY, 0) && near(ink.maxY, 12), `el automático mide ${ink.minY}..${ink.maxY}`);
 
   const filled = sym.shapes(12, 15).filter((s) => s.fill);
