@@ -7,6 +7,7 @@ import { parse } from '../src/format/cade.ts';
 import { buildProject } from '../src/model/project.ts';
 import { circuitFrom } from '../src/sim/circuit.ts';
 import { simulate } from '../src/sim/solver.ts';
+import { changeoverPositions, linkedProtection } from '../src/sim/apparatus.ts';
 
 /**
  * Simulación del PR1 contra las capturas de CADeSimu.
@@ -143,4 +144,54 @@ test('cerrar el automático deja pasar la fase', () => {
   assert.ok(built);
   const state = simulate(built.circuit, { changeovers: new Map([[GRUPO_Q1, 1]]) });
   assert.ok(state.loads.size > 0, 'con el automático cerrado se enciende H1');
+});
+
+test('el conmutador del mando es el contacto auxiliar del disyuntor de potencia', () => {
+  // Mismo designador: son el mismo aparato. Por eso el conmutador no se
+  // acciona por separado: su posición la marca el disyuntor.
+  const conmutador = PR1.records.find((r) => r.code === 8018)!;
+  const disyuntor = PR1.records.find((r) => r.code === 6009)!;
+  assert.equal(conmutador.designator, disyuntor.designator, 'comparten designador');
+  assert.equal(linkedProtection(PR1.records, conmutador)?.id, disyuntor.id);
+});
+
+test('la posición del conmutador la marca el disyuntor', () => {
+  const conmutador = PR1.records.find((r) => r.code === 8018)!;
+  const disyuntor = PR1.records.find((r) => r.code === 6009)!;
+  const posiciones = (cerrado: boolean): Record<string, number> =>
+    changeoverPositions(PR1.records, { [disyuntor.id]: cerrado ? 'closed' : 'open' }, {});
+  assert.equal(
+    posiciones(true)[String(conmutador.id)],
+    1,
+    'con el disyuntor cerrado el conmutador queda en la posición de maniobra',
+  );
+  assert.equal(
+    posiciones(false)[String(conmutador.id)],
+    0,
+    'con el disyuntor abierto, en la de reposo',
+  );
+});
+
+test('el estado de la captura 02 sale del disyuntor, sin tocar el conmutador', () => {
+  // El usuario activa el Q1 de potencia y el F0: el conmutador del mando se
+  // permuta solo y se enciende H1 (nada más).
+  const disyuntor = PR1.records.find((r) => r.code === 6009)!;
+  const posiciones = changeoverPositions(PR1.records, { [disyuntor.id]: 'closed' }, {});
+  const { encendidas } = simular({
+    cerradas: [automato.id, disyuntor.id],
+    conmutadores: posiciones,
+    pulsados: [],
+  });
+  assert.deepEqual(encendidas, ['H1']);
+});
+
+test('al abrir el disyuntor de potencia se enciende H2 y se apaga H1', () => {
+  const disyuntor = PR1.records.find((r) => r.code === 6009)!;
+  const posiciones = changeoverPositions(PR1.records, { [disyuntor.id]: 'open' }, {});
+  const { encendidas } = simular({
+    cerradas: [automato.id, disyuntor.id],
+    conmutadores: posiciones,
+    pulsados: [],
+  });
+  assert.deepEqual(encendidas, ['H2'], 'la salida 96 alimenta la red de H2');
 });

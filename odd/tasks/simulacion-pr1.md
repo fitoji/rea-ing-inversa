@@ -41,6 +41,12 @@ F0 bloquea la fase hasta que el usuario la cierra. En la app arrancan conduciend
 abrir o cerrar una protección), como en CADeSimu. Hoy sólo se pueden pulsar los pulsadores y
 abrir las protecciones.
 
+**S8.** El `8018` (Q1 del mando) y el `6009` (Q1 de potencia) comparten designador: son **el
+mismo aparato**. El conmutador es su contacto auxiliar, así que **no se acciona por
+separado**: su posición la marca el disyuntor. Con el disyuntor cerrado el conmutador queda en
+la posición de maniobra (la salida 98, la que alimenta la red de la bobina) y con el abierto en
+la de reposo (la salida 96).
+
 ## Tasks
 
 | ID | Specs | Ruta | Estado | Commit |
@@ -50,6 +56,7 @@ abrir las protecciones.
 | T15 | S7 | inline | hecho | ídem |
 | T16 | S1-S3 | inline | hecho | ídem |
 | T17 | S5 (dibujo) | inline | hecho | commit de la tanda |
+| T18 | S8 | inline | hecho | ídem |
 
 ## Log
 
@@ -119,3 +126,17 @@ está "cerrado" cuando está en la posición de reposo.
 **L14. Verificación.** 297/297 tests (4 nuevos en `app/test/conmutador.test.ts`), `tsc` limpio,
 build OK, catálogo regenerado. La miniatura del 8018 coincide con la captura: los dos contactos
 verticales, la lambda y el acoplamiento punteado con el corchete.
+
+**L15. El Q1 del mando es el contacto auxiliar del Q1 de potencia (S8).** El usuario: "revisa
+que Q1 están conectados, si activo el disyuntor Q1 en la parte de potencia, se tiene que
+permutar los contactos Q1 en la parte de mando". Verificado en el archivo: el `8018` y el `6009`
+comparten designador "Q1". Nuevo módulo `app/src/sim/apparatus.ts`: `linkedProtection` busca la
+protección del mismo designador y `changeoverPositions` deriva la posición del conmutador del
+estado de esa protección (cerrado → maniobra, abierto → reposo). El clic sobre el conmutador
+acciona el aparato, no el conmutador suelto.
+
+**L16. Con esto las capturas se reproducen actuando la parte de potencia.** El usuario activa
+el Q1 de la derecha y el F0: el conmutador del mando se permuta solo, se enciende H1 (y el
+motor queda alimentado, con sus conductores en rojo ✓ como en la captura 02). Al volver a abrir
+el disyuntor, el conmutador vuelve a su posición de reposo y se enciende H2 ✓ (captura 04).
+Verificado en `app/test/simulacion-pr1.test.ts` (301/301 tests).

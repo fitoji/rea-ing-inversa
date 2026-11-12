@@ -46,6 +46,7 @@ import {
 import { buildNetwork, validate } from '../editor/network.ts';
 import { roundTrips } from '../model/project.ts';
 import { isChangeover, isPushable, startsOpen } from '../model/component-spec.ts';
+import { changeoverPositions, linkedProtection } from '../sim/apparatus.ts';
 import type { Point } from '../editor/pins.ts';
 import { Canvas } from './Canvas.tsx';
 import { Palette } from './Palette.tsx';
@@ -248,6 +249,16 @@ export function App(): JSX.Element {
     return circuitFrom(project.records, { openRecords: open });
   }, [project, protectionStates]);
 
+  /**
+   * Posición de cada conmutador. Un conmutador que comparte designador con una
+   * protección es su contacto auxiliar: no se acciona por separado, sigue al
+   * disyuntor (`sim/apparatus.ts`).
+   */
+  const positions = useMemo(() => {
+    if (!project) return {};
+    return changeoverPositions(project.records, protectionStates, changeovers);
+  }, [project, protectionStates, changeovers]);
+
   const pressed = useMemo(() => {
     const out = new Set<string>();
     if (!built) return out;
@@ -292,7 +303,7 @@ export function App(): JSX.Element {
       initialEnergized: lastEnergized.current,
       timers,
       latched: lastEnergized.current,
-      changeovers: new Map(Object.entries(changeovers)),
+      changeovers: new Map(Object.entries(positions)),
     });
     lastEnergized.current = state.energized;
     return state;
@@ -331,7 +342,7 @@ export function App(): JSX.Element {
       const recordId = Number(id.split(':')[0]);
       const rec = byId.get(recordId);
       if (rec && isChangeover(rec.code)) {
-        if ((changeovers[String(recordId)] ?? 0) === 0) out.add(recordId);
+        if ((positions[String(recordId)] ?? 0) === 0) out.add(recordId);
         continue;
       }
       out.add(recordId);
@@ -348,7 +359,7 @@ export function App(): JSX.Element {
       }
     }
     return out;
-  }, [simulation, project, changeovers]);
+  }, [simulation, project, positions]);
 
   /**
    * Tramos con tensión y sentido de la corriente: lazo completo desde la fase,
@@ -416,7 +427,19 @@ export function App(): JSX.Element {
         return;
       }
       if (isChangeover(code)) {
-        // Conmutador de dos posiciones: el clic lo pasa de una salida a la otra.
+        const rec = projectOf(state!).records.find((r) => r.id === id);
+        const protection = rec ? linkedProtection(projectOf(state!).records, rec) : undefined;
+        if (protection) {
+          // Es el contacto auxiliar de un disyuntor: el clic acciona el aparato.
+          const current = protectionStateOf(protection.code, protectionStates[protection.id]);
+          const next = current === 'closed' ? 'open' : 'closed';
+          setProtectionStates((prev) => ({ ...prev, [protection.id]: next }));
+          setTrippedProtections((prev) =>
+            next === 'open' && current === 'closed' ? [...new Set([...prev, protection.id])] : prev,
+          );
+          return;
+        }
+        // Conmutador suelto: el clic lo pasa de una salida a la otra.
         setChangeovers((prev) => ({ ...prev, [String(id)]: prev[String(id)] === 1 ? 0 : 1 }));
         return;
       }
