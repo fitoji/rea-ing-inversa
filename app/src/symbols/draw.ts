@@ -202,6 +202,52 @@ export function verticalPole(x: number, h: number): Shape[] {
   ];
 }
 
+/**
+ * Cuchilla de un conmutador vertical (el 8018).
+ *
+ * El pivote está en el borne de abajo (la fila inferior de la grilla, a
+ * `h - 3`) y la cuchilla se apoya girando. `side` es -1 para la que abre hacia
+ * la izquierda y +1 para la que abre hacia la derecha: las dos se dibujan
+ * abiertas y en direcciones opuestas, formando la lambda del dibujo de
+ * CADeSimu, y sólo una puede apoyarse.
+ *
+ * El giro lleva signo contrario al lado porque el lienzo rota la hoja cuando el
+ * contacto está cerrado (`deg > 0`): con la hoja de 95-96 abierta hacia la
+ * izquierda el giro la apoya, y con la de 97-98 abierta hacia la derecha hace
+ * falta el giro contrario.
+ */
+export function changeoverPole(x: number, h: number, side: number): Shape[] {
+  const pivotY = h - BOTTOM_INSET;
+  const reach = 5.5;
+  const rad = (BLADE_DEG * Math.PI) / 180;
+  const tipX = x + side * reach * Math.sin(rad);
+  const tipY = pivotY - reach * Math.cos(rad);
+  return [
+    // Contacto fijo: el tramo que baja del borne de arriba.
+    { d: line(x, 0, x, pivotY - reach) },
+    // La cuchilla, con su pivote en el borne de abajo.
+    {
+      d: line(x, pivotY, tipX, tipY),
+      thin: true,
+      blade: { px: x, py: pivotY, deg: -side * BLADE_DEG },
+    },
+  ];
+}
+
+/**
+ * Acoplamiento mecánico de un conmutador: la línea punteada que une las dos
+ * cuchillas y el corchete de la derecha, como los dibuja CADeSimu.
+ */
+export function mechanicalLink(w: number, h: number): Shape[] {
+  const y = h * 0.62;
+  return [
+    { d: line(w * 0.06, y, w * 0.94, y), thin: true, dashed: true },
+    { d: line(w * 0.94, y - 1.6, w * 1.06, y - 1.6), thin: true },
+    { d: line(w * 1.06, y - 1.6, w * 1.06, y + 1.6), thin: true },
+    { d: line(w * 1.06, y + 1.6, w * 0.94, y + 1.6), thin: true },
+  ];
+}
+
 /** Todos los polos de un aparato, sobre las columnas de la grilla. */
 export function verticalPoles(w: number, h: number, n = 3): Shape[] {
   return poleColumns(n, w).flatMap((x) => verticalPole(x, h));

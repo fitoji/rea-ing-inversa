@@ -318,11 +318,24 @@ export function App(): JSX.Element {
    * no está entre ellos: su estado lo manda el aparato del mismo designador.
    * Por eso además se miran los contactos NA (7000/2001) de un aparato
    * energizado y se abren los NC (7001) del mismo aparato.
+   *
+   * El conmutador (8018) es el caso aparte: de sus dos salidas sólo una
+   * conduce, y "apoyada" es la de la posición de reposo. El lienzo rota las dos
+   * cuchillas al revés, así que hay que decirle cuál está apoyada.
    */
   const closedContacts = useMemo(() => {
     const out = new Set<number>();
     if (!simulation || !project) return out;
-    for (const id of simulation.closed) out.add(Number(id.split(':')[0]));
+    const byId = new Map(project.records.map((r) => [r.id, r]));
+    for (const id of simulation.closed) {
+      const recordId = Number(id.split(':')[0]);
+      const rec = byId.get(recordId);
+      if (rec && isChangeover(rec.code)) {
+        if ((changeovers[String(recordId)] ?? 0) === 0) out.add(recordId);
+        continue;
+      }
+      out.add(recordId);
+    }
     for (const rec of project.records) {
       if (rec.kind !== 'component') continue;
       if (rec.code !== 7000 && rec.code !== 7001 && rec.code !== 2001) continue;
@@ -335,7 +348,7 @@ export function App(): JSX.Element {
       }
     }
     return out;
-  }, [simulation, project]);
+  }, [simulation, project, changeovers]);
 
   /**
    * Tramos con tensión y sentido de la corriente: lazo completo desde la fase,

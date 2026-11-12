@@ -98,7 +98,7 @@ export function SymbolGlyph({
         <path
           key={`s${i}`}
           d={s.d}
-          className={[s.fill ? 'fill' : '', s.thin ? 'thin' : '', s.lamp ? 'lamp' : ''].filter(Boolean).join(' ') || undefined}
+          className={[s.fill ? 'fill' : '', s.thin ? 'thin' : '', s.dashed ? 'dashed' : '', s.lamp ? 'lamp' : ''].filter(Boolean).join(' ') || undefined}
           style={s.blade ? bladeStyle(s.d, s.blade, closed) : undefined}
         />
       ))}

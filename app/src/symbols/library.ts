@@ -26,7 +26,20 @@ export type SymbolGroup =
   | 'carga'
   | 'otro';
 
-import { cadesimuLamp, circle, contact, left, line, pinsBoth, rect, right, round, threePole } from './draw.ts';
+import {
+  cadesimuLamp,
+  changeoverPole,
+  circle,
+  contact,
+  left,
+  line,
+  mechanicalLink,
+  pinsBoth,
+  rect,
+  right,
+  round,
+  threePole,
+} from './draw.ts';
 import { FAMILY_SYMBOLS, LINE_SYMBOLS } from './families.ts';
 import { DXF_SYMBOLS } from './dxf.ts';
 import { getPack } from './pack.ts';
@@ -46,6 +59,8 @@ export interface Shape {
   fill?: boolean;
   /** trazo fino para detalles (ejes, marcas) */
   thin?: boolean;
+  /** trazo punteado: el acoplamiento mecánico entre dos contactos */
+  dashed?: boolean;
   /**
    * Vidrio de una lámpara: se pinta con el color guardado en el archivo cuando
    * el registro lo trae. Sin color queda con la tinta normal del dibujo.
@@ -380,13 +395,36 @@ const thermalContact: SymbolDef = {
   },
 };
 
-const auxNC2: SymbolDef = {
+/**
+ * Conmutador de dos posiciones (el 8018).
+ *
+ * En CADeSimu el 8018 son **dos contactos verticales** (95-96 y 97-98) con
+ * acoplamiento mecánico: la línea punteada que los une y el corchete de la
+ * derecha. La captura del PR1
+ * (`app/test_simu/PR1_Rodolfo_Giusti_03_simu_play_02.png`) lo muestra con la
+ * lambda de las dos cuchillas abiertas; en `..._play_04.png` la de 95-96 está
+ * apoyada y la de 97-98 abierta.
+ *
+ * Las dos cuchillas se dibujan abiertas y en direcciones opuestas: la lambda.
+ * Al mover el conmutador, una se apoya y la otra se abre —nunca las dos.
+ */
+const changeover: SymbolDef = {
   code: 8018,
-  name: 'Contacto auxiliar NC doble',
+  name: 'Conmutador de dos posiciones',
   group: 'mando',
-  pins: [left(0.3, '95'), left(0.7, '97'), right(0.3, '96'), right(0.7, '98')],
+  pins: [
+    { name: '95', nx: 0, ny: 0, side: 'top' },
+    { name: '97', nx: 0.6, ny: 0, side: 'top' },
+    { name: '96', nx: 0, ny: 12 / 15, side: 'bottom' },
+    { name: '98', nx: 0.6, ny: 12 / 15, side: 'bottom' },
+  ],
+  size: { w: 15, h: 15 },
   shapes(w, h) {
-    return [...contact(w, h * 0.3, true), ...contact(w, h * 0.7, true)];
+    return [
+      ...changeoverPole(0, h, -1),
+      ...changeoverPole(w * 0.6, h, 1),
+      ...mechanicalLink(w, h),
+    ];
   },
 };
 
@@ -715,7 +753,7 @@ const ALL: SymbolDef[] = [
   selectorNC,
   lamp,
   thermalContact,
-  auxNC2,
+  changeover,
   electrovalve,
   motorSingle,
   motorDahlander,

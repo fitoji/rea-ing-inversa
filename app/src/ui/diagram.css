@@ -48,6 +48,12 @@
   stroke: var(--ink-soft);
 }
 
+/* Acoplamiento mecánico del conmutador: la línea punteada que une sus dos
+   cuchillas, como la dibuja CADeSimu. */
+.sym path.dashed {
+  stroke-dasharray: 0.9 0.9;
+}
+
 /*
  * Señalización óptica con color guardado (9008/9009). El índice del archivo
  * entra como `data-lamp` y el tema resuelve el tono; sin dato, el vidrio queda

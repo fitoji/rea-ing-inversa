@@ -1,16 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="63" height="63" viewBox="-1.5 -1.5 21 21" role="img">
-<title>Contacto auxiliar NC doble</title>
-<rect x="-1.5" y="-1.5" width="21" height="21" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
-<path d="M0 5.4L6.12 5.4" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M11.88 5.4L18 5.4" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M6.12 2.52L11.88 5.4" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M11.88 3.1L11.88 7.7" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M0 12.6L6.12 12.6" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M11.88 12.6L18 12.6" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M6.12 9.72L11.88 12.6" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M11.88 10.3L11.88 14.9" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="0" cy="5.4" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<circle cx="0" cy="12.6" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<circle cx="18" cy="5.4" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
-<circle cx="18" cy="12.6" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="63" height="54" viewBox="-3.56 -1.5 20.96 18" role="img">
+<title>Conmutador de dos posiciones</title>
+<rect x="-3.56" y="-1.5" width="20.96" height="18" rx="1.2" fill="#f6f8fb" stroke="#d7dee8" stroke-width="0.3"/>
+<path d="M0 0L0 6.5" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0 12L-2.06 6.9" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M9 0L9 6.5" stroke="#3d4a5c" stroke-width="0.38" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M9 12L11.06 6.9" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0.9 9.3L14.1 9.3" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-dasharray="0.9 0.9" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M14.1 7.7L15.9 7.7" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.9 7.7L15.9 10.9" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.9 10.9L14.1 10.9" stroke="#6b7789" stroke-width="0.26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="0" cy="0" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="9" cy="0" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="0" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
+<circle cx="9" cy="12" r="1.4" fill="#ffffff" stroke="#7d8b9c" stroke-width="0.42"/>
 </svg>

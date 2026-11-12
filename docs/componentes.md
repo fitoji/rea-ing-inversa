@@ -11,7 +11,7 @@ Catálogo de componentes eléctricos que ofrece la paleta del editor: cómo se d
 
 Totales: **270 códigos** en el catálogo generado, **238 componentes dibujados**, **46 códigos del catálogo caen al fallback** (un rectángulo con el código adentro).
 
-Hay **3 componentes dibujados que no figuran en el catálogo**: `8016` (Lámpara de señalización), `8017` (Contacto del térmico), `8018` (Contacto auxiliar NC doble). No salen del menú del CAD pero aparecen en archivos reales, así que su plantilla se generó desde los fixtures y el dibujo se escribió a mano. Por eso no tienen designador de catálogo.
+Hay **3 componentes dibujados que no figuran en el catálogo**: `8016` (Lámpara de señalización), `8017` (Contacto del térmico), `8018` (Conmutador de dos posiciones). No salen del menú del CAD pero aparecen en archivos reales, así que su plantilla se generó desde los fixtures y el dibujo se escribió a mano. Por eso no tienen designador de catálogo.
 
 El designador de la tabla es el prefijo con el que el CAD nombra el componente nuevo (`-M`, `-Q`…); `—` significa que el catálogo no lo define.
 
@@ -149,7 +149,7 @@ De los 270 códigos, **125 no traen designador** en el catálogo: el menú del C
 | ![Contacto final de carrera NC](img/componentes/8013.svg) | `8013` | Contacto final de carrera NC | `-S` | 11 · 12 |
 | ![Lámpara de señalización](img/componentes/8016.svg) | `8016` | Lámpara de señalización | — | 97 · 98 |
 | ![Contacto del térmico](img/componentes/8017.svg) | `8017` | Contacto del térmico | — | 95 · 96 |
-| ![Contacto auxiliar NC doble](img/componentes/8018.svg) | `8018` | Contacto auxiliar NC doble | — | 95 · 97 · 96 · 98 |
+| ![Conmutador de dos posiciones](img/componentes/8018.svg) | `8018` | Conmutador de dos posiciones | — | 95 · 97 · 96 · 98 |
 | ![Bobina monoestable](img/componentes/9000.svg) | `9000` | Bobina monoestable | `-EV` | A1 · A2 |
 | ![Bobina monoestable](img/componentes/9000.svg) | `9000` | Bobina monoestable | `-EV` | A1 · A2 |
 | ![Bobina biestable](img/componentes/9001.svg) | `9001` | Bobina biestable | `-EV` | A1 · A2 |

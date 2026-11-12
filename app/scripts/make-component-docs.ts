@@ -90,7 +90,8 @@ const pathOf = (shape: Shape): string => {
   const stroke = shape.thin ? INK_SOFT : INK;
   const width = shape.thin ? '0.26' : '0.38';
   const fill = shape.fill ? `fill="${INK}"` : 'fill="none"';
-  return `<path d="${shape.d}" stroke="${stroke}" stroke-width="${width}" ${fill} stroke-linecap="round" stroke-linejoin="round"/>`;
+  const dash = shape.dashed ? ' stroke-dasharray="0.9 0.9"' : '';
+  return `<path d="${shape.d}" stroke="${stroke}" stroke-width="${width}" ${fill}${dash} stroke-linecap="round" stroke-linejoin="round"/>`;
 };
 
 const textOf = (label: Label): string =>

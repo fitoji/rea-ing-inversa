@@ -49,7 +49,7 @@ abrir las protecciones.
 | T14 | S6 | inline | hecho | ídem |
 | T15 | S7 | inline | hecho | ídem |
 | T16 | S1-S3 | inline | hecho | ídem |
-| T17 | S5 (dibujo) | inline | pendiente | — |
+| T17 | S5 (dibujo) | inline | hecho | commit de la tanda |
 
 ## Log
 
@@ -103,7 +103,19 @@ encendido; con el automático cerrado y el conmutador en la otra posición se en
 con S1 o S2 pulsada, H1 y H3 (y la bobina de K1M); con el conmutador en la posición de reposo,
 sólo H2.
 
-**L12. Lo que queda (T17).** El **dibujo** del `8018` sigue siendo el de dos contactos NC
-independientes (`library.ts:auxNC2`), no el conmutador de CADeSimu (el común arriba con la
-cuchilla colgando hacia una de las dos salidas). El modelo eléctrico ya es el correcto; falta
-el glifo y la animación de la cuchilla al cambiar de posición.
+**L12. El dibujo del `8018` (T17).** La captura del PR1 muestra que no son dos contactos
+horizontales: son **dos contactos verticales** (95-96 y 97-98) con las cuchillas abiertas en
+direcciones opuestas —la lambda—, un **acoplamiento mecánico punteado** entre ellas y el
+corchete de la derecha. El símbolo nuevo (`library.ts:changeover`) reproduce esa estructura: los
+bornes en la grilla (0 y 12 de alto, cada 9 de ancho), las dos cuchillas con giros de signo
+contrario y el punteado (`Shape.dashed` + `.sym path.dashed`).
+
+**L13. La animación.** El lienzo rota la hoja cuando el contacto está cerrado, y la regla de
+signo (`deg > 0` rota al cerrar) hace que con el conmutador en la posición de reposo se apoye la
+cuchilla de 95-96 y se abra la de 97-98, y al revés en la otra posición. Como el solver sólo
+cierra una de las dos salidas, `closedContacts` tiene que distinguir la posición: un conmutador
+está "cerrado" cuando está en la posición de reposo.
+
+**L14. Verificación.** 297/297 tests (4 nuevos en `app/test/conmutador.test.ts`), `tsc` limpio,
+build OK, catálogo regenerado. La miniatura del 8018 coincide con la captura: los dos contactos
+verticales, la lambda y el acoplamiento punteado con el corchete.
