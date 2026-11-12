@@ -155,6 +155,42 @@ test('la lámpara (9008) sigue anclada y centrada como antes', () => {
   assert.ok(near(ink.minY, 0) && near(ink.maxY, 12), `la lámpara mide ${ink.minY}..${ink.maxY}`);
 });
 
+test('el motor (1000) va anclado al origen, con los bornes sobre el registro y el cuerpo centrado', () => {
+  const sym = resolveSymbol(1000, ['U1', 'V1', 'W1', 'PE']);
+  assert.equal(sym.anchor, 'origin', 'el 1000 migró a anclaje al origen');
+  assert.deepEqual(sym.originPins, [
+    { name: 'U1', x: 0, y: 0 },
+    { name: 'V1', x: 6, y: 0 },
+    { name: 'W1', x: 12, y: 0 },
+    { name: 'PE', x: 18, y: 0 },
+  ]);
+
+  // Medido sobre docs/cadesimu-svg/reference/PR1_Rodolfo_Giusti_03.png, M1 en
+  // (183,168): los cables terminan en la fila del registro (rel y=0) y la
+  // tinta del símbolo empieza 6 unidades arriba (162) tapando el cable,
+  // igual que en CADe. Círculo r=9 centrado en (189,174): rel (6,6).
+  // El sobreenvolvente de arcos de shapesBounds es conservador: para el arco
+  // del PE cuenta los dos centros candidatos (±9,75 de la cuerda), así que la
+  // caja llega a 25,3 aunque la tinta real (el gancho) termina en x=18.
+  const shapes = sym.shapes(24, 24);
+  const ink = shapesBounds(shapes);
+  assert.ok(near(ink.minX, -3) && near(ink.maxX, 25.3), `el motor mide ${ink.minX}..${ink.maxX} de ancho`);
+  assert.ok(near(ink.minY, -6) && near(ink.maxY, 15), `el motor mide ${ink.minY}..${ink.maxY} de alto`);
+
+  // Cada stub baja hasta ~0,15 del borde del círculo (el hueco visual que
+  // deja CADe): U1 -0.375, V1 -2.875 (borde el apex), W1 -0.875.
+  const ds = shapes.map((s) => s.d);
+  assert.ok(ds.includes('M0 -6L0 -0.37'), 'falta el stub de U1');
+  assert.ok(ds.includes('M6 -6L6 -2.87'), 'falta el stub de V1');
+  assert.ok(ds.includes('M12 -6L12 -0.87'), 'falta el stub de W1');
+  assert.ok(ds.includes('M18 -6L18 6'), 'el stub del PE cruza hasta la altura del centro');
+  assert.ok(ds.includes('M18 6L15.5 6'), 'falta el gancho del PE hacia el círculo');
+  // La terminal del PE es un arco concéntrico al cuerpo (r 9.75), no una
+  // marca de tierra: mide ~4u de alto pegado al borde derecho.
+  assert.ok(ds.includes('M15.55 4a9.75 9.75 0 0 1 0 4'), 'falta el arco de la terminal del PE');
+  assert.equal(shapes.some((s) => s.fill), false, 'sin rellenos');
+});
+
 test('los bornes de los símbolos anclados caen donde el archivo los conecta', () => {
   // El criterio real del anclaje: el símbolo tiene que estar sobre sus cables.
   for (const rec of project.records) {

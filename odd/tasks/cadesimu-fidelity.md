@@ -31,7 +31,7 @@ NO se integra el prototipo `docs/cadesimu-svg/src/CadeSymbol.tsx` como ruta para
   defs reales + recortes de referencia. Route: inline. (commit: e4ad856)
 - T3: Calibrar 8000/8001 (pulsadores NA/NC) contra el recorte. Route: inline. (commit: ver Log L5)
 - T4: Calibrar 9000 (bobina) y 9008 (piloto) contra el recorte. Route: inline. (commit: ver Log L6)
-- T5: Calibrar 1000 (motor trifásico) contra el recorte. Route: inline.
+- T5: Calibrar 1000 (motor trifásico) contra el recorte. Route: inline. (commit: ver Log L7)
 - T6: Tests de geometría que fijen las correcciones + suite completa verde. Route: inline.
 - T7: S5 (README del prototipo corregido). Route: inline.
 
@@ -76,3 +76,25 @@ NO se integra el prototipo `docs/cadesimu-svg/src/CadeSymbol.tsx` como ruta para
   tests de 9000 y de 9008-inalterada (S6: la lámpara ya estaba calibrada y no se toca).
   Raster: ref 143 px, overlap 126, los 17 restantes son rótulos A1/A2 overlay. Suite
   312/312 verde. Pendiente T5 (motor 1000).
+- L7 (T5): 1000 (motor trifásico) migrado a `anchor: 'origin'` con `originPins`
+  U1@(0,0), V1@(6,0), W1@(12,0), PE@(18,0) — los bornes caen sobre la fila del
+  registro (los wires del .cad terminan en y=168 = posición del registro *29 en
+  cad (183,168)) y la tinta empieza 6u arriba tapando el cable, igual que CADe.
+  Geometría medida con rowprobe/px exactos sobre M1 en (183,168): círculo r=9
+  centrado en rel (6,6) (el "+6.5" de T2 era un error de muestreo a 0,25u);
+  stubs U1→−0.375, V1→−2.875 (borde en el apex), W1→−0.875, cada uno a ~0,15u
+  del borde del círculo (hueco visual de CADe); PE: stub (18,−6)→(18,6), gancho
+  (18,6)→(15.5,6), terminal = arco concéntrico al cuerpo r=9,75 de (15.55,4) a
+  (15.55,8) — NO es una marca de tierra: el arco de tierra del def viejo se
+  eliminó, y la "barra izquierda" de los mapas es el propio borde casi
+  vertical del círculo. Labels: M en rel (6,3) tamaño 2,8 y "3~" en rel
+  (6,7.5) tamaño 2,5 (overlay rojo en CADe; la app pinta los suyos). Borrado
+  el alias duplicado `motor3f` (`{...motor, code: 1000}`) y `motor` entra al
+  `ALL` en su lugar; import `round` de library.ts quedó huérfano y se quitó.
+  Test RED→GREEN en symbol-anchors (assert del bbox: el sobreenvolvente de
+  arcos de `shapesBounds` es conservador para el arco del PE, caja hasta
+  x=25,3 con tinta real hasta x=18 — documentado en el comentario del test).
+  Raster (overlaydiff, extendido con rasterizado paramétrico de arcos `a`):
+  ref 366 px, overlap 317 (87%), stray=0 (cada px dibujado tiene tinta CADe a
+  ≤2px), refOnly=49 = rótulos de bornes + glifos M/3~ + anillo AA del trazo.
+  Suite 313/313 verde. Pendiente T6 (differential + suite) y T7 (README).

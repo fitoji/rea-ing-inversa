@@ -37,7 +37,6 @@ import {
   pinsBoth,
   rect,
   right,
-  round,
   threePole,
 } from './draw.ts';
 import { FAMILY_SYMBOLS, LINE_SYMBOLS } from './families.ts';
@@ -125,54 +124,53 @@ const genericPins = (names: string[]): SymbolPin[] =>
 // --- símbolos ---------------------------------------------------------------
 
 /**
- * Motor trifásico.
- *
- * Los cuatro bornes salen por el borde superior, en una sola fila sobre la
- * grilla de 6 (`U1` en 0, `V1` en 6, `W1` en 12, `PE` en 18 de una caja de 24).
- * Es la disposición medida en los archivos reales (`docs/cade-format.md:183-186`,
- * S3) y los nombres son el contrato que guarda el `.cade` (S4).
+ * Motor trifásico (el 1000), anclado al origen, como lo dibuja CADeSimu:
+ * los cuatro bornes caen sobre la fila del registro (`U1` en el origen,
+ * `V1`/`W1`/`PE` cada 6 unidades) y la tinta empieza 6 unidades arriba,
+ * tapando el cable igual que en CADe. Círculo de r=9 centrado en (6,6);
+ * cada stub baja hasta ~0,15 del borde del círculo (el hueco visual que
+ * deja CADe). La terminal del `PE` es un arco concéntrico al cuerpo
+ * (r=9,75), no una marca de tierra. Geometría medida sobre
+ * `docs/cadesimu-svg/reference/PR1_Rodolfo_Giusti_03.png` (M1 en (183,168)).
  */
-const MOTOR_PINS: SymbolPin[] = [
-  { name: 'U1', nx: 0, ny: 0, side: 'top' },
-  { name: 'V1', nx: 0.25, ny: 0, side: 'top' },
-  { name: 'W1', nx: 0.5, ny: 0, side: 'top' },
-  { name: 'PE', nx: 0.75, ny: 0, side: 'top' },
-];
-
 const motor: SymbolDef = {
   code: 1000,
   name: 'Motor trifásico',
   group: 'motor',
-  pins: MOTOR_PINS,
+  pins: [
+    { name: 'U1', nx: 0, ny: 0, side: 'top' },
+    { name: 'V1', nx: 0.25, ny: 0, side: 'top' },
+    { name: 'W1', nx: 0.5, ny: 0, side: 'top' },
+    { name: 'PE', nx: 0.75, ny: 0, side: 'top' },
+  ],
+  anchor: 'origin',
+  originPins: [
+    { name: 'U1', x: 0, y: 0 },
+    { name: 'V1', x: 6, y: 0 },
+    { name: 'W1', x: 12, y: 0 },
+    { name: 'PE', x: 18, y: 0 },
+  ],
   size: { w: 24, h: 24 },
-  shapes(w, h) {
-    const r = Math.min(w, h) * 0.42;
-    const cx = w * 0.375;
-    const cy = h * 0.54;
-    const out: Shape[] = [{ d: circle(cx, cy, r) }];
-    for (const p of MOTOR_PINS) {
-      const x = p.nx * w;
-      // La bajada de cada borne entra al círculo por donde la corta su columna.
-      const dy = Math.sqrt(Math.max(0, r * r - (x - cx) * (x - cx)));
-      out.push({ d: line(x, 0, x, cy - dy) });
-    }
-    // Marca de tierra del `PE`, al costado derecho del círculo.
-    const px = cx + r + Math.min(w, h) * 0.06;
-    const ear = Math.min(w, h) * 0.05;
-    out.push({ d: `M${round(px)} ${round(cy - ear)}a${round(ear)} ${round(ear)} 0 0 0 0 ${round(ear * 2)}`, thin: true });
-    return out;
-  },
-  labels(w, h) {
+  shapes() {
     return [
-      { x: w * 0.375, y: h * 0.4, value: 'M', size: Math.min(w, h) * 0.3, anchor: 'middle' },
-      { x: w * 0.375, y: h * 0.62, value: '3~', size: Math.min(w, h) * 0.2, anchor: 'middle' },
+      { d: circle(6, 6, 9) },
+      // Bajadas de los bornes, hasta ~0,15 del borde del círculo.
+      { d: line(0, -6, 0, -0.375) },
+      { d: line(6, -6, 6, -2.875) },
+      { d: line(12, -6, 12, -0.875) },
+      // El PE baja hasta la altura del centro y entra con un gancho.
+      { d: line(18, -6, 18, 6) },
+      { d: line(18, 6, 15.5, 6) },
+      // Terminal del PE: arco concéntrico al cuerpo, pegado al borde derecho.
+      { d: 'M15.55 4a9.75 9.75 0 0 1 0 4', thin: true },
     ];
   },
-};
-
-const motor3f: SymbolDef = {
-  ...motor,
-  code: 1000,
+  labels() {
+    return [
+      { x: 6, y: 3, value: 'M', size: 2.8, anchor: 'middle' },
+      { x: 6, y: 7.5, value: '3~', size: 2.5, anchor: 'middle' },
+    ];
+  },
 };
 
 const powerContact: SymbolDef = {
@@ -782,7 +780,7 @@ const switchNANC: SymbolDef = {
 };
 
 const ALL: SymbolDef[] = [
-  motor3f,
+  motor,
   powerContact,
   feedL,
   feedN,
