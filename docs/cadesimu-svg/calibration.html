@@ -29,31 +29,29 @@ origen del registro (igual que el lienzo); verde = bornes reales (extremos de ca
 anotá el resultado: es el dato que hay que corregir en los <code>SymbolDef</code>.</p>
 
 <section data-code="8000" data-label="S1">
-  <h3>8000 — S1 <small>pos (66, 123) caja 6×15</small></h3>
+  <h3>8000 — S1 <small>pos (66, 123) caja 9×15 · anclado al origen</small></h3>
   <div class="row">
     <figure><figcaption>captura (tinta real)</figcaption><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGkAAABXCAIAAACIkPywAAACMklEQVR42u3cUW6DMAyAYb/3ItHOsgeO1JyrL9ysU7cCDrAkpW6J6R9NWpmq1fpIROwa5NrMOItcXQ3BDjvsjmTX933xX1i9Ryrs3hlP8T0NnWphzRraXbpTiONLuY3hGLucXQzKKoZTd1G/scvZxRj1vFtMROyq1+wwEVmzm+ySxYtdrd2EiN3262xDlwr2d9hhRz57iFy1JmZhTrVud0g+7DzYHY8Pu13tJB0u+ExiXimZzUqMxbrPQxzmdouYxz/kojaJWZIoho8bXyYFSCMOS75FzLp8kMl9TWKWJPOef9pqAbIlu4xQDJmwre30fFcBmdvZTz1ZllgKtSqTmKV4Olu3W4lZreT32N0qZKpa9hdH3/c1dquj+J7n89CVmC/dl3zHCojnY/7nOvviNWs49WYxT4fZOqlJzDb7O3dbZZOYsfNptyOfSczvzsnasXs+5v2zS78FAuw82/nlw865nVc+7F5lR7+xg3lHT4Wx3bwMka8FYzcrkKRfnNBDVmU3L/f/zrkuYPfwmr2v1ojdw3ZD12dbnZ++erWZd9ixv8MOuw/PZ8/ks5sH97xjhx122GGHHXbYHcjuLILddjh3fNIUnC++/fPZpZ2XH9Ys1wr2KNhhhx122GGHHXbYYffJ+ewUCt/Pbj+NrFlDu1vbbMMPmm3ZLoZTCMqq5oEj2F3HNlk10aoeOIKduh8gvS8Auwo73WGsWoyxK9slTzhRnbLYFe1mD4eZDrFjf/fxdj/OOUNXCN2ODgAAAABJRU5ErkJggg==" width="252"></figure>
-    <figure><figcaption>library.ts actual</figcaption><svg viewBox="-4 -1 5 14" width="12" height="33.6" class="sym"><path d="M0 0L0 3" style="stroke-width:0.26"/>
-<path d="M-3 3L0 9" style="stroke-width:0.17"/>
-<path d="M0 9L0 12" style="stroke-width:0.26"/>
-<path d="M-1.8 5.82L-1.8 9.18" style="stroke-width:0.17"/>
-<path d="M-1.8 5.82L-0.84 5.82" style="stroke-width:0.17"/>
-<path d="M-1.8 7.5L-0.84 7.5" style="stroke-width:0.17"/>
-<path d="M-1.8 9.18L-0.84 9.18" style="stroke-width:0.17"/>
-<path d="M-0.84 7.5L-0.3 7.5" style="stroke-width:0.17"/>
-<path d="M-0.3 6.96L-0.3 8.04" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+    <figure><figcaption>library.ts actual</figcaption><svg viewBox="-7 -7 8 13.75" width="19.2" height="33" class="sym"><path d="M0 -6L0 -3.25" style="stroke-width:0.26"/>
+<path d="M0 3L0 5.75" style="stroke-width:0.26"/>
+<path d="M0 3L-3 -3" style="stroke-width:0.26"/>
+<path d="M-3 0L-1.5 0" style="stroke-width:0.17"/>
+<path d="M-6 -1.5L-5 -1.5" style="stroke-width:0.17"/>
+<path d="M-6 1.25L-5 1.25" style="stroke-width:0.17"/>
+<path d="M-6 -1.5L-6 1.25" style="stroke-width:0.17"/>
+<path d="M-6 0L-4.25 0" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
 <circle cx="0" cy="12" r="0.55" fill="#0a0"/></svg></figure>
     <figure class="ov-fig"><figcaption>superposición (símbolo azul, bornes verdes)</figcaption><div class="ov-wrap">
       <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGkAAABXCAIAAACIkPywAAACMklEQVR42u3cUW6DMAyAYb/3ItHOsgeO1JyrL9ysU7cCDrAkpW6J6R9NWpmq1fpIROwa5NrMOItcXQ3BDjvsjmTX933xX1i9Ryrs3hlP8T0NnWphzRraXbpTiONLuY3hGLucXQzKKoZTd1G/scvZxRj1vFtMROyq1+wwEVmzm+ySxYtdrd2EiN3262xDlwr2d9hhRz57iFy1JmZhTrVud0g+7DzYHY8Pu13tJB0u+ExiXimZzUqMxbrPQxzmdouYxz/kojaJWZIoho8bXyYFSCMOS75FzLp8kMl9TWKWJPOef9pqAbIlu4xQDJmwre30fFcBmdvZTz1ZllgKtSqTmKV4Olu3W4lZreT32N0qZKpa9hdH3/c1dquj+J7n89CVmC/dl3zHCojnY/7nOvviNWs49WYxT4fZOqlJzDb7O3dbZZOYsfNptyOfSczvzsnasXs+5v2zS78FAuw82/nlw865nVc+7F5lR7+xg3lHT4Wx3bwMka8FYzcrkKRfnNBDVmU3L/f/zrkuYPfwmr2v1ojdw3ZD12dbnZ++erWZd9ixv8MOuw/PZ8/ks5sH97xjhx122GGHHXbYHcjuLILddjh3fNIUnC++/fPZpZ2XH9Ys1wr2KNhhhx122GGHHXbYYffJ+ewUCt/Pbj+NrFlDu1vbbMMPmm3ZLoZTCMqq5oEj2F3HNlk10aoeOIKduh8gvS8Auwo73WGsWoyxK9slTzhRnbLYFe1mD4eZDrFjf/fxdj/OOUNXCN2ODgAAAABJRU5ErkJggg==" width="252">
       <svg class="ov" viewBox="54.5 116.125 26.25 21.75" width="252" height="208.79999999999998">
-        <g class="sym-layer"><g data-bx="66" data-by="123"><path d="M0 0L0 3" style="stroke-width:0.26"/>
-<path d="M-3 3L0 9" style="stroke-width:0.17"/>
-<path d="M0 9L0 12" style="stroke-width:0.26"/>
-<path d="M-1.8 5.82L-1.8 9.18" style="stroke-width:0.17"/>
-<path d="M-1.8 5.82L-0.84 5.82" style="stroke-width:0.17"/>
-<path d="M-1.8 7.5L-0.84 7.5" style="stroke-width:0.17"/>
-<path d="M-1.8 9.18L-0.84 9.18" style="stroke-width:0.17"/>
-<path d="M-0.84 7.5L-0.3 7.5" style="stroke-width:0.17"/>
-<path d="M-0.3 6.96L-0.3 8.04" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+        <g class="sym-layer"><g data-bx="66" data-by="123"><path d="M0 -6L0 -3.25" style="stroke-width:0.26"/>
+<path d="M0 3L0 5.75" style="stroke-width:0.26"/>
+<path d="M0 3L-3 -3" style="stroke-width:0.26"/>
+<path d="M-3 0L-1.5 0" style="stroke-width:0.17"/>
+<path d="M-6 -1.5L-5 -1.5" style="stroke-width:0.17"/>
+<path d="M-6 1.25L-5 1.25" style="stroke-width:0.17"/>
+<path d="M-6 -1.5L-6 1.25" style="stroke-width:0.17"/>
+<path d="M-6 0L-4.25 0" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
 <circle cx="0" cy="12" r="0.55" fill="#0a0"/><g class="terms"><circle cx="11.50" cy="-5.13" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="6.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="18.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="3.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="3.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="3.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="-2.13" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="-2.13" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/></g></g></g>
       </svg></div></figure>
   </div>
@@ -70,36 +68,34 @@ anotá el resultado: es el dato que hay que corregir en los <code>SymbolDef</cod
 </section>
 
 <section data-code="8001" data-label="S0">
-  <h3>8001 — S0 <small>pos (66, 99) caja 6×15</small></h3>
+  <h3>8001 — S0 <small>pos (66, 99) caja 9×15 · anclado al origen</small></h3>
   <div class="row">
     <figure><figcaption>captura (tinta real)</figcaption><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAA4CAIAAADCemklAAABRklEQVR42u2aTRKDIAyFs+ciTE/DPXoJOUxPwcab2Zlq+RE6olVI2ueqKI35TIQXkCY2x0B04F8EAABcCjCO46aJs/pQBUBuh1EESHoK5QDOKG0/NrkDWE1E5D1eNfkDWGvjR75qIoUAAADMAwBoA8BNC+V9JEWg2IEXQOXBFOBYfADQ+/Wg03O3J8CsuSPd7Yyisgz/evw+a3SixH2vvuefVivj0iucAZxRs7/hhF7ab5L2ANuTw1TMoZe/wW0xAGkwukegSlzETvtMX7LJ6tv9UfMObM+XR/vsWxcKo9DywHuOQpVmqdmd/gug3iYALpASu4xwFHOyAfbGEAC9FyYAgHWhXQDYI2sLEO/Q6LTYFQAQb4p5kqxqFLNHFrBWZyRtcBQrQ0EA5bpQCEBc70oECLWur3YxDwDg97TQIF0L4ZMzmQBPNZucCX8D+ToAAAAASUVORK5CYII=" width="153.6"></figure>
-    <figure><figcaption>library.ts actual</figcaption><svg viewBox="-5.5 -1 6.5 14" width="15.6" height="33.6" class="sym"><path d="M0 0L0 3" style="stroke-width:0.26"/>
-<path d="M-1.8 3L0 3" style="stroke-width:0.26"/>
-<path d="M-1.8 3L0 8.25" style="stroke-width:0.17"/>
-<path d="M0 8.25L0 12" style="stroke-width:0.26"/>
-<path d="M-4.5 5.82L-4.5 9.18" style="stroke-width:0.17"/>
-<path d="M-4.5 5.82L-3.54 5.82" style="stroke-width:0.17"/>
-<path d="M-4.5 7.5L-3.54 7.5" style="stroke-width:0.17"/>
-<path d="M-4.5 9.18L-3.54 9.18" style="stroke-width:0.17"/>
-<path d="M-3.54 7.5L-1.74 7.5" style="stroke-width:0.17"/>
-<path d="M-0.42 7.5L-0.3 7.5" style="stroke-width:0.17"/>
-<path d="M-0.3 6.96L-0.3 8.04" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+    <figure><figcaption>library.ts actual</figcaption><svg viewBox="-7 -7 11.25 13.75" width="27" height="33" class="sym"><path d="M0 -6L0 -2.5" style="stroke-width:0.26"/>
+<path d="M0 -2.5L3.25 -2.5" style="stroke-width:0.26"/>
+<path d="M0 3L3 -3" style="stroke-width:0.26"/>
+<path d="M0 3L0 5.75" style="stroke-width:0.26"/>
+<path d="M0 0L1.5 0" style="stroke-width:0.17"/>
+<path d="M-3 0L-1.25 0" style="stroke-width:0.17"/>
+<path d="M-6 -1.5L-5 -1.5" style="stroke-width:0.17"/>
+<path d="M-6 1.25L-5 1.25" style="stroke-width:0.17"/>
+<path d="M-6 -1.5L-6 1.25" style="stroke-width:0.17"/>
+<path d="M-6 0L-4.25 0" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
 <circle cx="0" cy="12" r="0.55" fill="#0a0"/></svg></figure>
     <figure class="ov-fig"><figcaption>superposición (símbolo azul, bornes verdes)</figcaption><div class="ov-wrap">
       <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAA4CAIAAADCemklAAABRklEQVR42u2aTRKDIAyFs+ciTE/DPXoJOUxPwcab2Zlq+RE6olVI2ueqKI35TIQXkCY2x0B04F8EAABcCjCO46aJs/pQBUBuh1EESHoK5QDOKG0/NrkDWE1E5D1eNfkDWGvjR75qIoUAAADMAwBoA8BNC+V9JEWg2IEXQOXBFOBYfADQ+/Wg03O3J8CsuSPd7Yyisgz/evw+a3SixH2vvuefVivj0iucAZxRs7/hhF7ab5L2ANuTw1TMoZe/wW0xAGkwukegSlzETvtMX7LJ6tv9UfMObM+XR/vsWxcKo9DywHuOQpVmqdmd/gug3iYALpASu4xwFHOyAfbGEAC9FyYAgHWhXQDYI2sLEO/Q6LTYFQAQb4p5kqxqFLNHFrBWZyRtcBQrQ0EA5bpQCEBc70oECLWur3YxDwDg97TQIF0L4ZMzmQBPNZucCX8D+ToAAAAASUVORK5CYII=" width="153.6">
       <svg class="ov" viewBox="54.5 92.125 16 14" width="153.6" height="134.4">
-        <g class="sym-layer"><g data-bx="66" data-by="99"><path d="M0 0L0 3" style="stroke-width:0.26"/>
-<path d="M-1.8 3L0 3" style="stroke-width:0.26"/>
-<path d="M-1.8 3L0 8.25" style="stroke-width:0.17"/>
-<path d="M0 8.25L0 12" style="stroke-width:0.26"/>
-<path d="M-4.5 5.82L-4.5 9.18" style="stroke-width:0.17"/>
-<path d="M-4.5 5.82L-3.54 5.82" style="stroke-width:0.17"/>
-<path d="M-4.5 7.5L-3.54 7.5" style="stroke-width:0.17"/>
-<path d="M-4.5 9.18L-3.54 9.18" style="stroke-width:0.17"/>
-<path d="M-3.54 7.5L-1.74 7.5" style="stroke-width:0.17"/>
-<path d="M-0.42 7.5L-0.3 7.5" style="stroke-width:0.17"/>
-<path d="M-0.3 6.96L-0.3 8.04" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
-<circle cx="0" cy="12" r="0.55" fill="#0a0"/><g class="terms"><circle cx="11.50" cy="18.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="-2.13" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="6.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/></g></g></g>
+        <g class="sym-layer"><g data-bx="66" data-by="99"><path d="M0 -6L0 -2.5" style="stroke-width:0.26"/>
+<path d="M0 -2.5L3.25 -2.5" style="stroke-width:0.26"/>
+<path d="M0 3L3 -3" style="stroke-width:0.26"/>
+<path d="M0 3L0 5.75" style="stroke-width:0.26"/>
+<path d="M0 0L1.5 0" style="stroke-width:0.17"/>
+<path d="M-3 0L-1.25 0" style="stroke-width:0.17"/>
+<path d="M-6 -1.5L-5 -1.5" style="stroke-width:0.17"/>
+<path d="M-6 1.25L-5 1.25" style="stroke-width:0.17"/>
+<path d="M-6 -1.5L-6 1.25" style="stroke-width:0.17"/>
+<path d="M-6 0L-4.25 0" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="0" cy="12" r="0.55" fill="#0a0"/><g class="terms"><circle cx="11.50" cy="18.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="-2.13" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="6.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="2.50" cy="-2.13" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="2.50" cy="3.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="2.50" cy="3.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/></g></g></g>
       </svg></div></figure>
   </div>
   <div class="controls">
@@ -144,31 +140,29 @@ anotá el resultado: es el dato que hay que corregir en los <code>SymbolDef</cod
 </section>
 
 <section data-code="8000" data-label="S2">
-  <h3>8000 — S2 <small>pos (81, 123) caja 6×15</small></h3>
+  <h3>8000 — S2 <small>pos (81, 123) caja 9×15 · anclado al origen</small></h3>
   <div class="row">
     <figure><figcaption>captura (tinta real)</figcaption><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAABXCAIAAABeNSbVAAACzklEQVR42u2dUZKDIBBE+fciU3uW/eBI4Vz+5GbZUmOcQYMag9uTNJVKtIoqm5cBoREMN2/pEoIvwYGIiZiIifg44uv1CpUnBGea/UVx8B7FbWwkPQ5Dl8ZzWMTgmo3cJEpekia26hcUMb5mLTelpCNiFiKIiB1oLlS6MUQ8NRSImstyTe1zghhO81O5k24/iDE1b7g7Y93ttvUokDSzX0zEREzEzjwKd/7DFs2BEVpbc2A7UFszEX8f4s+jTMQfhDjY9D2UXynJYNEam9aeH6d2HmLlZnSjbzUSV4V7lEtnqYc4yeMiw6F2YQrewF5qJ1F+IFasM5t/sjx6C6QQR4ua9xejADLJ3sujIDZ+qLX5kzQi0pe4jSLS1EesGwbDesVAfAHZGZQ71VFm3pz1RVOU/n+QmNYmVOaaD5VBBbRqPrwhDvfWzkDOrOfhK8a2rYE4G6dn94Shlv2E37SB12JazVPXf5jqnomSAWWXZ8iQpEsL84QL18oLdahH0aubTotW+GshWT2QdfOWRN/Y7ATK/Q/YMvP6BsQnDyi895GJmIj9UwYdQBMxvaEdmomYiP1TJmIi/gDKRPz/iLnW42AePg10ehTnNkd5JgMDMbjm5+smbuNECjZifM2ldRN9NESBRuxA8/NKd69uSRw1FJCaSw/1bzHaoRBjal5dmuIqiiE1EzFHd5/XLyZiIuZaj/p5LvQoaiduXEPEREzEREzEREzEREzEROwRsTvFLhH7Eu0VMT/1PmwoeLsjYiImYiImYiImYiImYiImYiIm4rcg5lqPg3n4NNDpUWy2zOoT2isRNGKz1dd8/y9IxP12TnqzJ4F7eYqN4oGn3VUNTXAWsI3ZYWjxrRlgDUWSpsEWPCOcL6pCRzzbXAsYsV4poZZKgCPu5Il5Kh4XsQkGu5MkLuJRnF56AIs4q27TKTBi1aLZQ+QeBfvFROwQ8R9ee0ZkJJKTsgAAAABJRU5ErkJggg==" width="283.2"></figure>
-    <figure><figcaption>library.ts actual</figcaption><svg viewBox="-4 -1 5 14" width="12" height="33.6" class="sym"><path d="M0 0L0 3" style="stroke-width:0.26"/>
-<path d="M-3 3L0 9" style="stroke-width:0.17"/>
-<path d="M0 9L0 12" style="stroke-width:0.26"/>
-<path d="M-1.8 5.82L-1.8 9.18" style="stroke-width:0.17"/>
-<path d="M-1.8 5.82L-0.84 5.82" style="stroke-width:0.17"/>
-<path d="M-1.8 7.5L-0.84 7.5" style="stroke-width:0.17"/>
-<path d="M-1.8 9.18L-0.84 9.18" style="stroke-width:0.17"/>
-<path d="M-0.84 7.5L-0.3 7.5" style="stroke-width:0.17"/>
-<path d="M-0.3 6.96L-0.3 8.04" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+    <figure><figcaption>library.ts actual</figcaption><svg viewBox="-7 -7 8 13.75" width="19.2" height="33" class="sym"><path d="M0 -6L0 -3.25" style="stroke-width:0.26"/>
+<path d="M0 3L0 5.75" style="stroke-width:0.26"/>
+<path d="M0 3L-3 -3" style="stroke-width:0.26"/>
+<path d="M-3 0L-1.5 0" style="stroke-width:0.17"/>
+<path d="M-6 -1.5L-5 -1.5" style="stroke-width:0.17"/>
+<path d="M-6 1.25L-5 1.25" style="stroke-width:0.17"/>
+<path d="M-6 -1.5L-6 1.25" style="stroke-width:0.17"/>
+<path d="M-6 0L-4.25 0" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
 <circle cx="0" cy="12" r="0.55" fill="#0a0"/></svg></figure>
     <figure class="ov-fig"><figcaption>superposición (símbolo azul, bornes verdes)</figcaption><div class="ov-wrap">
       <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAABXCAIAAABeNSbVAAACzklEQVR42u2dUZKDIBBE+fciU3uW/eBI4Vz+5GbZUmOcQYMag9uTNJVKtIoqm5cBoREMN2/pEoIvwYGIiZiIifg44uv1CpUnBGea/UVx8B7FbWwkPQ5Dl8ZzWMTgmo3cJEpekia26hcUMb5mLTelpCNiFiKIiB1oLlS6MUQ8NRSImstyTe1zghhO81O5k24/iDE1b7g7Y93ttvUokDSzX0zEREzEzjwKd/7DFs2BEVpbc2A7UFszEX8f4s+jTMQfhDjY9D2UXynJYNEam9aeH6d2HmLlZnSjbzUSV4V7lEtnqYc4yeMiw6F2YQrewF5qJ1F+IFasM5t/sjx6C6QQR4ua9xejADLJ3sujIDZ+qLX5kzQi0pe4jSLS1EesGwbDesVAfAHZGZQ71VFm3pz1RVOU/n+QmNYmVOaaD5VBBbRqPrwhDvfWzkDOrOfhK8a2rYE4G6dn94Shlv2E37SB12JazVPXf5jqnomSAWWXZ8iQpEsL84QL18oLdahH0aubTotW+GshWT2QdfOWRN/Y7ATK/Q/YMvP6BsQnDyi895GJmIj9UwYdQBMxvaEdmomYiP1TJmIi/gDKRPz/iLnW42AePg10ehTnNkd5JgMDMbjm5+smbuNECjZifM2ldRN9NESBRuxA8/NKd69uSRw1FJCaSw/1bzHaoRBjal5dmuIqiiE1EzFHd5/XLyZiIuZaj/p5LvQoaiduXEPEREzEREzEREzEREzEROwRsTvFLhH7Eu0VMT/1PmwoeLsjYiImYiImYiImYiImYiImYiIm4rcg5lqPg3n4NNDpUWy2zOoT2isRNGKz1dd8/y9IxP12TnqzJ4F7eYqN4oGn3VUNTXAWsI3ZYWjxrRlgDUWSpsEWPCOcL6pCRzzbXAsYsV4poZZKgCPu5Il5Kh4XsQkGu5MkLuJRnF56AIs4q27TKTBi1aLZQ+QeBfvFROwQ8R9ee0ZkJJKTsgAAAABJRU5ErkJggg==" width="283.2">
       <svg class="ov" viewBox="66.25 116.125 29.5 21.75" width="283.2" height="208.79999999999998">
-        <g class="sym-layer"><g data-bx="81" data-by="123"><path d="M0 0L0 3" style="stroke-width:0.26"/>
-<path d="M-3 3L0 9" style="stroke-width:0.17"/>
-<path d="M0 9L0 12" style="stroke-width:0.26"/>
-<path d="M-1.8 5.82L-1.8 9.18" style="stroke-width:0.17"/>
-<path d="M-1.8 5.82L-0.84 5.82" style="stroke-width:0.17"/>
-<path d="M-1.8 7.5L-0.84 7.5" style="stroke-width:0.17"/>
-<path d="M-1.8 9.18L-0.84 9.18" style="stroke-width:0.17"/>
-<path d="M-0.84 7.5L-0.3 7.5" style="stroke-width:0.17"/>
-<path d="M-0.3 6.96L-0.3 8.04" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+        <g class="sym-layer"><g data-bx="81" data-by="123"><path d="M0 -6L0 -3.25" style="stroke-width:0.26"/>
+<path d="M0 3L0 5.75" style="stroke-width:0.26"/>
+<path d="M0 3L-3 -3" style="stroke-width:0.26"/>
+<path d="M-3 0L-1.5 0" style="stroke-width:0.17"/>
+<path d="M-6 -1.5L-5 -1.5" style="stroke-width:0.17"/>
+<path d="M-6 1.25L-5 1.25" style="stroke-width:0.17"/>
+<path d="M-6 -1.5L-6 1.25" style="stroke-width:0.17"/>
+<path d="M-6 0L-4.25 0" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
 <circle cx="0" cy="12" r="0.55" fill="#0a0"/><g class="terms"><circle cx="14.75" cy="3.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="6.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="3.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="3.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="18.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/></g></g></g>
       </svg></div></figure>
   </div>

@@ -579,37 +579,6 @@ export function manualOperator(w: number, h: number, n: number, rows = 1): Shape
   return out;
 }
 
-/**
- * Operación de pulsador: bracket `E` con enlace mecánico hacia el polo, tal
- * como lo dibuja CADe_SIMU (`pulsador no.png` / `pulsador nc.png`). En el NA
- * el bracket va pegado al polo y el enlace es sólido; en el NC queda más lejos
- * y el enlace es discontinuo. La línea muere con un tick vertical junto a la
- * cuchilla. El bracket desborda la caja por la izquierda (S2c).
- *
- * La columna del polo está en `x = 0`: los bornes del pulsador caen sobre el
- * borde izquierdo de la caja (medido en `arranque-paro-motor-3f.cad`).
- */
-export function pushOperator(h: number, rest: 'NO' | 'NC' = 'NO'): Shape[] {
-  const cy = h / 2;
-  const xb = rest === 'NC' ? -GRID * 0.75 : -GRID * 0.3;
-  const arm = GRID * 0.16;
-  const y0 = cy - GRID * 0.28;
-  const y1 = cy + GRID * 0.28;
-  const linkEnd = -GRID * 0.05;
-  const link: Shape[] =
-    rest === 'NC'
-      ? dashed(xb + arm, cy, linkEnd, cy, GRID * 0.3, GRID * 0.22)
-      : [{ d: line(xb + arm, cy, linkEnd, cy), thin: true }];
-  return [
-    { d: line(xb, y0, xb, y1), thin: true },
-    { d: line(xb, y0, xb + arm, y0), thin: true },
-    { d: line(xb, cy, xb + arm, cy), thin: true },
-    { d: line(xb, y1, xb + arm, y1), thin: true },
-    ...link,
-    { d: line(linkEnd, cy - GRID * 0.09, linkEnd, cy + GRID * 0.09), thin: true },
-  ];
-}
-
 /** Marca de reloj para contactos y bobinas temporizadas. */
 export function clock(w: number, h: number): Shape[] {
   const r = Math.min(w, h) * 0.12;

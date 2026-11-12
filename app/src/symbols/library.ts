@@ -300,41 +300,85 @@ const auxContactNC: SymbolDef = {
   },
 };
 
+/**
+ * Giro de la paleta de los pulsadores al cambiar de estado.
+ *
+ * CADeSimu dibuja la paleta abierta a 26,57° de la vertical y cerrada a
+ * 9,46°, frenando a 1 unidad del conductor (medido sobre las capturas
+ * `app/test_simu/*_simu_play*.png`): el giro entre las dos poses es 17,1°.
+ */
+const PUSH_BLADE_DEG = 17.1;
+
+/**
+ * Pulsador NA (el 8000), vertical y anclado al origen, como lo dibuja
+ * CADeSimu: el borne 13 arriba en el origen y el 14 doce unidades abajo.
+ * La geometría está medida sobre
+ * `docs/cadesimu-svg/reference/PR1_Rodolfo_Giusti_03.png` (S1 en (66,123)).
+ */
 const pushNO: SymbolDef = {
   code: 8000,
   name: 'Contacto pulsador NA',
   group: 'mando',
   pins: [left(0.5, '13'), right(0.5, '14')],
-  shapes(w, h) {
-    const cy = h / 2;
-    const mx = w / 2;
-    const gap = Math.min(w * 0.18, 4);
+  anchor: 'origin',
+  originPins: [
+    { name: '13', x: 0, y: 0 },
+    { name: '14', x: 0, y: 12 },
+  ],
+  size: { w: 9, h: 15 },
+  shapes() {
     return [
-      { d: line(0, cy, mx - gap, cy) },
-      { d: line(mx + gap, cy, w, cy) },
-      { d: line(mx - gap, cy, mx + gap, cy - gap * 0.9), thin: true },
-      { d: line(mx, cy - gap * 0.9, mx, cy - h * 0.28), thin: true },
-      { d: line(mx - w * 0.2, cy - h * 0.28, mx + w * 0.2, cy - h * 0.28), thin: true },
+      // Conductores arriba y abajo del corte.
+      { d: line(0, -6, 0, -3.25) },
+      { d: line(0, 3, 0, 5.75) },
+      // Paleta abierta, con el pivote en el borne de abajo; el lienzo la gira
+      // al cerrar hasta frenar a 1 unidad del conductor.
+      { d: line(0, 3, -3, -3), blade: { px: 0, py: 3, deg: PUSH_BLADE_DEG } },
+      // Guion que toca la paleta en reposo y arranca 3 unidades a la izquierda.
+      { d: line(-3, 0, -1.5, 0), thin: true },
+      // Operador: corchete E con el brazo central más largo y separado.
+      { d: line(-6, -1.5, -5, -1.5), thin: true },
+      { d: line(-6, 1.25, -5, 1.25), thin: true },
+      { d: line(-6, -1.5, -6, 1.25), thin: true },
+      { d: line(-6, 0, -4.25, 0), thin: true },
     ];
   },
 };
 
+/**
+ * Pulsador NC (el 8001), espejo del NA: el borne 11 arriba y el 12 abajo.
+ * En reposo la paleta está apoyada hacia la derecha cruzando la barra del
+ * contacto fijo; al presionar gira al lado contrario del NA y abre.
+ */
 const pushNC: SymbolDef = {
   code: 8001,
   name: 'Contacto pulsador NC',
   group: 'mando',
   pins: [left(0.5, '11'), right(0.5, '12')],
-  shapes(w, h) {
-    const cy = h / 2;
-    const mx = w / 2;
-    const gap = Math.min(w * 0.18, 4);
+  anchor: 'origin',
+  originPins: [
+    { name: '11', x: 0, y: 0 },
+    { name: '12', x: 0, y: 12 },
+  ],
+  size: { w: 9, h: 15 },
+  shapes() {
     return [
-      { d: line(0, cy, mx - gap, cy) },
-      { d: line(mx + gap, cy, w, cy) },
-      { d: line(mx - gap, cy - gap, mx + gap, cy), thin: true },
-      { d: line(mx + gap, cy - gap * 0.8, mx + gap, cy + gap * 0.8), thin: true },
-      { d: line(mx, cy - gap, mx, cy - h * 0.28), thin: true },
-      { d: line(mx - w * 0.2, cy - h * 0.28, mx + w * 0.2, cy - h * 0.28), thin: true },
+      // Tramo superior hasta la barra del contacto fijo, en (0,-2.5).
+      { d: line(0, -6, 0, -2.5) },
+      { d: line(0, -2.5, 3.25, -2.5) },
+      // Paleta apoyada (estado de reposo, cerrado), pivote en el borne de
+      // abajo; el giro negativo lo aplica el lienzo cuando el contacto abre.
+      { d: line(0, 3, 3, -3), blade: { px: 0, py: 3, deg: -PUSH_BLADE_DEG } },
+      { d: line(0, 3, 0, 5.75) },
+      // Guiones a la altura del origen: el derecho toca la paleta y el
+      // izquierdo queda separado, espejo de los del NA.
+      { d: line(0, 0, 1.5, 0), thin: true },
+      { d: line(-3, 0, -1.25, 0), thin: true },
+      // Mismo operador E que el NA.
+      { d: line(-6, -1.5, -5, -1.5), thin: true },
+      { d: line(-6, 1.25, -5, 1.25), thin: true },
+      { d: line(-6, -1.5, -6, 1.25), thin: true },
+      { d: line(-6, 0, -4.25, 0), thin: true },
     ];
   },
 };

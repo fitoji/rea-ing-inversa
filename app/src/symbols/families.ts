@@ -32,7 +32,6 @@ import {
   manualOperator,
   poles,
   poleColumns,
-  pushOperator,
   rect,
   right,
   round,
@@ -176,53 +175,6 @@ const contactorPoles = (code: number, n: number): SymbolDef => {
  * `13/14` para el NA y `11/12` para el NC. En reposo se dibuja abierto y la
  * hoja gira al cerrar, igual que en la aparamenta de protección.
  */
-/**
- * Pulsador vertical con su operación `E` (`pulsador no.png` / `pulsador nc.png`).
- *
- * El `.cade` real mide 6×15 con los bornes sobre el borde izquierdo de la caja:
- * `13/14` para el NA y `11/12` para el NC. El NA usa el polo estándar; en el NC
- * la cuchilla cuelga de un tope en `L` y gira hasta vertical al cerrar.
- */
-const pushDevice = (code: number, rest: 'NO' | 'NC'): SymbolDef => {
-  const size = { w: 6, h: 15 };
-  const pins: SymbolPin[] = [
-    { name: rest === 'NC' ? '11' : '13', nx: 0, ny: 0, side: 'top' },
-    { name: rest === 'NC' ? '12' : '14', nx: 0, ny: 12 / 15, side: 'bottom' },
-  ];
-  const shapes = (_w: number, h: number): Shape[] => {
-    if (rest === 'NO') {
-      // `pulsador no.png`: la conductora superior termina en +3 y la cuchilla
-      // cuelga del borne de abajo: va de (−3, +3) a (0, +9), con el hueco de
-      // contacto abierto entre la punta y la conductora superior. Es la misma
-      // cuchilla del automático.
-      const tipX = -3;
-      const tipY = 3;
-      const pivotY = 9;
-      const deg = round((Math.atan2(-tipX, pivotY - tipY) * 180) / Math.PI);
-      return [
-        { d: line(0, 0, 0, tipY) },
-        { d: line(tipX, tipY, 0, pivotY), thin: true, blade: { px: 0, py: pivotY, deg } },
-        { d: line(0, pivotY, 0, gridBottom(h)) },
-        ...pushOperator(h, rest),
-      ];
-    }
-    // NC: tramo superior, tope en `L` hacia la izquierda y cuchilla colgando
-    // del extremo del tope, que gira hasta la vertical al accionar.
-    const yL = h * 0.2;
-    const yPivot = h * 0.55;
-    const xL = -GRID * 0.3;
-    const deg = round((Math.atan2(-xL, yPivot - yL) * 180) / Math.PI);
-    return [
-      { d: line(0, 0, 0, yL) },
-      { d: line(xL, yL, 0, yL) },
-      { d: line(xL, yL, 0, yPivot), thin: true, blade: { px: 0, py: yPivot, deg } },
-      { d: line(0, yPivot, 0, gridBottom(h)) },
-      ...pushOperator(h, rest),
-    ];
-  };
-  return def(code, 'mando', pins, shapes, size);
-};
-
 /**
  * Bobina vertical: rectángulo con A1 arriba y A2 abajo
  * (`bobina rele de contactor.png`).
@@ -609,8 +561,6 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
   contactDevice(7021, 'NA', 'mando', true),
 
   // señalización y pulsadores
-  pushDevice(8000, 'NO'),
-  pushDevice(8001, 'NC'),
   contactDevice(8003, 'CO', 'senalizacion'),
   contactDevice(8006, 'NANC', 'senalizacion', false, { w: 6, h: 18 }),
   contactDevice(8007, 'CO', 'senalizacion'),

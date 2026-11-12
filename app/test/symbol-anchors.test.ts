@@ -63,6 +63,67 @@ test('la lámpara se dibuja centrada en el medio de sus dos bornes', () => {
   assert.ok(near(ink.minY, 0) && near(ink.maxY, 12), `la lámpara mide ${ink.minY}..${ink.maxY}`);
 });
 
+test('el pulsador NA (8000) va anclado al origen, vertical, como lo dibuja CADeSimu', () => {
+  const sym = resolveSymbol(8000, ['13', '14']);
+  assert.equal(sym.anchor, 'origin', 'el 8000 migró a anclaje al origen');
+  assert.deepEqual(sym.originPins, [
+    { name: '13', x: 0, y: 0 },
+    { name: '14', x: 0, y: 12 },
+  ]);
+
+  // Medido sobre docs/cadesimu-svg/reference/PR1_Rodolfo_Giusti_03.png
+  // (4 px por unidad), S1 en (66,123): tramo superior (0,-6)→(0,-3.25),
+  // paleta (−3,−3)→(0,+3) con pivote en (0,+3), tramo inferior hasta +5.75,
+  // corchete del operador en x=−6 y guion (−3,0)→(−1.5,0) apoyado en la paleta.
+  const shapes = sym.shapes(9, 15);
+  const ink = shapesBounds(shapes);
+  assert.ok(near(ink.minX, -6) && near(ink.maxX, 0), `el NA mide ${ink.minX}..${ink.maxX} de ancho`);
+  assert.ok(near(ink.minY, -6) && near(ink.maxY, 5.75), `el NA mide ${ink.minY}..${ink.maxY} de alto`);
+
+  const blade = shapes.find((s) => s.blade);
+  assert.ok(blade, 'la paleta del NA es móvil');
+  const m = /M(-?[\d.]+) (-?[\d.]+)L(-?[\d.]+) (-?[\d.]+)/.exec(blade.d)!;
+  assert.deepEqual([Number(m[1]), Number(m[2])], [0, 3], 'el pivote de la paleta cae en el borne del tramo inferior');
+  assert.deepEqual([Number(m[3]), Number(m[4])], [-3, -3], 'la paleta en reposo abre hacia la izquierda');
+  // CADe deja la paleta a 1 unidad del conductor al cerrar (medido en
+  // K1M-aux de play_03 y F0 de play_04): giro de 17.1° (26.57 − 9.46),
+  // positivo porque el lienzo rota las cuchillas con deg > 0 al cerrar.
+  assert.ok(near(blade.blade!.deg, 17.1, 0.05), `giro del NA: ${blade.blade!.deg}`);
+});
+
+test('el pulsador NC (8001) abre girando al contrario que el NA', () => {
+  const sym = resolveSymbol(8001, ['11', '12']);
+  assert.equal(sym.anchor, 'origin', 'el 8001 migró a anclaje al origen');
+  assert.deepEqual(sym.originPins, [
+    { name: '11', x: 0, y: 0 },
+    { name: '12', x: 0, y: 12 },
+  ]);
+
+  // Medido sobre la misma referencia, S0 en (66,99): tramo superior hasta
+  // −2.5 donde sale la barra (0,−2.5)→(+3.25,−2.5); paleta espejo
+  // (+3,−3)→(0,+3); dos guiones a la altura del origen.
+  const shapes = sym.shapes(9, 15);
+  const ink = shapesBounds(shapes);
+  assert.ok(near(ink.minX, -6) && near(ink.maxX, 3.25), `el NC mide ${ink.minX}..${ink.maxX} de ancho`);
+  assert.ok(near(ink.minY, -6) && near(ink.maxY, 5.75), `el NC mide ${ink.minY}..${ink.maxY} de alto`);
+
+  const blade = shapes.find((s) => s.blade);
+  assert.ok(blade, 'la paleta del NC es móvil');
+  const m = /M(-?[\d.]+) (-?[\d.]+)L(-?[\d.]+) (-?[\d.]+)/.exec(blade.d)!;
+  assert.deepEqual([Number(m[1]), Number(m[2])], [0, 3], 'el pivote de la paleta cae en el borne del tramo inferior');
+  assert.deepEqual([Number(m[3]), Number(m[4])], [3, -3], 'la paleta en reposo está apoyada hacia la derecha');
+  // Espejo del NA: el carrier común mueve las dos puntas hacia el conductor
+  // y frena a 1 unidad, así que el NC presionado deja la punta a +1 y el
+  // giro es negativo (el lienzo lo aplica cuando el contacto está abierto).
+  assert.ok(near(blade.blade!.deg, -17.1, 0.05), `giro del NC: ${blade.blade!.deg}`);
+
+  // La barra del apoyo y el tramo superior comparten la esquina (0,−2.5).
+  const bar = shapes.find((s) => s.d === 'M0 -2.5L3.25 -2.5');
+  assert.ok(bar, 'falta la barra del apoyo NC');
+  const stub = shapes.find((s) => s.d === 'M0 -6L0 -2.5');
+  assert.ok(stub, 'el tramo superior del NC baja hasta la barra');
+});
+
 test('los bornes de los símbolos anclados caen donde el archivo los conecta', () => {
   // El criterio real del anclaje: el símbolo tiene que estar sobre sus cables.
   for (const rec of project.records) {
@@ -88,7 +149,7 @@ test('el rótulo del borne va a su derecha y el designador a la izquierda del s�
 
 test('los símbolos que no se migraron siguen dibujándose en su caja', () => {
   // El anclaje al origen es opt-in: el resto del catálogo no se mueve.
-  for (const code of [2001, 6007, 8000, 9000]) {
+  for (const code of [2001, 6007, 9000]) {
     const sym = resolveSymbol(code, []);
     assert.notEqual(sym.anchor, 'origin', `${code} no debería estar anclado todavía`);
   }

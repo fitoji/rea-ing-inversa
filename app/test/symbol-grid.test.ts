@@ -209,11 +209,11 @@ test('los bornes dibujados de la aparamenta caen en la grilla de CADeSimu', () =
 });
 
 test('pulsadores y bobina redibujados usan la caja medida en archivos reales', () => {
-  // Medido en `arranque-paro-motor-3f.cad`: 8000/8001 son 6×15 con bornes
-  // sobre el borde izquierdo, y 9000 es 9×15 con A1 arriba y A2 abajo.
+  // Medido en `arranque-paro-motor-3f.cad`: 9000 es 9×15 con A1 arriba y A2
+  // abajo. 8000/8001 ya no siguen la caja: se midieron contra la captura real
+  // y migraron al anclaje al origen (ver symbol-anchors.test.ts), como la
+  // lámpara.
   const expected: Array<[number, string, string]> = [
-    [8000, '13', '14'],
-    [8001, '11', '12'],
     [9000, 'A1', 'A2'],
     [7018, 'A1', 'A2'],
   ];
@@ -516,23 +516,9 @@ test('el disyuntor 6009 dibuja un cuerpo de dos filas: gancho arriba, triángulo
 
 // --- pulsadores (T10) -------------------------------------------------------
 
-test('el pulsador NA dibuja la cuchilla que cuelga del borne de abajo', () => {
-  // `components_png/pulsador no.png`: la conductora superior termina en +3 y
-  // la cuchilla va de (−3, +3) a (0, +9), con la punta al mismo nivel que el
-  // final de la conductora superior.
-  const sym = FAMILY_SYMBOLS.find((s) => s.code === 8000);
-  assert.ok(sym?.size, 'el 8000 debe declarar caja');
-  const { w, h } = sym.size;
-  const shapes = shapesOf(8000, w, h);
-  const ds = shapes.map((s) => s.d);
-  assert.ok(ds.includes('M0 0L0 3'), 'la conductora superior termina en +3');
-  assert.ok(ds.includes('M-3 3L0 9'), 'falta la cuchilla medida');
-  assert.ok(ds.includes('M0 9L0 12'), 'la conductora inferior arranca en +9');
-
-  const blade = shapes.find((s) => s.blade);
-  assert.ok(blade, 'la cuchilla debe llevar metadata para girar al cerrar');
-  assert.deepEqual(blade.blade, { px: 0, py: 9, deg: 26.57 });
-});
+// Los pulsadores 8000/8001 dejaron de seguir la caja: se midieron contra la
+// captura real de CADeSimu y migraron al anclaje al origen. La geometría
+// medida y la metadata de la paleta están fijadas en `symbol-anchors.test.ts`.
 
 // --- el unipolar y la grilla de los polos ------------------------------------
 
