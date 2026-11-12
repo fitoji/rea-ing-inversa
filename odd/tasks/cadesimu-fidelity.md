@@ -33,7 +33,8 @@ NO se integra el prototipo `docs/cadesimu-svg/src/CadeSymbol.tsx` como ruta para
 - T4: Calibrar 9000 (bobina) y 9008 (piloto) contra el recorte. Route: inline. (commit: ver Log L6)
 - T5: Calibrar 1000 (motor trifásico) contra el recorte. Route: inline. (commit: ver Log L7)
 - T6: Tests de geometría que fijen las correcciones + suite completa verde. Route: inline.
-- T7: S5 (README del prototipo corregido). Route: inline.
+  (commit: ver Log L8)
+- T7: S5 (README del prototipo corregido). Route: inline. (commit: 6762577)
 
 ## Log
 
@@ -98,3 +99,24 @@ NO se integra el prototipo `docs/cadesimu-svg/src/CadeSymbol.tsx` como ruta para
   ref 366 px, overlap 317 (87%), stray=0 (cada px dibujado tiene tinta CADe a
   ≤2px), refOnly=49 = rótulos de bornes + glifos M/3~ + anillo AA del trazo.
   Suite 313/313 verde. Pendiente T6 (differential + suite) y T7 (README).
+- L8 (T6): differential del código compartido tocado: `src/symbols` del commit
+  base (d07c3fc^) extraído a scratch y comparado def por def (shapes, labels,
+  pins, size, anchor) contra el árbol actual → OK, solo cambia el 1000 (el
+  alias motor3f era contenido idéntico, su reemplazo no altera el resto).
+  Estados de simulación (S3) ya cubiertos y verdes: "motor energizado queda
+  activo", "los bornes de los símbolos anclados caen donde el archivo los
+  conecta" (corre sobre los records del proyecto, incluido el *29). Suite
+  completa 313/313. Scratch limpio (/T/opencode sin restos).
+- L9 (T7, cierre): README del prototipo reescrito (commit 6762577): la
+  sección "Integración" describía pasos que nunca existieron; ahora declara
+  el prototipo como material de referencia descartado, apunta a library.ts,
+  make-calibration.ts → calibration.html, symbol-anchors.test.ts y la
+  limpieza de overrides en families.ts. S5 cubierta.
+
+## Resultado
+
+Feature completa: 7/7 tareas, suite 313/313, commits e4ad856 → d07c3fc →
+6762577 sobre `cadesimu-fidelity`. Sin push ni PR (decisión del usuario).
+Risk: item 3 (contract rendering compartido: library.ts alimenta el lienzo y
+tests; mitigado con differential base-vs-árbol OK solo-1000, suite 313/313 y
+los overrides de families.ts eliminados; docs actualizadas).
