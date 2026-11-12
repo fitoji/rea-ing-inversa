@@ -229,6 +229,11 @@ const pushDevice = (code: number, rest: 'NO' | 'NC'): SymbolDef => {
  *
  * El `.cade` real mide 9×15 con los bornes sobre el borde izquierdo; el cuerpo
  * arranca en la fila superior de la grilla y cierra en la inferior.
+ *
+ * Medido en ese PNG (32,3 px por unidad, con el polo de 12 unidades de alto):
+ * el cuerpo es un rectángulo **centrado en el conductor**, de −4,7 a +4,7 y de
+ * +3,5 a +8,0, y los rótulos A1 y A2 quedan a su izquierda, con A1 pegado al
+ * borne de arriba y A2 al de abajo.
  */
 const coilVertical = (code: number): SymbolDef => {
   const size = { w: 9, h: 15 };
@@ -237,15 +242,15 @@ const coilVertical = (code: number): SymbolDef => {
     { name: 'A2', nx: 0, ny: 12 / 15, side: 'bottom' },
   ];
   const labels = (_w: number, h: number) => [
-    { x: -0.5, y: h * 0.16, value: 'A1', size: 3, anchor: 'end' as const },
-    { x: -0.5, y: h - 1.2, value: 'A2', size: 3, anchor: 'end' as const },
+    { x: -0.5, y: h * 0.073, value: 'A1', size: 3, anchor: 'end' as const },
+    { x: -0.5, y: h * 0.667, value: 'A2', size: 3, anchor: 'end' as const },
   ];
-  return def(code, 'mando', pins, (w, h) => [
+  return def(code, 'mando', pins, (_w, h) => [
     // Conductora vertical completa: A1 arriba, A2 abajo, como la línea que
     // atraviesa el rectángulo en `bobina rele de contactor.png`.
     { d: line(0, 0, 0, gridBottom(h)) },
-    // Rectángulo de la bobina cruzando la conductora, en el tramo medio.
-    { d: rect(-GRID * 0.3, h * 0.24, w + GRID * 0.3, h * 0.34) },
+    // Rectángulo de la bobina, centrado en el conductor.
+    { d: rect(-4.7, 3.5, 9.4, 4.5) },
   ], size, labels);
 };
 
@@ -567,15 +572,15 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
   protectionDevice(6004, 3, { w: 18, h: 15 }, { cadesimu: true, tripSquare: 'all', cadeOrder: true }), // medido
   // Diferencial: toroide cruzando los polos por abajo y disparador arriba a la
   // izquierda, sin celdas ni botón de ensayo (`rele diferencial.png`).
-  protectionDevice(6005, 2, { w: 12, h: 15 }, { torus: true, trip: true, cadeOrder: true }),
-  protectionDevice(6006, 3, { w: 18, h: 15 }, { torus: true, trip: true, cadeOrder: true }),
+  protectionDevice(6005, 2, { w: 12, h: 15 }, { cadesimu: true, tripSquare: 'none', torus: true, trip: true, cadeOrder: true }),
+  protectionDevice(6006, 3, { w: 18, h: 15 }, { cadesimu: true, tripSquare: 'none', torus: true, trip: true, cadeOrder: true }),
   // El térmico dibuja el gancho de cada polo en su celda (`rele termico.png`):
   // sus conductores son rectos, no llevan cuchilla.
   protectionDevice(6007, 3, { w: 21, h: 15 }, { body: true, hook: true, straight: true, cadeOrder: true }), // medido
   protectionDevice(6008, 2, { w: 12, h: 15 }, { body: true, hook: true, cadeOrder: true }),
   // Disyuntor III: caja de dos filas, gancho arriba y triángulo abajo, con el
   // accionamiento manual a la izquierda (`disyuntor trifasico.png`).
-  protectionDevice(6009, 3, { w: 18, h: 24 }, { body: true, hook: true, triangle: true, manual: true, cadeOrder: true }), // medido
+  protectionDevice(6009, 3, { w: 18, h: 24 }, { cadesimu: true, tripSquare: 'none', body: true, hook: true, triangle: true, manual: true, cadeOrder: true }), // medido
   protectionDevice(6010, 1, { w: 12, h: 15 }, { body: true, hook: true, cadeOrder: true }),
   protectionDevice(6015, 3, { w: 18, h: 15 }, { body: true, manual: true }),
   protectionDevice(6016, 3, { w: 18, h: 15 }, { body: true, hook: true }),

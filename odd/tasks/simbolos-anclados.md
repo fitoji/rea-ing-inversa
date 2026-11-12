@@ -353,3 +353,43 @@ horizontal no caían sobre el dibujo). Sus tres avisos: el 2006/2007 fuera de la
 (convención, no rotura), el pivote de la cuchilla del pulsador (medido en +8,9 y 27°, no en
 +9,9 y 23,5°: corregido a **+9** y 26,57°, que es la cuchilla del automático) y la altura
 del guion en el tripolar (+6,8 contra +6 de la hoja: la hoja manda).
+
+---
+
+## Tanda 5: el resto del catálogo (T10)
+
+**L37. La bobina (9000 y 7018) estaba corrida.** `components_png/bobina rele de contactor.png`
+(32,3 px por unidad) la dibuja con el cuerpo **centrado en el conductor**: un rectángulo de
+−4,7 a +4,7 y de +3,5 a +8,0, con la conductora atravesándolo de A1 a A2. El nuestro iba de
+−1,8 a +9 (todo a la derecha del conductor). Corregido, con los rótulos A1 y A2 a la altura
+medida (el centro en +1,1 y +10,0; antes A2 caía debajo del borne de abajo).
+
+**L38. El diferencial (6005/6006) y el disyuntor (6009) usan la cuchilla del automático.**
+`rele diferencial.png` y `disyuntor trifasico.png` muestran los tres polos con la cuchilla
+que abre hacia la izquierda y su guion a +6, igual que el automático; los ours usaban la
+cuchilla vieja del polo genérico (de 22° y 1,97 de recorrido). Ahora los tres usan la
+geometría medida, sin cuadro de disparo relleno (el diferencial no lleva).
+
+**L39. Lo que queda de T10, medido y sin corregir.** Queda anotado para la próxima tanda:
+
+- **El relé térmico (6007).** `rele termico.png` (8,15 px por unidad) lo dibuja con el cuerpo
+  **arriba**, de +2,64 a +7,85, y **sin tabiques** internos; el nuestro va abajo (de +8,7 a
+  +11,7) y con dos tabiques. Además el gancho térmico es un **escalón en el conductor** (sale
+  en diagonal a +2,2 de la columna, baja y vuelve), no un corchete `⊐` aparte como el nuestro.
+- **El operador del pulsador.** En CADeSimu la `E` está en −6,04 con barras de 1,91, entre
+  +4,44 y +7,38; el enlace al contacto es una barra a +6,02 que va de −3,07 a la cuchilla. La
+  nuestra es una `E` de 0,96 de brazo en −1,8 con un enlace de 0,54.
+- **El pulsador NC.** CADeSimu lo dibuja con la cuchilla colgando del tope (libre, sin tocar
+  el borne de abajo) y el tope a +6,02; el nuestro la apoya cerrada sobre el borne de abajo.
+  Es una diferencia de estado de reposo, no sólo de geometría: **hay que decidir cuál manda**.
+- **El motor trifásico (1000).** `motor trifasico.png` lo dibuja con el círculo y las cuatro
+  puntas **tocando** el círculo, el símbolo `3~` dentro (con la `M` encima) y la punta de PE
+  bajando por la derecha hasta un gancho corto en el borde del círculo. El nuestro deja las
+  puntas en el aire (a 8,42 y 3,34 del borde), no tiene el `3~` y dibuja la PE como un
+  círculo suelto abajo a la derecha.
+- **El 6000 (monofásico).** `interruptor proteccion contra cortocircuitos monofasico.png`
+  trae elementos que el 6001 no tiene (un tirador vertical a la derecha del polo y una banda
+  más gruesa en la cuchilla): es otro dibujo, no otra medida del mismo.
+
+**L40. Verificación.** 310/310 tests (2 nuevos: el cuerpo de la bobina y la cuchilla del
+diferencial y del disyuntor), `tsc` limpio, catálogo regenerado (238 SVG).

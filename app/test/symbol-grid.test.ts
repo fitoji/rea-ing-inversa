@@ -380,9 +380,16 @@ test('el accionamiento manual se dibuja a la izquierda, con un pie por fila', ()
     }
 
     // Un pie por fila: tramo horizontal que cruza x = 0 (del accionamiento al
-    // borde izquierdo del aparato).
+    // borde izquierdo del aparato), dentro de la banda del cuerpo.
+    const body = widestRect(shapes);
+    assert.ok(body, `${code}: debe dibujar un cuerpo`);
     const stubs = segments(shapes).filter(
-      (s) => near(s.a.y, s.b.y) && Math.min(s.a.x, s.b.x) < -EPS && Math.max(s.a.x, s.b.x) > -EPS,
+      (s) =>
+        near(s.a.y, s.b.y) &&
+        Math.min(s.a.x, s.b.x) < -EPS &&
+        Math.max(s.a.x, s.b.x) > -EPS &&
+        s.a.y >= body.y0 - EPS &&
+        s.a.y <= body.y1 + EPS,
     );
     const heights = [...new Set(stubs.map((s) => Math.round(s.a.y * 100) / 100))].sort((a, b) => a - b);
     if (stubs.length !== rows || heights.length !== rows) {
@@ -580,6 +587,39 @@ test('los multipolares de la familia siguen en la grilla de 6 unidades', () => {
         `${code}: falta el polo ${x}`,
       );
     }
+  }
+});
+
+test('la bobina se dibuja centrada en el conductor', () => {
+  // `bobina rele de contactor.png` (32,3 px por unidad): el cuerpo es un
+  // rectángulo centrado en el conductor, de −4,7 a +4,7 y de +3,5 a +8.
+  const sym = symbolFor(9000);
+  assert.ok(sym?.size, 'la bobina 9000 debe declarar caja');
+  const { w, h } = sym.size;
+  const ds = sym.shapes(w, h).map((s) => s.d);
+  assert.ok(ds.includes('M0 0L0 12'), 'la conductora va de A1 a A2');
+  assert.ok(ds.includes('M-4.7 3.5H4.7V8H-4.7Z'), 'el cuerpo no es el rectángulo medido');
+});
+
+test('el diferencial y el disyuntor usan la cuchilla de CADeSimu', () => {
+  // `rele diferencial.png` y `disyuntor trifasico.png`: sus polos abren la
+  // cuchilla hacia la izquierda, como los del automático, y no llevan cuadro
+  // de disparo relleno.
+  for (const [code, n] of [
+    [6005, 2],
+    [6006, 3],
+    [6009, 3],
+  ] as const) {
+    const sym = symbolFor(code);
+    assert.ok(sym?.size, `${code} debe declarar caja`);
+    const { w, h } = sym.size;
+    const shapes = sym.shapes(w, h);
+    const ds = shapes.map((s) => s.d);
+    for (let i = 0; i < n; i++) {
+      const x = i * 6;
+      assert.ok(ds.includes(`M${x - 3} 3L${x} 9`), `${code}: falta la cuchilla del polo ${x}`);
+    }
+    assert.equal(shapes.filter((s) => s.fill).length, 0, `${code}: no lleva cuadro relleno`);
   }
 });
 
