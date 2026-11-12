@@ -24,6 +24,8 @@ export type DeviceKind =
   | 'contact'
   | 'pushbutton'
   | 'selector'
+  /** conmutador de dos posiciones: una sola de sus dos salidas está conectada */
+  | 'changeover'
   | 'lamp'
   | 'fuse'
   | 'thermal'

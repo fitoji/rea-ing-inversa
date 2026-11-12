@@ -45,7 +45,7 @@ import {
 } from '../editor/state.ts';
 import { buildNetwork, validate } from '../editor/network.ts';
 import { roundTrips } from '../model/project.ts';
-import { isPushable } from '../model/component-spec.ts';
+import { isChangeover, isPushable, startsOpen } from '../model/component-spec.ts';
 import type { Point } from '../editor/pins.ts';
 import { Canvas } from './Canvas.tsx';
 import { Palette } from './Palette.tsx';
@@ -100,6 +100,15 @@ function readMode(): Mode {
   }
 }
 
+/**
+ * Estado de una protección: `'closed'` conduce, `'open'` corta. Sin acción del
+ * usuario vale el del código: los automáticos y disyuntores arrancan abiertos
+ * (`startsOpen`), como en CADeSimu.
+ */
+function protectionStateOf(code: number, state?: 'closed' | 'open'): 'closed' | 'open' {
+  return state ?? (startsOpen(code) ? 'open' : 'closed');
+}
+
 export function App(): JSX.Element {
   const [state, setState] = useState<EditorState | null>(null);
   const [fileName, setFileName] = useState('');
@@ -119,8 +128,19 @@ export function App(): JSX.Element {
   const [running, setRunning] = useState(false);
   /** Pulsadores apretados durante la simulación (ids de registro). */
   const [pressedRecords, setPressedRecords] = useState<number[]>([]);
-  /** Protecciones abiertas/disparadas durante la simulación. */
-  const [openProtections, setOpenProtections] = useState<number[]>([]);
+  /**
+   * Estado de las protecciones durante la simulación, por id de registro:
+   * `'closed'` conduce, `'open'` corta. Sin entrada, vale el del código: en
+   * CADeSimu los automáticos, disyuntores y diferenciales arrancan **abiertos**
+   * y el usuario los cierra con un clic (`startsOpen`).
+   *
+   * `trippedProtections` son las que el usuario volvió a abrir después de
+   * cerrarlas: ésas se pintan de rojo.
+   */
+  const [protectionStates, setProtectionStates] = useState<Record<number, 'closed' | 'open'>>({});
+  const [trippedProtections, setTrippedProtections] = useState<number[]>([]);
+  /** Posición de cada conmutador de dos posiciones, por id de registro. */
+  const [changeovers, setChangeovers] = useState<Record<string, number>>({});
   /** Reloj de simulación para temporizadores (ms desde que arrancó). */
   const [tick, setTick] = useState(0);
   const timerStartRef = useRef(new Map<string, number>());
@@ -213,11 +233,20 @@ export function App(): JSX.Element {
    * Circuito armado desde el dibujo: la alimentación sale de los símbolos de
    * alimentación (3000/3001/…) y de los tipos de cable, como en CADe_SIMU.
    * No hay marcas manuales de fase/neutro.
+   *
+   * Las protecciones que el usuario no cerró quedan fuera del circuito: en
+   * CADeSimu arrancan abiertas.
    */
   const built = useMemo(() => {
     if (!project) return null;
-    return circuitFrom(project.records, { openRecords: new Set(openProtections) });
-  }, [project, openProtections]);
+    const open = new Set<number>();
+    for (const rec of project.records) {
+      if (rec.kind !== 'component') continue;
+      if (!isProtectionCode(rec.code)) continue;
+      if (protectionStateOf(rec.code, protectionStates[rec.id]) === 'open') open.add(rec.id);
+    }
+    return circuitFrom(project.records, { openRecords: open });
+  }, [project, protectionStates]);
 
   const pressed = useMemo(() => {
     const out = new Set<string>();
@@ -258,7 +287,13 @@ export function App(): JSX.Element {
     }
     timerReadyRef.current = timerReadyIds;
 
-    const state = simulate(built.circuit, { pressed, initialEnergized: lastEnergized.current, timers, latched: lastEnergized.current });
+    const state = simulate(built.circuit, {
+      pressed,
+      initialEnergized: lastEnergized.current,
+      timers,
+      latched: lastEnergized.current,
+      changeovers: new Map(Object.entries(changeovers)),
+    });
     lastEnergized.current = state.energized;
     return state;
   }, [running, built, pressed, tick]);
@@ -322,17 +357,19 @@ export function App(): JSX.Element {
         live,
         closed: closedContacts,
         pressed: new Set(pressedRecords),
-        tripped: new Set(openProtections),
+        tripped: new Set(trippedProtections),
         timerReady: timerReadyRef.current,
       }),
-    [project, running, live, closedContacts, pressedRecords, openProtections, tick],
+    [project, running, live, closedContacts, pressedRecords, trippedProtections, tick],
   );
 
   const toggleSimulation = (): void => {
     if (running) {
       setRunning(false);
       setPressedRecords([]);
-      setOpenProtections([]);
+      setProtectionStates({});
+      setTrippedProtections([]);
+      setChangeovers({});
       lastEnergized.current = new Set();
       return;
     }
@@ -365,14 +402,26 @@ export function App(): JSX.Element {
         setPressedRecords((prev) => (prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]));
         return;
       }
+      if (isChangeover(code)) {
+        // Conmutador de dos posiciones: el clic lo pasa de una salida a la otra.
+        setChangeovers((prev) => ({ ...prev, [String(id)]: prev[String(id)] === 1 ? 0 : 1 }));
+        return;
+      }
       if (isProtectionCode(code)) {
-        setOpenProtections((prev) => (prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]));
+        // La protección arranca abierta (los automáticos); el clic la cierra y
+        // el siguiente la vuelve a abrir (disparo).
+        const current = protectionStateOf(code, protectionStates[id]);
+        const next = current === 'closed' ? 'open' : 'closed';
+        setProtectionStates((prev) => ({ ...prev, [id]: next }));
+        setTrippedProtections((prev) =>
+          next === 'open' && current === 'closed' ? [...new Set([...prev, id])] : prev,
+        );
         return;
       }
     }
     setState((s) => (s ? select(s, ids, additive) : s));
     setPlacing(null);
-  }, [running, state]);
+  }, [running, state, protectionStates]);
 
   const onDragPreview = useCallback((op: DragOp | null) => {
     setPreview(op);

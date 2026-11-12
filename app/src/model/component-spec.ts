@@ -20,6 +20,8 @@ export type SimKind =
   | 'contact'
   | 'pushbutton'
   | 'selector'
+  /** conmutador de dos posiciones: una sola de sus dos salidas está conectada */
+  | 'changeover'
   | 'lamp'
   | 'thermal'
   | 'fuse'
@@ -87,7 +89,13 @@ function buildTable(): Readonly<Record<number, ComponentSpec>> {
   one(2001, contactNO);
   one(2002, contactNO);
   one(2006, contactNO);
-  one(8018, { kind: 'contact', rest: 'closed', pressable: false, protection: false });
+  // El 8018 es un conmutador de dos posiciones, no dos contactos independientes.
+  // En el PR1 (`app/test_simu/PR1_Rodolfo_Giusti_03.cad`) los bornes 95 y 97
+  // están enlazados en el dibujo (es el común) y las salidas son 96 y 98: con
+  // las dos cerradas a la vez la fase llegaba a las dos redes y se encendían
+  // H1 y H2, cosa que en CADeSimu nunca pasa. Medido en las capturas: con la
+  // salida 98 cerrada se enciende H1 y con la 96 se enciende H2, nunca las dos.
+  one(8018, { kind: 'changeover', rest: 'open', pressable: false, protection: false });
 
   // Contactos temporizados: 7004-7007 a la conexión, 7008-7011 a la
   // desconexión, 7012-7015 a ambos. Los terminados en 5/9/3 son NC: así los
@@ -162,6 +170,23 @@ export function specOf(code: number): ComponentSpec {
 /** Presionable con un clic: pulsadores y selectores. */
 export function isPushable(code: number): boolean {
   return specOf(code).pressable;
+}
+
+/** Conmutador de dos posiciones: el clic lo pasa de una salida a la otra. */
+export function isChangeover(code: number): boolean {
+  return specOf(code).kind === 'changeover';
+}
+
+/**
+ * Protecciones que arrancan **abiertas**, como en CADeSimu: hasta que el
+ * usuario las cierra no dejan pasar la fase.
+ *
+ * Son los automáticos, disyuntores y diferenciales (6000-6999). El contacto
+ * auxiliar del relé térmico (8017) no corta: es un contacto y arranca cerrado,
+ * como antes.
+ */
+export function startsOpen(code: number): boolean {
+  return code >= 6000 && code < 7000;
 }
 
 export function isLamp(code: number): boolean {

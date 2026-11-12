@@ -28,7 +28,9 @@ export type DeviceKind =
   | 'buttonNC'
   | 'fuse'
   | 'thermal'
-  | 'switch';
+  | 'switch'
+  /** una de las dos salidas de un conmutador de dos posiciones */
+  | 'changeover';
 
 export interface SimDevice {
   /** identificador estable dentro del circuito */
@@ -44,6 +46,12 @@ export interface SimDevice {
   timerNC?: boolean;
   /** Bobina biestable: mantiene su estado tras desenergizarse. */
   latching?: boolean;
+  /**
+   * Conmutador de dos posiciones: este dispositivo es una de las dos salidas
+   * del mismo conmutador y sólo una puede estar conectada a la vez. `group`
+   * identifica el conmutador y `throw` es el número de salida.
+   */
+  changeover?: { group: string; throw: number };
 }
 
 export interface Circuit {
@@ -73,6 +81,7 @@ const CONDUCTIVE_CONTACT: ReadonlySet<DeviceKind> = new Set<DeviceKind>([
   'contactNC',
   'buttonNO',
   'buttonNC',
+  'changeover',
   'fuse',
   'thermal',
   'switch',
@@ -83,6 +92,12 @@ const LOAD_KINDS: ReadonlySet<DeviceKind> = new Set<DeviceKind>(['coil', 'lamp',
 export interface SimOptions {
   /** ids de pulsadores presionados */
   pressed?: ReadonlySet<string>;
+  /**
+   * Posición de cada conmutador de dos posiciones, por grupo (el id del
+   * registro). La posición 0 es la primera salida y la 1 la segunda; sólo una
+   * de las dos queda conectada.
+   */
+  changeovers?: ReadonlyMap<string, number>;
   /**
    * Estado retenido del paso anterior. Un contactor real no olvida: si soltás
    * el pulsador, el contacto auxiliar lo mantiene. Arrancar siempre desde cero
@@ -173,6 +188,14 @@ export function simulate(circuit: Circuit, options: SimOptions = {}): SimState {
         case 'switch':
           closed.add(device.id);
           break;
+        case 'changeover': {
+          // Conmutador de dos posiciones: sólo la salida de la posición actual
+          // toca el común. La posición 0 es la primera salida.
+          const info = device.changeover;
+          const position = info ? (options.changeovers?.get(info.group) ?? 0) : 0;
+          if (info && info.throw === position) closed.add(device.id);
+          break;
+        }
         default:
           // las cargas no conducen para el cálculo de continuidad
           break;

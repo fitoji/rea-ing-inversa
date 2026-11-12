@@ -285,7 +285,9 @@
  */
 [data-pack='cadesimu'] {
   --wire: #141414;
-  --warn: #d40000;
+  /* Rojo puro de la captura (`app/test_simu/PR1_Rodolfo_Giusti_03_simu_play_02.png`):
+     es el color de los conductores con tensión y de los aparatos energizados. */
+  --warn: #ff0000;
   --select: #0050c8;
 
   /*

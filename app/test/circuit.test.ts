@@ -44,7 +44,8 @@ test('simKindOf deriva kind y polaridad del ComponentSpec', () => {
   const fake = (code: number, kind: Device['kind']): Device =>
     ({ recordId: 1, code, designator: 'X', part: 'X', kind, pinNames: [], nets: [0, 1], poles: [[0, 1]] });
   // La polaridad NA/NC sale de `specOf(code).rest`, no de una lista suelta.
-  assert.equal(simKindOf(fake(8018, 'contact')), 'contactNC');
+  // El 8018 es un conmutador de dos posiciones, no un contacto NC doble.
+  assert.equal(simKindOf(fake(8018, 'changeover')), 'changeover');
   assert.equal(simKindOf(fake(2002, 'contact')), 'contactNO', '2002 era unknown en el solver');
   assert.equal(simKindOf(fake(8100, 'pushbutton')), 'buttonNO', '8100 era unknown y el clic se perdía');
   assert.equal(simKindOf(fake(8005, 'pushbutton')), 'buttonNC');
@@ -175,19 +176,41 @@ test('pr1: los pulsadores, el automático y el disyuntor conducen', () => {
   const s1 = built.circuit.devices.find((d) => d.part === 'S1');
   assert.ok(s1, 'falta el pulsador S1');
 
-  const pressed = simulate(built.circuit, { pressed: new Set([s1.id]) });
-  assert.equal(pressed.energized.has('K1M'), true);
-  assert.ok(pressed.loads.size > 0, 'el motor y las lámparas deben quedar como cargas');
+  // El Q1 es un conmutador de dos posiciones. En su posición de reposo queda
+  // conectada la salida 96 (la red de H2) y la de la maniobra no, así que la
+  // fase no llega a la bobina: hace falta pasar el conmutador.
+  const changeover = built.circuit.devices.find((d) => d.kind === 'changeover');
+  assert.ok(changeover?.changeover, 'el Q1 debe ser un conmutador de dos posiciones');
+  const group = changeover.changeover.group;
+
+  const enReposo = simulate(built.circuit, { pressed: new Set([s1.id]) });
+  assert.equal(enReposo.energized.has('K1M'), false, 'en reposo el conmutador no alimenta la maniobra');
+
+  const accionado = simulate(built.circuit, {
+    pressed: new Set([s1.id]),
+    changeovers: new Map([[group, 1]]),
+  });
+  assert.equal(accionado.energized.has('K1M'), true);
+  assert.ok(accionado.loads.size > 0, 'el motor y las lámparas deben quedar como cargas');
   assert.ok(built.circuit.devices.some((d) => d.kind === 'fuse'), 'el automático/diyuntor debe estar en el circuito');
 });
 
 test('pr1: abrir el automático corta la maniobra', () => {
   const breaker = PR1.records.find((r) => r.code === 6000)!;
+  const conTodo = circuitFrom(PR1.records);
+  assert.ok(conTodo);
+  const changeover = conTodo.circuit.devices.find((d) => d.kind === 'changeover');
+  assert.ok(changeover?.changeover);
+  const group = changeover.changeover.group;
+
   const built = circuitFrom(PR1.records, { openRecords: new Set([breaker.id]) });
   assert.ok(built);
   const s1 = built.circuit.devices.find((d) => d.part === 'S1');
   assert.ok(s1);
-  const pressed = simulate(built.circuit, { pressed: new Set([s1.id]) });
+  const pressed = simulate(built.circuit, {
+    pressed: new Set([s1.id]),
+    changeovers: new Map([[group, 1]]),
+  });
   assert.equal(pressed.energized.has('K1M'), false);
 });
 

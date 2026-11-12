@@ -71,6 +71,8 @@ export function visualStateOf(
     return ready ? 'active' : 'timing';
   }
   if (spec.kind === 'contact') return ctx.closed.has(id) ? 'closed' : 'open';
+  // Conmutador de dos posiciones: cerrado cuando su salida activa toca el común.
+  if (spec.kind === 'changeover') return ctx.closed.has(id) ? 'closed' : 'open';
   return ctx.live.has(id) ? 'active' : 'idle';
 }
 

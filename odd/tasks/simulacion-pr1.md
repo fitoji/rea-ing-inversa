@@ -45,10 +45,11 @@ abrir las protecciones.
 
 | ID | Specs | Ruta | Estado | Commit |
 |---|---|---|---|---|
-| T13 | S4, S5 | inline | pendiente | — |
-| T14 | S6 | inline | pendiente | — |
-| T15 | S7 | inline | pendiente | — |
-| T16 | S1-S3 | inline | pendiente | — |
+| T13 | S4, S5 | inline | hecho | commit de la tanda |
+| T14 | S6 | inline | hecho | ídem |
+| T15 | S7 | inline | hecho | ídem |
+| T16 | S1-S3 | inline | hecho | ídem |
+| T17 | S5 (dibujo) | inline | pendiente | — |
 
 ## Log
 
@@ -78,5 +79,31 @@ se apaga y H2 se enciende. En la app no hay forma de actuar un contacto que no s
 
 **L7. El archivo tiene dos aparatos con el designador `Q1`**: el `8018` (el conmutador del
 circuito de mando, arriba a la izquierda) y el `6009` (el disyuntor del motor, a la derecha). La
-captura 04 corresponde al `8018`: al abrirse, el motor sigue sin tension (sus conductores siguen
+captura 04 corresponde al `8018`: al abrirse, el motor sigue sin tensión (sus conductores siguen
 granate) y en cambio se enciende H2.
+
+**L8. Decisiones del usuario.** (1) "arranque abierto como cadesimu": las protecciones arrancan
+abiertas y el usuario las cierra con un clic. (2) "modelamos como conmutador de dos posiciones,
+no y nc": el `8018` no es un contacto NC doble sino un conmutador con un común (95-97, enlazados
+en el dibujo) y dos salidas (96 y 98).
+
+**L9. El conmutador como modelo.** El `8018` pasa a `kind: 'changeover'`: sus dos polos siguen
+siendo los pares de bornes (95-96) y (97-98), pero el solver cierra **sólo** el de la posición
+actual (`SimDevice.changeover` + `SimOptions.changeovers`). La posición de reposo es la salida
+96 y el clic pasa a la 98: así se reproducen las cuatro capturas.
+
+**L10. Las protecciones arrancan abiertas.** `startsOpen(code)` declara cuáles (6000-6999); el
+8017 (contacto auxiliar del térmico) no: es un contacto y arranca cerrado. El estado por
+protección es `'closed' | 'open'` y el clic lo alterna; abrir una que estaba cerrada la marca
+como disparada (roja).
+
+**L11. Verificación.** 293/293 tests, `tsc` limpio, build OK. Los nueve estados de
+aceptación del PR1 están en `app/test/simulacion-pr1.test.ts` y pasan: reposo y play sin nada
+encendido; con el automático cerrado y el conmutador en la otra posición se enciende sólo H1;
+con S1 o S2 pulsada, H1 y H3 (y la bobina de K1M); con el conmutador en la posición de reposo,
+sólo H2.
+
+**L12. Lo que queda (T17).** El **dibujo** del `8018` sigue siendo el de dos contactos NC
+independientes (`library.ts:auxNC2`), no el conmutador de CADeSimu (el común arriba con la
+cuchilla colgando hacia una de las dos salidas). El modelo eléctrico ya es el correcto; falta
+el glifo y la animación de la cuchilla al cambiar de posición.

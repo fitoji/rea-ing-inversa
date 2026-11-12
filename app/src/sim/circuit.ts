@@ -66,8 +66,12 @@ export function simKindOf(device: Device): SimDevice['kind'] | null {
       return device.code === 6007 ? 'thermal' : 'contactNC';
     case 'contact':
       // El estado lo manda la bobina del mismo designador; la polaridad de
-      // reposo la declara la tabla (NC: 7001 y 8018).
+      // reposo la declara la tabla (NC: 7001).
       return spec.rest === 'closed' ? 'contactNC' : 'contactNO';
+    case 'changeover':
+      // Conmutador de dos posiciones: el solver abre la salida que no está en
+      // la posición actual.
+      return 'changeover';
     case 'pushbutton':
     case 'selector':
       // Los selectores se accionan como pulsadores (conmutan al hacer clic).
@@ -165,7 +169,7 @@ export function circuitFrom(records: CadeRecordModel[], options: CircuitOptions 
     if (!kind) continue;
     // Una protección abierta/disparada no conduce: se saca del circuito.
     if (options.openRecords?.has(device.recordId)) continue;
-    for (const [a, b] of device.poles) {
+    device.poles.forEach(([a, b], index) => {
       devices.push({
         id: `${device.recordId}:${a}-${b}`,
         kind,
@@ -175,8 +179,11 @@ export function circuitFrom(records: CadeRecordModel[], options: CircuitOptions 
         timer: device.timer,
         timerNC: device.timerNC,
         latching: device.latching,
+        // Las dos salidas de un conmutador comparten grupo: sólo una cierra.
+        changeover:
+          kind === 'changeover' ? { group: String(device.recordId), throw: index } : undefined,
       });
-    }
+    });
   }
 
   return {

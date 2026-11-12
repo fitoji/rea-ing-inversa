@@ -50,7 +50,9 @@ test('contactos: auxiliares, de potencia y los que el solver ignoraba', () => {
   assert.deepEqual(specOf(7001), { kind: 'contact', rest: 'closed', pressable: false, protection: false });
   assert.deepEqual(specOf(2001), { kind: 'contact', rest: 'open', pressable: false, protection: false });
   assert.deepEqual(specOf(2006), { kind: 'contact', rest: 'open', pressable: false, protection: false });
-  assert.deepEqual(specOf(8018), { kind: 'contact', rest: 'closed', pressable: false, protection: false });
+  // El 8018 es un conmutador de dos posiciones: una sola de sus dos salidas
+  // queda conectada a la vez (medido en las capturas del PR1).
+  assert.deepEqual(specOf(8018), { kind: 'changeover', rest: 'open', pressable: false, protection: false });
   // 2002 era CONTACT en visual y unknown en el solver: ahora es contacto NA.
   assert.deepEqual(specOf(2002), { kind: 'contact', rest: 'open', pressable: false, protection: false });
   // 8100 es «Pulsador» (-S) en CATALOG y estaba en PUSH_CODES: el solver lo
@@ -144,7 +146,7 @@ test('predicados derivados de la misma fila', () => {
   assert.equal(isProtection(8017), true);
   assert.equal(isProtection(2001), false);
   assert.equal(restStateOf(7001), 'closed');
-  assert.equal(restStateOf(8018), 'closed');
+  assert.equal(restStateOf(8018), 'open');
   assert.equal(restStateOf(8005), 'closed');
   assert.equal(restStateOf(7000), 'open');
   assert.equal(timerOf(9004), 'on');
