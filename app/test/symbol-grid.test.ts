@@ -210,11 +210,10 @@ test('los bornes dibujados de la aparamenta caen en la grilla de CADeSimu', () =
 
 test('pulsadores y bobina redibujados usan la caja medida en archivos reales', () => {
   // Medido en `arranque-paro-motor-3f.cad`: 9000 es 9×15 con A1 arriba y A2
-  // abajo. 8000/8001 ya no siguen la caja: se midieron contra la captura real
-  // y migraron al anclaje al origen (ver symbol-anchors.test.ts), como la
-  // lámpara.
+  // abajo. 8000/8001 y 9000 ya no siguen la caja: se midieron contra la
+  // captura real y migraron al anclaje al origen (ver symbol-anchors.test.ts),
+  // como la lámpara.
   const expected: Array<[number, string, string]> = [
-    [9000, 'A1', 'A2'],
     [7018, 'A1', 'A2'],
   ];
   for (const [code, top, bottom] of expected) {
@@ -576,16 +575,9 @@ test('los multipolares de la familia siguen en la grilla de 6 unidades', () => {
   }
 });
 
-test('la bobina se dibuja centrada en el conductor', () => {
-  // `bobina rele de contactor.png` (32,3 px por unidad): el cuerpo es un
-  // rectángulo centrado en el conductor, de −4,7 a +4,7 y de +3,5 a +8.
-  const sym = symbolFor(9000);
-  assert.ok(sym?.size, 'la bobina 9000 debe declarar caja');
-  const { w, h } = sym.size;
-  const ds = sym.shapes(w, h).map((s) => s.d);
-  assert.ok(ds.includes('M0 0L0 12'), 'la conductora va de A1 a A2');
-  assert.ok(ds.includes('M-4.7 3.5H4.7V8H-4.7Z'), 'el cuerpo no es el rectángulo medido');
-});
+// La bobina 9000 dejó de seguir la caja: se midió contra la captura real de
+// CADeSimu y migró al anclaje al origen. La geometría medida está fijada en
+// `symbol-anchors.test.ts`.
 
 test('el diferencial y el disyuntor usan la cuchilla de CADeSimu', () => {
   // `rele diferencial.png` y `disyuntor trifasico.png`: sus polos abren la

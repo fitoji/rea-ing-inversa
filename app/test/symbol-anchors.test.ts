@@ -124,6 +124,37 @@ test('el pulsador NC (8001) abre girando al contrario que el NA', () => {
   assert.ok(stub, 'el tramo superior del NC baja hasta la barra');
 });
 
+test('la bobina (9000) va anclada al origen, con el cuerpo centrado en el conductor', () => {
+  const sym = resolveSymbol(9000, ['A1', 'A2']);
+  assert.equal(sym.anchor, 'origin', 'el 9000 migró a anclaje al origen');
+  assert.deepEqual(sym.originPins, [
+    { name: 'A1', x: 0, y: 0 },
+    { name: 'A2', x: 0, y: 12 },
+  ]);
+
+  // Medido sobre docs/cadesimu-svg/reference/PR1_Rodolfo_Giusti_03.png, K1M
+  // en (66,141): conductora continua de −5,875 a +5,875 (el tramo hasta el
+  // borne A2 lo dibuja el ruteador) y rectángulo de −4 a +4 por −2 a +2
+  // atravesado por el conductor, sin letra adentro.
+  const shapes = sym.shapes(9, 15);
+  const ink = shapesBounds(shapes);
+  assert.ok(near(ink.minX, -4) && near(ink.maxX, 4), `el cuerpo mide ${ink.minX}..${ink.maxX} de ancho`);
+  assert.ok(near(ink.minY, -5.875) && near(ink.maxY, 5.875), `la bobina mide ${ink.minY}..${ink.maxY} de alto`);
+  assert.ok(shapes.some((s) => s.d === 'M0 -5.87L0 5.88'), 'la conductora es continua y no llega hasta A2');
+  assert.ok(shapes.some((s) => s.d === 'M-4 -2H4V2H-4Z'), 'el cuerpo es el rectángulo medido');
+  assert.equal(sym.labels?.(9, 15), undefined, 'el cuerpo va sin letra: los rótulos los pone el lienzo');
+});
+
+test('la lámpara (9008) sigue anclada y centrada como antes', () => {
+  // S6: la lámpara ya estaba calibrada; la migración de los vecinos no la
+  // mueve. Es la verificación de que el recorte piloto no la toca.
+  const sym = resolveSymbol(9008, ['X1', 'X2']);
+  assert.equal(sym.anchor, 'origin');
+  const ink = shapesBounds(sym.shapes(9, 15));
+  assert.ok(near(ink.minX, -2.83) && near(ink.maxX, 2.83), `la lámpara mide ${ink.minX}..${ink.maxX}`);
+  assert.ok(near(ink.minY, 0) && near(ink.maxY, 12), `la lámpara mide ${ink.minY}..${ink.maxY}`);
+});
+
 test('los bornes de los símbolos anclados caen donde el archivo los conecta', () => {
   // El criterio real del anclaje: el símbolo tiene que estar sobre sus cables.
   for (const rec of project.records) {
@@ -149,7 +180,7 @@ test('el rótulo del borne va a su derecha y el designador a la izquierda del s�
 
 test('los símbolos que no se migraron siguen dibujándose en su caja', () => {
   // El anclaje al origen es opt-in: el resto del catálogo no se mueve.
-  for (const code of [2001, 6007, 9000]) {
+  for (const code of [2001, 6007]) {
     const sym = resolveSymbol(code, []);
     assert.notEqual(sym.anchor, 'origin', `${code} no debería estar anclado todavía`);
   }

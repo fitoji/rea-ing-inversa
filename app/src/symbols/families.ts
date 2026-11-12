@@ -583,7 +583,8 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
   soundDevice(9013),
 
   // bobinas y temporizadores
-  coilVertical(9000),
+  // (el 9000 ya no va por familia: la def medida y anclada al origen vive en
+  // library.ts, como la lámpara y los pulsadores)
   coilDevice(9001, 'K'),
   def(9002, 'mando', [left(0.3, 'A1'), right(0.3, 'A2'), left(0.7, '1'), right(0.7, '2')], (w, h) => [
     { d: rect(w * 0.1, h * 0.1, w * 0.8, h * 0.8) },

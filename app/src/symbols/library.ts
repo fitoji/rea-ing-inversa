@@ -263,17 +263,27 @@ const breaker4: SymbolDef = {
   },
 };
 
+/**
+ * Bobina monoestable (el 9000), anclada al origen, como la dibuja CADeSimu:
+ * conductora continua de −5,875 a +5,875 atravesando un rectángulo de −4 a
+ * +4 por −2 a +2, sin letra adentro. El tramo de conductor hasta el borne A2
+ * (12 unidades abajo) lo dibuja el ruteador, no el símbolo. Geometría medida
+ * sobre `docs/cadesimu-svg/reference/PR1_Rodolfo_Giusti_03.png` (K1M en
+ * (66,141)).
+ */
 const coil: SymbolDef = {
   code: 9000,
   name: 'Bobina monoestable',
   group: 'mando',
   pins: [left(0.5, 'A1'), right(0.5, 'A2')],
+  anchor: 'origin',
+  originPins: [
+    { name: 'A1', x: 0, y: 0 },
+    { name: 'A2', x: 0, y: 12 },
+  ],
   size: { w: 9, h: 15 },
-  shapes(w, h) {
-    return [{ d: rect(w * 0.2, h * 0.2, w * 0.6, h * 0.6) }];
-  },
-  labels(w, h) {
-    return [{ x: w / 2, y: h / 2, value: 'K', size: Math.min(w, h) * 0.3, anchor: 'middle' }];
+  shapes() {
+    return [{ d: line(0, -5.875, 0, 5.875) }, { d: rect(-4, -2, 8, 4) }];
   },
 };
 
