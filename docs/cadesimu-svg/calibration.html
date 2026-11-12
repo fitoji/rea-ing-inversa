@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<title>Calibración CADe_SIMU — símbolos piloto</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #fafafa; color: #111; margin: 2rem; }
+  section { margin-bottom: 3rem; border-top: 1px solid #ddd; padding-top: 1rem; }
+  h3 small { font-weight: normal; color: #777; }
+  .row { display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap; }
+  figure { margin: 0; } figcaption { font-size: 0.8rem; color: #666; margin-bottom: 0.4rem; }
+  .sym path { stroke: #111; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+  .sym path.fill { fill: #111; }
+  .sym path.dashed { stroke-dasharray: 0.9 0.9; }
+  .sym text { fill: #444; }
+  .ov-wrap { position: relative; display: inline-block; }
+  .ov { position: absolute; inset: 0; opacity: 0.65; pointer-events: none; }
+  .ov .sym-layer path { stroke: rgba(0,80,255,0.85); fill: none; stroke-linejoin: round; stroke-linecap: round; }
+  .ov .sym-layer path.fill { fill: rgba(0,80,255,0.35); }
+  .ov .sym-layer text { fill: rgba(0,80,255,0.9); font-family: ui-monospace,Menlo,monospace; }
+  .controls { margin-top: 0.6rem; display: flex; gap: 0.4rem; align-items: center; }
+  .controls button { font-size: 0.9rem; padding: 0.15rem 0.6rem; cursor: pointer; }
+  .off { font-size: 0.85rem; color: #555; }
+  .off-val, .rot-val { color: #111; }
+</style></head><body>
+<h1>Calibración CADe_SIMU — símbolos piloto</h1>
+<p>Escala de la captura: <b>4 px/unidad</b> (medida con H2↔H1). En la superposición:
+azul = dibujo actual de <code>library.ts</code>/<code>families.ts</code> apoyado en el
+origen del registro (igual que el lienzo); verde = bornes reales (extremos de cables del
+<code>.cad</code>). Corregí desplazamiento y rotación hasta alinear bornes con cables y
+anotá el resultado: es el dato que hay que corregir en los <code>SymbolDef</code>.</p>
+
+<section data-code="8000" data-label="S1">
+  <h3>8000 — S1 <small>pos (66, 123) caja 6×15</small></h3>
+  <div class="row">
+    <figure><figcaption>captura (tinta real)</figcaption><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGkAAABXCAIAAACIkPywAAACMklEQVR42u3cUW6DMAyAYb/3ItHOsgeO1JyrL9ysU7cCDrAkpW6J6R9NWpmq1fpIROwa5NrMOItcXQ3BDjvsjmTX933xX1i9Ryrs3hlP8T0NnWphzRraXbpTiONLuY3hGLucXQzKKoZTd1G/scvZxRj1vFtMROyq1+wwEVmzm+ySxYtdrd2EiN3262xDlwr2d9hhRz57iFy1JmZhTrVud0g+7DzYHY8Pu13tJB0u+ExiXimZzUqMxbrPQxzmdouYxz/kojaJWZIoho8bXyYFSCMOS75FzLp8kMl9TWKWJPOef9pqAbIlu4xQDJmwre30fFcBmdvZTz1ZllgKtSqTmKV4Olu3W4lZreT32N0qZKpa9hdH3/c1dquj+J7n89CVmC/dl3zHCojnY/7nOvviNWs49WYxT4fZOqlJzDb7O3dbZZOYsfNptyOfSczvzsnasXs+5v2zS78FAuw82/nlw865nVc+7F5lR7+xg3lHT4Wx3bwMka8FYzcrkKRfnNBDVmU3L/f/zrkuYPfwmr2v1ojdw3ZD12dbnZ++erWZd9ixv8MOuw/PZ8/ks5sH97xjhx122GGHHXbYHcjuLILddjh3fNIUnC++/fPZpZ2XH9Ys1wr2KNhhhx122GGHHXbYYffJ+ewUCt/Pbj+NrFlDu1vbbMMPmm3ZLoZTCMqq5oEj2F3HNlk10aoeOIKduh8gvS8Auwo73WGsWoyxK9slTzhRnbLYFe1mD4eZDrFjf/fxdj/OOUNXCN2ODgAAAABJRU5ErkJggg==" width="252"></figure>
+    <figure><figcaption>library.ts actual</figcaption><svg viewBox="-4 -1 5 14" width="12" height="33.6" class="sym"><path d="M0 0L0 3" style="stroke-width:0.26"/>
+<path d="M-3 3L0 9" style="stroke-width:0.17"/>
+<path d="M0 9L0 12" style="stroke-width:0.26"/>
+<path d="M-1.8 5.82L-1.8 9.18" style="stroke-width:0.17"/>
+<path d="M-1.8 5.82L-0.84 5.82" style="stroke-width:0.17"/>
+<path d="M-1.8 7.5L-0.84 7.5" style="stroke-width:0.17"/>
+<path d="M-1.8 9.18L-0.84 9.18" style="stroke-width:0.17"/>
+<path d="M-0.84 7.5L-0.3 7.5" style="stroke-width:0.17"/>
+<path d="M-0.3 6.96L-0.3 8.04" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="0" cy="12" r="0.55" fill="#0a0"/></svg></figure>
+    <figure class="ov-fig"><figcaption>superposición (símbolo azul, bornes verdes)</figcaption><div class="ov-wrap">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGkAAABXCAIAAACIkPywAAACMklEQVR42u3cUW6DMAyAYb/3ItHOsgeO1JyrL9ysU7cCDrAkpW6J6R9NWpmq1fpIROwa5NrMOItcXQ3BDjvsjmTX933xX1i9Ryrs3hlP8T0NnWphzRraXbpTiONLuY3hGLucXQzKKoZTd1G/scvZxRj1vFtMROyq1+wwEVmzm+ySxYtdrd2EiN3262xDlwr2d9hhRz57iFy1JmZhTrVud0g+7DzYHY8Pu13tJB0u+ExiXimZzUqMxbrPQxzmdouYxz/kojaJWZIoho8bXyYFSCMOS75FzLp8kMl9TWKWJPOef9pqAbIlu4xQDJmwre30fFcBmdvZTz1ZllgKtSqTmKV4Olu3W4lZreT32N0qZKpa9hdH3/c1dquj+J7n89CVmC/dl3zHCojnY/7nOvviNWs49WYxT4fZOqlJzDb7O3dbZZOYsfNptyOfSczvzsnasXs+5v2zS78FAuw82/nlw865nVc+7F5lR7+xg3lHT4Wx3bwMka8FYzcrkKRfnNBDVmU3L/f/zrkuYPfwmr2v1ojdw3ZD12dbnZ++erWZd9ixv8MOuw/PZ8/ks5sH97xjhx122GGHHXbYHcjuLILddjh3fNIUnC++/fPZpZ2XH9Ys1wr2KNhhhx122GGHHXbYYffJ+ewUCt/Pbj+NrFlDu1vbbMMPmm3ZLoZTCMqq5oEj2F3HNlk10aoeOIKduh8gvS8Auwo73WGsWoyxK9slTzhRnbLYFe1mD4eZDrFjf/fxdj/OOUNXCN2ODgAAAABJRU5ErkJggg==" width="252">
+      <svg class="ov" viewBox="54.5 116.125 26.25 21.75" width="252" height="208.79999999999998">
+        <g class="sym-layer"><g data-bx="66" data-by="123"><path d="M0 0L0 3" style="stroke-width:0.26"/>
+<path d="M-3 3L0 9" style="stroke-width:0.17"/>
+<path d="M0 9L0 12" style="stroke-width:0.26"/>
+<path d="M-1.8 5.82L-1.8 9.18" style="stroke-width:0.17"/>
+<path d="M-1.8 5.82L-0.84 5.82" style="stroke-width:0.17"/>
+<path d="M-1.8 7.5L-0.84 7.5" style="stroke-width:0.17"/>
+<path d="M-1.8 9.18L-0.84 9.18" style="stroke-width:0.17"/>
+<path d="M-0.84 7.5L-0.3 7.5" style="stroke-width:0.17"/>
+<path d="M-0.3 6.96L-0.3 8.04" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="0" cy="12" r="0.55" fill="#0a0"/><g class="terms"><circle cx="11.50" cy="-5.13" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="6.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="18.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="3.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="3.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="3.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="-2.13" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="-2.13" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/></g></g></g>
+      </svg></div></figure>
+  </div>
+  <div class="controls">
+    <button class="nudge" data-dx="-0.25">←</button>
+    <button class="nudge" data-dx="0.25">→</button>
+    <button class="nudge" data-dy="-0.25">↑</button>
+    <button class="nudge" data-dy="0.25">↓</button>
+    <button class="rot" data-dr="-90">⟲ 90°</button>
+    <button class="rot" data-dr="90">⟳ 90°</button>
+    <button class="reset">reset</button>
+    <span class="off">desplazamiento: <b class="off-val">0, 0</b> u · rotación: <b class="rot-val">0°</b></span>
+  </div>
+</section>
+
+<section data-code="8001" data-label="S0">
+  <h3>8001 — S0 <small>pos (66, 99) caja 6×15</small></h3>
+  <div class="row">
+    <figure><figcaption>captura (tinta real)</figcaption><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAA4CAIAAADCemklAAABRklEQVR42u2aTRKDIAyFs+ciTE/DPXoJOUxPwcab2Zlq+RE6olVI2ueqKI35TIQXkCY2x0B04F8EAABcCjCO46aJs/pQBUBuh1EESHoK5QDOKG0/NrkDWE1E5D1eNfkDWGvjR75qIoUAAADMAwBoA8BNC+V9JEWg2IEXQOXBFOBYfADQ+/Wg03O3J8CsuSPd7Yyisgz/evw+a3SixH2vvuefVivj0iucAZxRs7/hhF7ab5L2ANuTw1TMoZe/wW0xAGkwukegSlzETvtMX7LJ6tv9UfMObM+XR/vsWxcKo9DywHuOQpVmqdmd/gug3iYALpASu4xwFHOyAfbGEAC9FyYAgHWhXQDYI2sLEO/Q6LTYFQAQb4p5kqxqFLNHFrBWZyRtcBQrQ0EA5bpQCEBc70oECLWur3YxDwDg97TQIF0L4ZMzmQBPNZucCX8D+ToAAAAASUVORK5CYII=" width="153.6"></figure>
+    <figure><figcaption>library.ts actual</figcaption><svg viewBox="-5.5 -1 6.5 14" width="15.6" height="33.6" class="sym"><path d="M0 0L0 3" style="stroke-width:0.26"/>
+<path d="M-1.8 3L0 3" style="stroke-width:0.26"/>
+<path d="M-1.8 3L0 8.25" style="stroke-width:0.17"/>
+<path d="M0 8.25L0 12" style="stroke-width:0.26"/>
+<path d="M-4.5 5.82L-4.5 9.18" style="stroke-width:0.17"/>
+<path d="M-4.5 5.82L-3.54 5.82" style="stroke-width:0.17"/>
+<path d="M-4.5 7.5L-3.54 7.5" style="stroke-width:0.17"/>
+<path d="M-4.5 9.18L-3.54 9.18" style="stroke-width:0.17"/>
+<path d="M-3.54 7.5L-1.74 7.5" style="stroke-width:0.17"/>
+<path d="M-0.42 7.5L-0.3 7.5" style="stroke-width:0.17"/>
+<path d="M-0.3 6.96L-0.3 8.04" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="0" cy="12" r="0.55" fill="#0a0"/></svg></figure>
+    <figure class="ov-fig"><figcaption>superposición (símbolo azul, bornes verdes)</figcaption><div class="ov-wrap">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAA4CAIAAADCemklAAABRklEQVR42u2aTRKDIAyFs+ciTE/DPXoJOUxPwcab2Zlq+RE6olVI2ueqKI35TIQXkCY2x0B04F8EAABcCjCO46aJs/pQBUBuh1EESHoK5QDOKG0/NrkDWE1E5D1eNfkDWGvjR75qIoUAAADMAwBoA8BNC+V9JEWg2IEXQOXBFOBYfADQ+/Wg03O3J8CsuSPd7Yyisgz/evw+a3SixH2vvuefVivj0iucAZxRs7/hhF7ab5L2ANuTw1TMoZe/wW0xAGkwukegSlzETvtMX7LJ6tv9UfMObM+XR/vsWxcKo9DywHuOQpVmqdmd/gug3iYALpASu4xwFHOyAfbGEAC9FyYAgHWhXQDYI2sLEO/Q6LTYFQAQb4p5kqxqFLNHFrBWZyRtcBQrQ0EA5bpQCEBc70oECLWur3YxDwDg97TQIF0L4ZMzmQBPNZucCX8D+ToAAAAASUVORK5CYII=" width="153.6">
+      <svg class="ov" viewBox="54.5 92.125 16 14" width="153.6" height="134.4">
+        <g class="sym-layer"><g data-bx="66" data-by="99"><path d="M0 0L0 3" style="stroke-width:0.26"/>
+<path d="M-1.8 3L0 3" style="stroke-width:0.26"/>
+<path d="M-1.8 3L0 8.25" style="stroke-width:0.17"/>
+<path d="M0 8.25L0 12" style="stroke-width:0.26"/>
+<path d="M-4.5 5.82L-4.5 9.18" style="stroke-width:0.17"/>
+<path d="M-4.5 5.82L-3.54 5.82" style="stroke-width:0.17"/>
+<path d="M-4.5 7.5L-3.54 7.5" style="stroke-width:0.17"/>
+<path d="M-4.5 9.18L-3.54 9.18" style="stroke-width:0.17"/>
+<path d="M-3.54 7.5L-1.74 7.5" style="stroke-width:0.17"/>
+<path d="M-0.42 7.5L-0.3 7.5" style="stroke-width:0.17"/>
+<path d="M-0.3 6.96L-0.3 8.04" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="0" cy="12" r="0.55" fill="#0a0"/><g class="terms"><circle cx="11.50" cy="18.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="-2.13" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="6.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.50" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/></g></g></g>
+      </svg></div></figure>
+  </div>
+  <div class="controls">
+    <button class="nudge" data-dx="-0.25">←</button>
+    <button class="nudge" data-dx="0.25">→</button>
+    <button class="nudge" data-dy="-0.25">↑</button>
+    <button class="nudge" data-dy="0.25">↓</button>
+    <button class="rot" data-dr="-90">⟲ 90°</button>
+    <button class="rot" data-dr="90">⟳ 90°</button>
+    <button class="reset">reset</button>
+    <span class="off">desplazamiento: <b class="off-val">0, 0</b> u · rotación: <b class="rot-val">0°</b></span>
+  </div>
+</section>
+
+<section data-code="9000" data-label="K1M">
+  <h3>9000 — K1M <small>pos (66, 141) caja 9×15</small></h3>
+  <div class="row">
+    <figure><figcaption>captura (tinta real)</figcaption><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGgAAABXCAIAAABnUpeOAAACgUlEQVR42u3c7W2DMBCA4fvPIh7He3SJeJhOwR82o4IA8WHzYUKITV9UVUKlMjz4sM+5IG0em4i0RW2SLVxtK+P0fmVr4NbhnBER8eBqW4kAtwXnnFM9ru9t1gCXFqpDkDrg0uD6KB22fOjKGRzoccAxjwMOuCzgmqbZ/P+zjnnsgLvyfDaPyeU+PwhV4IADDjjggAMOuPLgHiLAHVQrzk7yUSvL7su5aghXyg+hyuDAdAQ44IADDjjggAMOOODumqu+zoPPVQ/eQEL1LLiumlWXKwX1S8BF4JypjPGggqpg4GJwz+pVr4vNq4KBi8KNpfm6RB+4LTi/6tcr+wVuA84Z8Z9tkxxw63DKzd8FjnkccMCRq15xjORzn4vocdMUiVBNI+MZ9xbZZ+Hk89tt4W7QQ6dWwuaA29vK8jNOZ4VT2vNKdNTSon9ITnA6LxuvaVw2SEnZIr3Md4zAeYJq+bDbGf/Sn0kxcOMVJX3lNf5om4J3Dqca1suH/aKsGe6gUeuzufe45OWVlfMP5nFdI9YE33tXcNZZ0+sa62yucGrs1cGzO1TXz18PtMMjbP5iFA1XP39Zta5dSo9LiNXN848ODsMS2DNfm8G1znTbGMJLOZ3f8Cfyx6ULa35/QrjZJZySO8dH1Y7OGwYU3MhaVI8bA3j32JASqszjDg4OwB2cjgB3cAIM3MGUCziSfNbjvrwY9wW4bHvQWXzAHQkj4N4QPDF/fOcYaoD/RY8rqAb4uRSdUTFrGTXA/otGM3nfYyk1wC/PTLpcSTXAWb1ftKAa4FmlJnABXKQGeONTXODaeA2wMZLby6eZxwEHXPFw1+aq7WVt3SxXbQlV4IBb3v4AJOFu3TrNcFMAAAAASUVORK5CYII=" width="249.6"></figure>
+    <figure><figcaption>library.ts actual</figcaption><svg viewBox="-5.7 -1 11.4 14" width="27.36" height="33.6" class="sym"><path d="M0 0L0 12" style="stroke-width:0.26"/>
+<path d="M-4.7 3.5H4.7V8H-4.7Z" style="stroke-width:0.26"/><text x="-0.5" y="1.095" font-size="3" text-anchor="end" dominant-baseline="middle" font-family="ui-monospace,Menlo,monospace">A1</text>
+<text x="-0.5" y="10.005" font-size="3" text-anchor="end" dominant-baseline="middle" font-family="ui-monospace,Menlo,monospace">A2</text><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="0" cy="12" r="0.55" fill="#0a0"/></svg></figure>
+    <figure class="ov-fig"><figcaption>superposición (símbolo azul, bornes verdes)</figcaption><div class="ov-wrap">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGgAAABXCAIAAABnUpeOAAACgUlEQVR42u3c7W2DMBCA4fvPIh7He3SJeJhOwR82o4IA8WHzYUKITV9UVUKlMjz4sM+5IG0em4i0RW2SLVxtK+P0fmVr4NbhnBER8eBqW4kAtwXnnFM9ru9t1gCXFqpDkDrg0uD6KB22fOjKGRzoccAxjwMOuCzgmqbZ/P+zjnnsgLvyfDaPyeU+PwhV4IADDjjggAMOuPLgHiLAHVQrzk7yUSvL7su5aghXyg+hyuDAdAQ44IADDjjggAMOOODumqu+zoPPVQ/eQEL1LLiumlWXKwX1S8BF4JypjPGggqpg4GJwz+pVr4vNq4KBi8KNpfm6RB+4LTi/6tcr+wVuA84Z8Z9tkxxw63DKzd8FjnkccMCRq15xjORzn4vocdMUiVBNI+MZ9xbZZ+Hk89tt4W7QQ6dWwuaA29vK8jNOZ4VT2vNKdNTSon9ITnA6LxuvaVw2SEnZIr3Md4zAeYJq+bDbGf/Sn0kxcOMVJX3lNf5om4J3Dqca1suH/aKsGe6gUeuzufe45OWVlfMP5nFdI9YE33tXcNZZ0+sa62yucGrs1cGzO1TXz18PtMMjbP5iFA1XP39Zta5dSo9LiNXN848ODsMS2DNfm8G1znTbGMJLOZ3f8Cfyx6ULa35/QrjZJZySO8dH1Y7OGwYU3MhaVI8bA3j32JASqszjDg4OwB2cjgB3cAIM3MGUCziSfNbjvrwY9wW4bHvQWXzAHQkj4N4QPDF/fOcYaoD/RY8rqAb4uRSdUTFrGTXA/otGM3nfYyk1wC/PTLpcSTXAWb1ftKAa4FmlJnABXKQGeONTXODaeA2wMZLby6eZxwEHXPFw1+aq7WVt3SxXbQlV4IBb3v4AJOFu3TrNcFMAAAAASUVORK5CYII=" width="249.6">
+      <svg class="ov" viewBox="54.75 126.375 26 21.75" width="249.6" height="208.79999999999998">
+        <g class="sym-layer"><g data-bx="66" data-by="141"><path d="M0 0L0 12" style="stroke-width:0.26"/>
+<path d="M-4.7 3.5H4.7V8H-4.7Z" style="stroke-width:0.26"/><text x="-0.5" y="1.095" font-size="3" text-anchor="end" dominant-baseline="middle" font-family="ui-monospace,Menlo,monospace">A1</text>
+<text x="-0.5" y="10.005" font-size="3" text-anchor="end" dominant-baseline="middle" font-family="ui-monospace,Menlo,monospace">A2</text><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="0" cy="12" r="0.55" fill="#0a0"/><g class="terms"><circle cx="11.25" cy="8.63" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.25" cy="14.63" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.25" cy="11.63" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.25" cy="11.63" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="11.25" cy="11.63" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/></g></g></g>
+      </svg></div></figure>
+  </div>
+  <div class="controls">
+    <button class="nudge" data-dx="-0.25">←</button>
+    <button class="nudge" data-dx="0.25">→</button>
+    <button class="nudge" data-dy="-0.25">↑</button>
+    <button class="nudge" data-dy="0.25">↓</button>
+    <button class="rot" data-dr="-90">⟲ 90°</button>
+    <button class="rot" data-dr="90">⟳ 90°</button>
+    <button class="reset">reset</button>
+    <span class="off">desplazamiento: <b class="off-val">0, 0</b> u · rotación: <b class="rot-val">0°</b></span>
+  </div>
+</section>
+
+<section data-code="8000" data-label="S2">
+  <h3>8000 — S2 <small>pos (81, 123) caja 6×15</small></h3>
+  <div class="row">
+    <figure><figcaption>captura (tinta real)</figcaption><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAABXCAIAAABeNSbVAAACzklEQVR42u2dUZKDIBBE+fciU3uW/eBI4Vz+5GbZUmOcQYMag9uTNJVKtIoqm5cBoREMN2/pEoIvwYGIiZiIifg44uv1CpUnBGea/UVx8B7FbWwkPQ5Dl8ZzWMTgmo3cJEpekia26hcUMb5mLTelpCNiFiKIiB1oLlS6MUQ8NRSImstyTe1zghhO81O5k24/iDE1b7g7Y93ttvUokDSzX0zEREzEzjwKd/7DFs2BEVpbc2A7UFszEX8f4s+jTMQfhDjY9D2UXynJYNEam9aeH6d2HmLlZnSjbzUSV4V7lEtnqYc4yeMiw6F2YQrewF5qJ1F+IFasM5t/sjx6C6QQR4ua9xejADLJ3sujIDZ+qLX5kzQi0pe4jSLS1EesGwbDesVAfAHZGZQ71VFm3pz1RVOU/n+QmNYmVOaaD5VBBbRqPrwhDvfWzkDOrOfhK8a2rYE4G6dn94Shlv2E37SB12JazVPXf5jqnomSAWWXZ8iQpEsL84QL18oLdahH0aubTotW+GshWT2QdfOWRN/Y7ATK/Q/YMvP6BsQnDyi895GJmIj9UwYdQBMxvaEdmomYiP1TJmIi/gDKRPz/iLnW42AePg10ehTnNkd5JgMDMbjm5+smbuNECjZifM2ldRN9NESBRuxA8/NKd69uSRw1FJCaSw/1bzHaoRBjal5dmuIqiiE1EzFHd5/XLyZiIuZaj/p5LvQoaiduXEPEREzEREzEREzEREzEROwRsTvFLhH7Eu0VMT/1PmwoeLsjYiImYiImYiImYiImYiImYiIm4rcg5lqPg3n4NNDpUWy2zOoT2isRNGKz1dd8/y9IxP12TnqzJ4F7eYqN4oGn3VUNTXAWsI3ZYWjxrRlgDUWSpsEWPCOcL6pCRzzbXAsYsV4poZZKgCPu5Il5Kh4XsQkGu5MkLuJRnF56AIs4q27TKTBi1aLZQ+QeBfvFROwQ8R9ee0ZkJJKTsgAAAABJRU5ErkJggg==" width="283.2"></figure>
+    <figure><figcaption>library.ts actual</figcaption><svg viewBox="-4 -1 5 14" width="12" height="33.6" class="sym"><path d="M0 0L0 3" style="stroke-width:0.26"/>
+<path d="M-3 3L0 9" style="stroke-width:0.17"/>
+<path d="M0 9L0 12" style="stroke-width:0.26"/>
+<path d="M-1.8 5.82L-1.8 9.18" style="stroke-width:0.17"/>
+<path d="M-1.8 5.82L-0.84 5.82" style="stroke-width:0.17"/>
+<path d="M-1.8 7.5L-0.84 7.5" style="stroke-width:0.17"/>
+<path d="M-1.8 9.18L-0.84 9.18" style="stroke-width:0.17"/>
+<path d="M-0.84 7.5L-0.3 7.5" style="stroke-width:0.17"/>
+<path d="M-0.3 6.96L-0.3 8.04" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="0" cy="12" r="0.55" fill="#0a0"/></svg></figure>
+    <figure class="ov-fig"><figcaption>superposición (símbolo azul, bornes verdes)</figcaption><div class="ov-wrap">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHYAAABXCAIAAABeNSbVAAACzklEQVR42u2dUZKDIBBE+fciU3uW/eBI4Vz+5GbZUmOcQYMag9uTNJVKtIoqm5cBoREMN2/pEoIvwYGIiZiIifg44uv1CpUnBGea/UVx8B7FbWwkPQ5Dl8ZzWMTgmo3cJEpekia26hcUMb5mLTelpCNiFiKIiB1oLlS6MUQ8NRSImstyTe1zghhO81O5k24/iDE1b7g7Y93ttvUokDSzX0zEREzEzjwKd/7DFs2BEVpbc2A7UFszEX8f4s+jTMQfhDjY9D2UXynJYNEam9aeH6d2HmLlZnSjbzUSV4V7lEtnqYc4yeMiw6F2YQrewF5qJ1F+IFasM5t/sjx6C6QQR4ua9xejADLJ3sujIDZ+qLX5kzQi0pe4jSLS1EesGwbDesVAfAHZGZQ71VFm3pz1RVOU/n+QmNYmVOaaD5VBBbRqPrwhDvfWzkDOrOfhK8a2rYE4G6dn94Shlv2E37SB12JazVPXf5jqnomSAWWXZ8iQpEsL84QL18oLdahH0aubTotW+GshWT2QdfOWRN/Y7ATK/Q/YMvP6BsQnDyi895GJmIj9UwYdQBMxvaEdmomYiP1TJmIi/gDKRPz/iLnW42AePg10ehTnNkd5JgMDMbjm5+smbuNECjZifM2ldRN9NESBRuxA8/NKd69uSRw1FJCaSw/1bzHaoRBjal5dmuIqiiE1EzFHd5/XLyZiIuZaj/p5LvQoaiduXEPEREzEREzEREzEREzEROwRsTvFLhH7Eu0VMT/1PmwoeLsjYiImYiImYiImYiImYiImYiIm4rcg5lqPg3n4NNDpUWy2zOoT2isRNGKz1dd8/y9IxP12TnqzJ4F7eYqN4oGn3VUNTXAWsI3ZYWjxrRlgDUWSpsEWPCOcL6pCRzzbXAsYsV4poZZKgCPu5Il5Kh4XsQkGu5MkLuJRnF56AIs4q27TKTBi1aLZQ+QeBfvFROwQ8R9ee0ZkJJKTsgAAAABJRU5ErkJggg==" width="283.2">
+      <svg class="ov" viewBox="66.25 116.125 29.5 21.75" width="283.2" height="208.79999999999998">
+        <g class="sym-layer"><g data-bx="81" data-by="123"><path d="M0 0L0 3" style="stroke-width:0.26"/>
+<path d="M-3 3L0 9" style="stroke-width:0.17"/>
+<path d="M0 9L0 12" style="stroke-width:0.26"/>
+<path d="M-1.8 5.82L-1.8 9.18" style="stroke-width:0.17"/>
+<path d="M-1.8 5.82L-0.84 5.82" style="stroke-width:0.17"/>
+<path d="M-1.8 7.5L-0.84 7.5" style="stroke-width:0.17"/>
+<path d="M-1.8 9.18L-0.84 9.18" style="stroke-width:0.17"/>
+<path d="M-0.84 7.5L-0.3 7.5" style="stroke-width:0.17"/>
+<path d="M-0.3 6.96L-0.3 8.04" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="0" cy="12" r="0.55" fill="#0a0"/><g class="terms"><circle cx="14.75" cy="3.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="6.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="3.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="3.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="18.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="21.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/></g></g></g>
+      </svg></div></figure>
+  </div>
+  <div class="controls">
+    <button class="nudge" data-dx="-0.25">←</button>
+    <button class="nudge" data-dx="0.25">→</button>
+    <button class="nudge" data-dy="-0.25">↑</button>
+    <button class="nudge" data-dy="0.25">↓</button>
+    <button class="rot" data-dr="-90">⟲ 90°</button>
+    <button class="rot" data-dr="90">⟳ 90°</button>
+    <button class="reset">reset</button>
+    <span class="off">desplazamiento: <b class="off-val">0, 0</b> u · rotación: <b class="rot-val">0°</b></span>
+  </div>
+</section>
+
+<section data-code="9008" data-label="H3">
+  <h3>9008 — H3 <small>pos (81, 141) caja 9×15 · anclado al origen</small></h3>
+  <div class="row">
+    <figure><figcaption>captura (tinta real)</figcaption><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAABXCAIAAAAh5DQkAAACX0lEQVR42u2c25HDIAxF9U8jlEMf20QoZqvwjzvbnTycCDACHDu5GDH5iHdgfY/FQyA59NdbIaLmJtH15Iz14bVxEzZkUXPQwFsiItZgcoYIG7JGM2/gvQ+eyu2JOAsNWaU5b/qH0b3tqLtmNGcb3Kz+KFCYAmROc2kQ92XJjOYhIYdYJxXyvJDzPEPVuVCz5v4seRmhuyqkQiqkQiqkQn4QckObLiH74twOee7PGN1VZ1eFVEiFVEiFVEiFVEi4c1ca4dx1hxP0a3Q6DBElMSMgyJc2b5+yU8EUMxprWZ0kIo9myTtRAJsKpshoxk3sScQRecTu6q0xBcGUMMYpIuiQvKeWuyuPuLOQOzjkVZ4NIssSZPBAWEAaGnIRxwPoAmRk9NclMCQbV+FXeXYdY51UyPNC4viuxMrZfNdVsEraDiBrMKrq9ItXP1CptcBCCvWp9d6fnD9rh1ypPjRkzR1rKu8EGbpSiye5uPwtbmF6C6kf1lU+EnJhbUqZXVf55h+PtGTzNqbeaG3m3Q0ymIOfkLfjiOruWlwJmqp90pIN/XWfpX8DJPcDczeYf39SSH66ZNy0y5lqJeRbvuvG2bV63sHursdvowAmnoM5MZaQIyFhnIEh3Dp10L+/1QLcTO6/adbjDz3I+h5t68DRnAFUezY3ia7DnIF7cBoroC7mDKwLlnIG+AvROO/8CjkDOcFyzsCLHceUYs7AuuByzgDau9vFnAHxxe31nIH0X2BBJjkDK4LFnIErNhZhIWcgI1jKGbCWAH80QsgZcBnBGmlWyFNB6u8MfKFoevbAkP8TlL8g2WvBKgAAAABJRU5ErkJggg==" width="182.4"></figure>
+    <figure><figcaption>library.ts actual</figcaption><svg viewBox="-3.83 -1 7.66 14" width="18.384" height="33.6" class="sym"><path d="M0 0L0 3.17" style="stroke-width:0.26"/>
+<path d="M0 8.83L0 12" style="stroke-width:0.26"/>
+<path d="M-2.83 6a2.83 2.83 0 1 0 5.66 0a2.83 2.83 0 1 0 -5.66 0Z" style="stroke-width:0.26"/>
+<path d="M-2.18 3.82L2.18 8.18" style="stroke-width:0.17"/>
+<path d="M-2.18 8.18L2.18 3.82" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="0" cy="12" r="0.55" fill="#0a0"/></svg></figure>
+    <figure class="ov-fig"><figcaption>superposición (símbolo azul, bornes verdes)</figcaption><div class="ov-wrap">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAABXCAIAAAAh5DQkAAACX0lEQVR42u2c25HDIAxF9U8jlEMf20QoZqvwjzvbnTycCDACHDu5GDH5iHdgfY/FQyA59NdbIaLmJtH15Iz14bVxEzZkUXPQwFsiItZgcoYIG7JGM2/gvQ+eyu2JOAsNWaU5b/qH0b3tqLtmNGcb3Kz+KFCYAmROc2kQ92XJjOYhIYdYJxXyvJDzPEPVuVCz5v4seRmhuyqkQiqkQiqkQn4QckObLiH74twOee7PGN1VZ1eFVEiFVEiFVEiFVEi4c1ca4dx1hxP0a3Q6DBElMSMgyJc2b5+yU8EUMxprWZ0kIo9myTtRAJsKpshoxk3sScQRecTu6q0xBcGUMMYpIuiQvKeWuyuPuLOQOzjkVZ4NIssSZPBAWEAaGnIRxwPoAmRk9NclMCQbV+FXeXYdY51UyPNC4viuxMrZfNdVsEraDiBrMKrq9ItXP1CptcBCCvWp9d6fnD9rh1ypPjRkzR1rKu8EGbpSiye5uPwtbmF6C6kf1lU+EnJhbUqZXVf55h+PtGTzNqbeaG3m3Q0ymIOfkLfjiOruWlwJmqp90pIN/XWfpX8DJPcDczeYf39SSH66ZNy0y5lqJeRbvuvG2bV63sHursdvowAmnoM5MZaQIyFhnIEh3Dp10L+/1QLcTO6/adbjDz3I+h5t68DRnAFUezY3ia7DnIF7cBoroC7mDKwLlnIG+AvROO/8CjkDOcFyzsCLHceUYs7AuuByzgDau9vFnAHxxe31nIH0X2BBJjkDK4LFnIErNhZhIWcgI1jKGbCWAH80QsgZcBnBGmlWyFNB6u8MfKFoevbAkP8TlL8g2WvBKgAAAABJRU5ErkJggg==" width="182.4">
+      <svg class="ov" viewBox="66.25 126.375 19 21.75" width="182.4" height="208.79999999999998">
+        <g class="sym-layer"><g data-bx="81" data-by="141"><path d="M0 0L0 3.17" style="stroke-width:0.26"/>
+<path d="M0 8.83L0 12" style="stroke-width:0.26"/>
+<path d="M-2.83 6a2.83 2.83 0 1 0 5.66 0a2.83 2.83 0 1 0 -5.66 0Z" style="stroke-width:0.26"/>
+<path d="M-2.18 3.82L2.18 8.18" style="stroke-width:0.17"/>
+<path d="M-2.18 8.18L2.18 3.82" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="0" cy="12" r="0.55" fill="#0a0"/><g class="terms"><circle cx="14.75" cy="8.63" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="11.63" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="11.63" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="11.63" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="11.63" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="14.63" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="14.75" cy="26.63" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/></g></g></g>
+      </svg></div></figure>
+  </div>
+  <div class="controls">
+    <button class="nudge" data-dx="-0.25">←</button>
+    <button class="nudge" data-dx="0.25">→</button>
+    <button class="nudge" data-dy="-0.25">↑</button>
+    <button class="nudge" data-dy="0.25">↓</button>
+    <button class="rot" data-dr="-90">⟲ 90°</button>
+    <button class="rot" data-dr="90">⟳ 90°</button>
+    <button class="reset">reset</button>
+    <span class="off">desplazamiento: <b class="off-val">0, 0</b> u · rotación: <b class="rot-val">0°</b></span>
+  </div>
+</section>
+
+<section data-code="9008" data-label="H1">
+  <h3>9008 — H1 <small>pos (117, 123) caja 9×15 · anclado al origen</small></h3>
+  <div class="row">
+    <figure><figcaption>captura (tinta real)</figcaption><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAIAAAAn5KxJAAABZ0lEQVR42u2Y3RGDIAyA884ijMMeXaIM0yl8YTN6arWgCIHyEyw8cVz0vst/ArrFeQLEfgIDdIAqpYLSuWQAAXr4TxuNQi+mN0EnwbhcbpLD52Y8UtLoSmUBAwBB0BmNsV2FUkqiGrWtTtj0CxbnTEy0QTcoaaASBJ0E2/jsK00f7SGP3he0Tq0H41Cs9U44JHElUAwKSqYtIt5xaYF65KF0XGNdMCQPFRIQxkeDwnDVsfgrb6y3+WyKEw6DOtvYhLD49TEE6m5j04L3nEcj1GyBmnUDEk0fyDK4IAuB5vDRPOndA6pejyBolpkdCXpd66toNIfpy7dwmYKpMGu+9FQSNGvC76aE/mdT0k2b11Pj3M0o0tlwlzwuN57r8alg7PBTQU87/HWkOE4V5Hb4O7exhNQ0d/jfR/OF6A7f7oc12R3+mZvgDn+eMR3zBLkdvuCuOXjk0QFavdbr2P+00qjuxfT3BX0DqsYhIAYfmVMAAAAASUVORK5CYII=" width="134.4"></figure>
+    <figure><figcaption>library.ts actual</figcaption><svg viewBox="-3.83 -1 7.66 14" width="18.384" height="33.6" class="sym"><path d="M0 0L0 3.17" style="stroke-width:0.26"/>
+<path d="M0 8.83L0 12" style="stroke-width:0.26"/>
+<path d="M-2.83 6a2.83 2.83 0 1 0 5.66 0a2.83 2.83 0 1 0 -5.66 0Z" style="stroke-width:0.26"/>
+<path d="M-2.18 3.82L2.18 8.18" style="stroke-width:0.17"/>
+<path d="M-2.18 8.18L2.18 3.82" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="0" cy="12" r="0.55" fill="#0a0"/></svg></figure>
+    <figure class="ov-fig"><figcaption>superposición (símbolo azul, bornes verdes)</figcaption><div class="ov-wrap">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAIAAAAn5KxJAAABZ0lEQVR42u2Y3RGDIAyA884ijMMeXaIM0yl8YTN6arWgCIHyEyw8cVz0vst/ArrFeQLEfgIDdIAqpYLSuWQAAXr4TxuNQi+mN0EnwbhcbpLD52Y8UtLoSmUBAwBB0BmNsV2FUkqiGrWtTtj0CxbnTEy0QTcoaaASBJ0E2/jsK00f7SGP3he0Tq0H41Cs9U44JHElUAwKSqYtIt5xaYF65KF0XGNdMCQPFRIQxkeDwnDVsfgrb6y3+WyKEw6DOtvYhLD49TEE6m5j04L3nEcj1GyBmnUDEk0fyDK4IAuB5vDRPOndA6pejyBolpkdCXpd66toNIfpy7dwmYKpMGu+9FQSNGvC76aE/mdT0k2b11Pj3M0o0tlwlzwuN57r8alg7PBTQU87/HWkOE4V5Hb4O7exhNQ0d/jfR/OF6A7f7oc12R3+mZvgDn+eMR3zBLkdvuCuOXjk0QFavdbr2P+00qjuxfT3BX0DqsYhIAYfmVMAAAAASUVORK5CYII=" width="134.4">
+      <svg class="ov" viewBox="107.25 116.125 14 14" width="134.4" height="134.4">
+        <g class="sym-layer"><g data-bx="117" data-by="123"><path d="M0 0L0 3.17" style="stroke-width:0.26"/>
+<path d="M0 8.83L0 12" style="stroke-width:0.26"/>
+<path d="M-2.83 6a2.83 2.83 0 1 0 5.66 0a2.83 2.83 0 1 0 -5.66 0Z" style="stroke-width:0.26"/>
+<path d="M-2.18 3.82L2.18 8.18" style="stroke-width:0.17"/>
+<path d="M-2.18 8.18L2.18 3.82" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="0" cy="12" r="0.55" fill="#0a0"/><g class="terms"><circle cx="9.75" cy="3.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="9.75" cy="3.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="9.75" cy="6.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/></g></g></g>
+      </svg></div></figure>
+  </div>
+  <div class="controls">
+    <button class="nudge" data-dx="-0.25">←</button>
+    <button class="nudge" data-dx="0.25">→</button>
+    <button class="nudge" data-dy="-0.25">↑</button>
+    <button class="nudge" data-dy="0.25">↓</button>
+    <button class="rot" data-dr="-90">⟲ 90°</button>
+    <button class="rot" data-dr="90">⟳ 90°</button>
+    <button class="reset">reset</button>
+    <span class="off">desplazamiento: <b class="off-val">0, 0</b> u · rotación: <b class="rot-val">0°</b></span>
+  </div>
+</section>
+
+<section data-code="9008" data-label="H2">
+  <h3>9008 — H2 <small>pos (45, 123) caja 9×15 · anclado al origen</small></h3>
+  <div class="row">
+    <figure><figcaption>captura (tinta real)</figcaption><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAF0AAAA4CAIAAAAQKmN9AAABz0lEQVR42u2a0ZGEIAyG824jlGMf28RRzFXhC515s7uKQNwznKA5+HliGWTMN3/YJIbmnEE0FxlfpQ6qNghcwAVcCnJxzhXhIjuHipxTb889eiH40SGXaRyMfc2soWUWLHbLZYUQ8SEicHmSGAYvEGst9OLBxPoAl5WCMcM4gQtxbdiADLhM47DiiKfwI8Qv4NIOl2vyIwoG8qN5l4UQUJt+JLFcIZ2KXHKtVYVGFxc9aGpx8RYKTc3d/++5SEzN2nw5lzj2XrOVdzFkqYcI35nb9ou1WZuLDG9SmMMnmccBF7/2zl3+zOX8YkkqvtKzTnkl7FAv229jRXqRSyNLRMVGkJ1623glLOYSRqMUPr1QOslFfr9WlwwzMc+PEuWd5yKP9C64XEPpfOTivh87XJ4i2lav5FIp9wkN8lycc3l62a7ul+ja8KPNKJEfFYpftN+7N8Z1qv+nVXFRFdchD0DeiDoD6lKNcsmK4jqqY3LLUfc+BqT8ExL662b01yn2I86F9ddFldN+uST9dUnltGcuSX/dtnijYJT21/H6co9cWH8dx9Qhl6S/Lq6cdssl7a8bzf4XiT7vF8Qv4NIIl2vzozLntJcfzfAjcGmIyw/RdniUn78J7wAAAABJRU5ErkJggg==" width="223.2"></figure>
+    <figure><figcaption>library.ts actual</figcaption><svg viewBox="-3.83 -1 7.66 14" width="18.384" height="33.6" class="sym"><path d="M0 0L0 3.17" style="stroke-width:0.26"/>
+<path d="M0 8.83L0 12" style="stroke-width:0.26"/>
+<path d="M-2.83 6a2.83 2.83 0 1 0 5.66 0a2.83 2.83 0 1 0 -5.66 0Z" style="stroke-width:0.26"/>
+<path d="M-2.18 3.82L2.18 8.18" style="stroke-width:0.17"/>
+<path d="M-2.18 8.18L2.18 3.82" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="0" cy="12" r="0.55" fill="#0a0"/></svg></figure>
+    <figure class="ov-fig"><figcaption>superposición (símbolo azul, bornes verdes)</figcaption><div class="ov-wrap">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAF0AAAA4CAIAAAAQKmN9AAABz0lEQVR42u2a0ZGEIAyG824jlGMf28RRzFXhC515s7uKQNwznKA5+HliGWTMN3/YJIbmnEE0FxlfpQ6qNghcwAVcCnJxzhXhIjuHipxTb889eiH40SGXaRyMfc2soWUWLHbLZYUQ8SEicHmSGAYvEGst9OLBxPoAl5WCMcM4gQtxbdiADLhM47DiiKfwI8Qv4NIOl2vyIwoG8qN5l4UQUJt+JLFcIZ2KXHKtVYVGFxc9aGpx8RYKTc3d/++5SEzN2nw5lzj2XrOVdzFkqYcI35nb9ou1WZuLDG9SmMMnmccBF7/2zl3+zOX8YkkqvtKzTnkl7FAv229jRXqRSyNLRMVGkJ1623glLOYSRqMUPr1QOslFfr9WlwwzMc+PEuWd5yKP9C64XEPpfOTivh87XJ4i2lav5FIp9wkN8lycc3l62a7ul+ja8KPNKJEfFYpftN+7N8Z1qv+nVXFRFdchD0DeiDoD6lKNcsmK4jqqY3LLUfc+BqT8ExL662b01yn2I86F9ddFldN+uST9dUnltGcuSX/dtnijYJT21/H6co9cWH8dx9Qhl6S/Lq6cdssl7a8bzf4XiT7vF8Qv4NIIl2vzozLntJcfzfAjcGmIyw/RdniUn78J7wAAAABJRU5ErkJggg==" width="223.2">
+      <svg class="ov" viewBox="35.25 116.125 23.25 14" width="223.2" height="134.4">
+        <g class="sym-layer"><g data-bx="45" data-by="123"><path d="M0 0L0 3.17" style="stroke-width:0.26"/>
+<path d="M0 8.83L0 12" style="stroke-width:0.26"/>
+<path d="M-2.83 6a2.83 2.83 0 1 0 5.66 0a2.83 2.83 0 1 0 -5.66 0Z" style="stroke-width:0.26"/>
+<path d="M-2.18 3.82L2.18 8.18" style="stroke-width:0.17"/>
+<path d="M-2.18 8.18L2.18 3.82" style="stroke-width:0.17"/><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="0" cy="12" r="0.55" fill="#0a0"/><g class="terms"><circle cx="9.75" cy="6.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/></g></g></g>
+      </svg></div></figure>
+  </div>
+  <div class="controls">
+    <button class="nudge" data-dx="-0.25">←</button>
+    <button class="nudge" data-dx="0.25">→</button>
+    <button class="nudge" data-dy="-0.25">↑</button>
+    <button class="nudge" data-dy="0.25">↓</button>
+    <button class="rot" data-dr="-90">⟲ 90°</button>
+    <button class="rot" data-dr="90">⟳ 90°</button>
+    <button class="reset">reset</button>
+    <span class="off">desplazamiento: <b class="off-val">0, 0</b> u · rotación: <b class="rot-val">0°</b></span>
+  </div>
+</section>
+
+<section data-code="1000" data-label="M1">
+  <h3>1000 — M1 <small>pos (183, 168) caja 24×24</small></h3>
+  <div class="row">
+    <figure><figcaption>captura (tinta real)</figcaption><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAABXCAIAAAALVMWLAAAC0klEQVR42u2cy5HDIAxAdacRitkDfWwTSzFbhS/pbHcM/sc4/AQC5EPGmSAZngVIIAJ/mNcPQFt6gHEwDsaRguP1en1U7VMGPJpBSg+udUCmt1pMT0EckxJSb9+0FGq6/eVZz6TELnj89lGJU8+kBCz39XFoCQDgjePEY1Ppo+Rdjy0/38ilNtVxaK2DrONIcqfho8RVHy2lXnU211kOsmexYByLGvtppacmcVjhi1Q4DmMXaz1mcaVKzixa7r37eB+OY+Yh5VkoAsc8DIlVSkshRNmJ1o54cB32wnEYTWeZCBxmTjm+IcF+B7thjCMJR/WYBR6v/mMWnwbHFW4JR0STUpTQxZFOIUInRRwYIDz108KBDeLjswjhKAbi+X3Ux1HSKJ7NpD6OiiBuX0wPXmmxysAgLCp3FoIsfCqGErNsj8wV++Qt8+QcjmMXPpWEAVk8ecyMAwtHQyxcFYZhWdx78YwjP45GWdzEmYwjM46mWVyaQBjHaaPttF9GFweiacw4jhkpiDj2FQA8/z811jDb0tLw+P3+uu5Q48RZpK1DKK2kSb6QSnvsSGNZB4lB1GRe2A/1ls2BRIQ6jjklRc7ZSozD5uUsiTHD46jhfTCOTDg6Y5HqhjGOoXC4Y4TbUX0EHDcxgivdu38cdzGCM9071xkTUmXAJ0YYtLO4YgSaOFDSqXxiBBwcZnyCmGWMS8pGRijgEyOg4NgOtByOLsTN8Tg46rgeeUKzLDZSPWYxk3imQNWVpdhaCBfRW3A6UU0ceyfJiiNliK1rHevMkgtG8jiSZ/jpZrGD9ko6HRwk9lnKlsljHbxHyzi6JsL5Hcg4OBmKcXRHBDGRsjkinHVcHAen6LdHJPgAR3qMYB9JMGaJOd7Tq43w0cCwygCFShBhUQIHqWPFJHBUNJPg1WOyL6rKs4C49RbW30aXLqaTRFJCsT+7oY7jvUmof4X08foHcyGCkSP7X0AAAAAASUVORK5CYII=" width="216"></figure>
+    <figure><figcaption>library.ts actual</figcaption><svg viewBox="-2.080000000000002 -1 24.8 25.04" width="59.519999999999996" height="60.096" class="sym"><path d="M-1.08 12.96a10.08 10.08 0 1 0 20.16 0a10.08 10.08 0 1 0 -20.16 0Z" style="stroke-width:0.26"/>
+<path d="M0 0L0 8.42" style="stroke-width:0.26"/>
+<path d="M6 0L6 3.34" style="stroke-width:0.26"/>
+<path d="M12 0L12 3.34" style="stroke-width:0.26"/>
+<path d="M18 0L18 8.42" style="stroke-width:0.26"/>
+<path d="M20.52 11.76a1.2 1.2 0 0 0 0 2.4" style="stroke-width:0.17"/><text x="9" y="9.600000000000001" font-size="7.199999999999999" text-anchor="middle" dominant-baseline="middle" font-family="ui-monospace,Menlo,monospace">M</text>
+<text x="9" y="14.879999999999999" font-size="4.800000000000001" text-anchor="middle" dominant-baseline="middle" font-family="ui-monospace,Menlo,monospace">3~</text><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="6" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="12" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="18" cy="0" r="0.55" fill="#0a0"/></svg></figure>
+    <figure class="ov-fig"><figcaption>superposición (símbolo azul, bornes verdes)</figcaption><div class="ov-wrap">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAABXCAIAAAALVMWLAAAC0klEQVR42u2cy5HDIAxAdacRitkDfWwTSzFbhS/pbHcM/sc4/AQC5EPGmSAZngVIIAJ/mNcPQFt6gHEwDsaRguP1en1U7VMGPJpBSg+udUCmt1pMT0EckxJSb9+0FGq6/eVZz6TELnj89lGJU8+kBCz39XFoCQDgjePEY1Ppo+Rdjy0/38ilNtVxaK2DrONIcqfho8RVHy2lXnU211kOsmexYByLGvtppacmcVjhi1Q4DmMXaz1mcaVKzixa7r37eB+OY+Yh5VkoAsc8DIlVSkshRNmJ1o54cB32wnEYTWeZCBxmTjm+IcF+B7thjCMJR/WYBR6v/mMWnwbHFW4JR0STUpTQxZFOIUInRRwYIDz108KBDeLjswjhKAbi+X3Ux1HSKJ7NpD6OiiBuX0wPXmmxysAgLCp3FoIsfCqGErNsj8wV++Qt8+QcjmMXPpWEAVk8ecyMAwtHQyxcFYZhWdx78YwjP45GWdzEmYwjM46mWVyaQBjHaaPttF9GFweiacw4jhkpiDj2FQA8/z811jDb0tLw+P3+uu5Q48RZpK1DKK2kSb6QSnvsSGNZB4lB1GRe2A/1ls2BRIQ6jjklRc7ZSozD5uUsiTHD46jhfTCOTDg6Y5HqhjGOoXC4Y4TbUX0EHDcxgivdu38cdzGCM9071xkTUmXAJ0YYtLO4YgSaOFDSqXxiBBwcZnyCmGWMS8pGRijgEyOg4NgOtByOLsTN8Tg46rgeeUKzLDZSPWYxk3imQNWVpdhaCBfRW3A6UU0ceyfJiiNliK1rHevMkgtG8jiSZ/jpZrGD9ko6HRwk9lnKlsljHbxHyzi6JsL5Hcg4OBmKcXRHBDGRsjkinHVcHAen6LdHJPgAR3qMYB9JMGaJOd7Tq43w0cCwygCFShBhUQIHqWPFJHBUNJPg1WOyL6rKs4C49RbW30aXLqaTRFJCsT+7oY7jvUmof4X08foHcyGCkSP7X0AAAAAASUVORK5CYII=" width="216">
+      <svg class="ov" viewBox="175.25 161.125 22.5 21.75" width="216" height="208.79999999999998">
+        <g class="sym-layer"><g data-bx="183" data-by="168"><path d="M-1.08 12.96a10.08 10.08 0 1 0 20.16 0a10.08 10.08 0 1 0 -20.16 0Z" style="stroke-width:0.26"/>
+<path d="M0 0L0 8.42" style="stroke-width:0.26"/>
+<path d="M6 0L6 3.34" style="stroke-width:0.26"/>
+<path d="M12 0L12 3.34" style="stroke-width:0.26"/>
+<path d="M18 0L18 8.42" style="stroke-width:0.26"/>
+<path d="M20.52 11.76a1.2 1.2 0 0 0 0 2.4" style="stroke-width:0.17"/><text x="9" y="9.600000000000001" font-size="7.199999999999999" text-anchor="middle" dominant-baseline="middle" font-family="ui-monospace,Menlo,monospace">M</text>
+<text x="9" y="14.879999999999999" font-size="4.800000000000001" text-anchor="middle" dominant-baseline="middle" font-family="ui-monospace,Menlo,monospace">3~</text><circle cx="0" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="6" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="12" cy="0" r="0.55" fill="#0a0"/>
+<circle cx="18" cy="0" r="0.55" fill="#0a0"/><g class="terms"><circle cx="7.75" cy="-17.13" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="7.75" cy="6.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="13.75" cy="-17.13" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="13.75" cy="6.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="19.75" cy="-17.13" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/><circle cx="19.75" cy="6.88" r="0.7" fill="none" stroke="#0a0" stroke-width="0.3"/></g></g></g>
+      </svg></div></figure>
+  </div>
+  <div class="controls">
+    <button class="nudge" data-dx="-0.25">←</button>
+    <button class="nudge" data-dx="0.25">→</button>
+    <button class="nudge" data-dy="-0.25">↑</button>
+    <button class="nudge" data-dy="0.25">↓</button>
+    <button class="rot" data-dr="-90">⟲ 90°</button>
+    <button class="rot" data-dr="90">⟳ 90°</button>
+    <button class="reset">reset</button>
+    <span class="off">desplazamiento: <b class="off-val">0, 0</b> u · rotación: <b class="rot-val">0°</b></span>
+  </div>
+</section>
+<script>
+  document.querySelectorAll('section').forEach((sec) => {
+    const layer = sec.querySelector('.sym-layer');
+    const g = layer.querySelector('g');
+    const val = sec.querySelector('.off-val');
+    const rval = sec.querySelector('.rot-val');
+    let dx = 0, dy = 0, rot = 0;
+    const bx = +g.dataset.bx, by = +g.dataset.by;
+    const apply = () => {
+      layer.setAttribute('transform', `translate(${dx} ${dy}) rotate(${rot} ${bx} ${by})`);
+      val.textContent = `${dx}, ${dy}`;
+      rval.textContent = `${rot}°`;
+    };
+    sec.querySelectorAll('.nudge').forEach((b) => b.addEventListener('click', () => {
+      dx += +b.dataset.dx || 0; dy += +b.dataset.dy || 0; apply();
+    }));
+    sec.querySelectorAll('.rot').forEach((b) => b.addEventListener('click', () => {
+      rot = (rot + +b.dataset.dr + 360) % 360; apply();
+    }));
+    sec.querySelector('.reset').addEventListener('click', () => { dx = 0; dy = 0; rot = 0; apply(); });
+  });
+</script>
+</body></html>
