@@ -566,7 +566,8 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
   lampDevice(8101, 'senalizacion'),
   lampDevice(8102, 'senalizacion'),
   lampDevice(8103, 'senalizacion'),
-  lampDevice(9009, 'senalizacion', true),
+  // 9009 («Señalización óptica intermitente») vive en `library.ts` calibrada
+  // contra la captura de docs/03, anclada al origen.
   soundDevice(9010),
   soundDevice(9012),
   soundDevice(9013),

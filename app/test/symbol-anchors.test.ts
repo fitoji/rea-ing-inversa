@@ -319,6 +319,28 @@ test('los bornes de los símbolos anclados caen donde el archivo los conecta', (
   }
 });
 
+test('la lámpara de señalización intermitente (9009) lleva el destello medido en docs/03', () => {
+  const sym = resolveSymbol(9009, ['X1', 'X2']);
+  assert.equal(sym.anchor, 'origin', 'el 9009 va anclado al origen');
+  assert.deepEqual(sym.originPins, [
+    { name: 'X1', x: 0, y: 0 },
+    { name: 'X2', x: 0, y: 12 },
+  ]);
+
+  // Misma base que la lámpara CADe (círculo centrado en y=6, r=2,83, aspa y
+  // conductores hasta las filas 0/12) más la marca de intermitencia medida
+  // sobre docs/03/componentes01.png (S=4, OX=-17, OY=-101), a la derecha.
+  const shapes = sym.shapes(12, 15);
+  const ink = shapesBounds(shapes);
+  assert.ok(near(ink.minX, -2.83) && near(ink.maxX, 7.25), `la 9009 mide ${ink.minX}..${ink.maxX} de ancho`);
+  assert.ok(near(ink.minY, 0) && near(ink.maxY, 12), `la 9009 mide ${ink.minY}..${ink.maxY} de alto`);
+  assert.ok(shapes.some((s) => s.d === 'M0 0L0 3.17'), 'falta el conductor superior de la lámpara');
+  assert.ok(shapes.some((s) => s.d === 'M0 8.83L0 12'), 'falta el conductor inferior de la lámpara');
+  assert.ok(shapes.some((s) => s.d === 'M6 5.25H6.75'), 'falta la barra superior del destello');
+  assert.ok(shapes.some((s) => s.d === 'M6 5.25V6.5H5.5'), 'falta el trazo izquierdo del destello');
+  assert.ok(shapes.some((s) => s.d === 'M6.75 5.25V6.5H7.25'), 'falta el trazo derecho del destello');
+});
+
 test('el rótulo del borne va a su derecha y el designador a la izquierda del símbolo', () => {
   assert.deepEqual(pinLabelAt({ x: 10, y: 20 }), { x: 11.2, y: 20.4 });
   assert.deepEqual(designatorAt({ x: 4, y: 6, w: 10, h: 12 }), { x: 2.8, y: 12 });

@@ -467,6 +467,35 @@ const thermalContact: SymbolDef = {
 };
 
 /**
+ * Señalización óptica intermitente (9009): lámpara con el destello de
+ * intermitencia, medida sobre `docs/03/componentes01` (9 px/u aprox en
+ * captura original no aplica; verificada en `componentes01.png` con
+ * S=4, OX=-17, OY=-101). Misma base que la lámpara CADe (círculo centrado
+ * entre bornes, aspa) más la marca de intermitencia a la derecha.
+ */
+const flashingLamp: SymbolDef = {
+  code: 9009,
+  name: 'Señalización óptica intermitente',
+  group: 'senalizacion',
+  pins: [left(0.5, 'X1'), right(0.5, 'X2')],
+  anchor: 'origin',
+  originPins: [
+    { name: 'X1', x: 0, y: 0 },
+    { name: 'X2', x: 0, y: 12 },
+  ],
+  size: { w: 12, h: 15 },
+  shapes() {
+    return [
+      ...cadesimuLamp(),
+      // Marca de intermitencia (destello), medida en px sobre componentes01.png.
+      { d: 'M6 5.25H6.75', thin: true, lamp: true },
+      { d: 'M6 5.25V6.5H5.5', thin: true, lamp: true },
+      { d: 'M6.75 5.25V6.5H7.25', thin: true, lamp: true },
+    ];
+  },
+};
+
+/**
  * Conmutador de dos posiciones (el 8018).
  *
  * En CADeSimu el 8018 son **dos contactos verticales** (95-96 y 97-98) con
@@ -929,6 +958,7 @@ const ALL: SymbolDef[] = [
   selectorNO,
   selectorNC,
   lamp,
+  flashingLamp,
   thermalContact,
   changeover,
   electrovalve,
