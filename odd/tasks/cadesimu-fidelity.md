@@ -120,3 +120,55 @@ Feature completa: 7/7 tareas, suite 313/313, commits e4ad856 → d07c3fc →
 Risk: item 3 (contract rendering compartido: library.ts alimenta el lienzo y
 tests; mitigado con differential base-vs-árbol OK solo-1000, suite 313/313 y
 los overrides de families.ts eliminados; docs actualizadas).
+
+## Pendientes de captura (13/11/2026)
+
+Estado: 17 de 230 defs están ancladas al origen (lista abajo). La prioridad
+sale de la frecuencia en los 31 `.cad` del repo. Para calibrar hace falta
+**una captura PNG + el `.cad` con el componente colocado**; con las dos se
+mide escala, origen y tinta, y el gate raster verifica píxel a píxel.
+
+Ancladas hoy: 1000, 2001, 3000, 3001, 6001, 7016, 8000-8005, 8016, 9000, 9003,
+9004, 9008.
+
+### A. Sin captura ni .cad (prioridad por uso real)
+
+| # | Código | Nombre | Usos |
+|---|--------|--------|------|
+| 1 | 9009 | Señalización óptica intermitente | 10 |
+| 2 | 7000 | Contacto auxiliar NA | 7 |
+| 3 | 7001 | Contacto auxiliar NC | 5 |
+| 4 | 3005 | Alimentación L1 L2 L3 PE | 5 |
+| 5 | 8018 | Conmutador de dos posiciones | 4 |
+| 6 | 6002 | Automático II (con 6000/6003) | 3 |
+| 7 | 8013 | Contacto final de carrera NC (con 8012) | 3 |
+| 8 | 2006 | Contactor I (con 2000/2003/2004/2007) | 3 |
+| 9 | 8017 | Contacto del térmico | 1 |
+| 10 | 3003 | Alimentación L N | 1 |
+
+### B. Ya hay PNG, falta el .cad (más barato: guardar un archivo con el
+componente colocado)
+
+- 6009 Disyuntor III — `data/samples/components_png/disyuntor trifasico.png`
+- 5000 Fusible I — `fusible monofasico.png`
+- 6010 Disyuntor I — `interruptor proteccion contra cortocircuitos monofasico.png`
+- 6005 Diferencial IN — `rele diferencial.png`
+- 6007 Relé térmico — `rele termico.png` (bloqueado: no existe registro
+  `*6007#` en ningún fixture; el usuario decidió posponerlo)
+- 6015/6016 Contactor / Relé térmico — sin PNG
+
+### C. Familias completas (baja frecuencia; un solo .cad con todas las
+variantes alcanza)
+
+- protección: 5000-5008 fusibles/seccionadores; 6000-6020 automáticos,
+  diferenciales y relés.
+- potencia especial: 1050-1058 resistencias/autotransformador/arrancador/
+  variadores; 1076 relé.
+- motores: 1001-1010 (monofásico, Dahlander, rotor bobinado, dos velocidades,
+  cc).
+- mando/temporizadores: 7002-7015 contactos conmutados y temporizados;
+  9001-9007 bobinas y temporizadores.
+- señalización: 8006-8015 interruptores y finales; 8100-8103 piloto/botonera/
+  LED; 9010-9013 timbre/sirena/bocina/zumbador.
+- neumática: 10500-10509, 10550.
+- sensores: 7500-7605 y 7883 (detectores, barreras, presostatos, termostatos).
