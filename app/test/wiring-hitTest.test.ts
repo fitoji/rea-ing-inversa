@@ -5,7 +5,7 @@
 import { test } from 'node:test';
 import { strict as assert } from 'node:assert';
 
-import { hitContext, hitTest } from '../src/editor/wiring/hitTest.ts';
+import { hitContext, hitTest, segmentAttachedTo } from '../src/editor/wiring/hitTest.ts';
 import type { Point } from '../src/editor/pins.ts';
 import type { CadeRecordModel } from '../src/model/project.ts';
 import type { Network } from '../src/editor/network.ts';
@@ -86,4 +86,29 @@ test('los endpoints se pueden apagar: el escaneo de solo segmentos conserva el g
   const out = hitTest(pt(0, 50), ctx, TOL, { endpoints: false });
   assert.equal(out.kind, 'segment');
   if (out.kind === 'segment') assert.equal(out.segmentId, 1);
+});
+
+// --- bornes: el cable que llega a la caja no le roba el clic a la tinta -------
+
+test('un extremo del tramo dentro de la caja lo declara conectado por borne', () => {
+  // Tramo 1 termina exactamente en la esquina (0,50) de una caja que lo toca.
+  const box = { x: 0, y: 50, w: 6, h: 3 };
+  assert.equal(segmentAttachedTo({ x1: 0, y1: 50, x2: 20, y2: 50 }, box), true);
+});
+
+test('un extremo apenas adentro también cuenta: la tolerancia de caja es cerrada', () => {
+  const box = { x: 0, y: 50, w: 6, h: 3 };
+  assert.equal(segmentAttachedTo({ x1: 3, y1: 51, x2: 30, y2: 51 }, box), true);
+});
+
+test('un tramo que solo cruza cerca no está conectado: gana el cable como siempre', () => {
+  // Pasa al costado de la caja sin meter ningún extremo en ella.
+  const box = { x: 0, y: 50, w: 6, h: 3 };
+  assert.equal(segmentAttachedTo({ x1: -20, y1: 40, x2: 20, y2: 40 }, box), false);
+  assert.equal(segmentAttachedTo({ x1: 20, y1: 40, x2: 20, y2: 70 }, box), false);
+});
+
+test('un tramo lejano no está conectado', () => {
+  const box = { x: 0, y: 50, w: 6, h: 3 };
+  assert.equal(segmentAttachedTo({ x1: 40, y1: 80, x2: 60, y2: 80 }, box), false);
 });

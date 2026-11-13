@@ -9,7 +9,7 @@ import { idle, startBend, startMarquee, startMove, startPan, startVertex, step a
 import { attachPoints, type Point } from '../editor/pins.ts';
 import { buildNetwork, cableSegments } from '../editor/network.ts';
 import { snapContext, snapTarget, type SnapTarget } from '../editor/wiring/snap.ts';
-import { hitContext, hitTest } from '../editor/wiring/hitTest.ts';
+import { hitContext, hitTest, segmentAttachedTo } from '../editor/wiring/hitTest.ts';
 import { WIRE_TEMPLATES } from '../symbols/templates.ts';
 import { conductorToneOf, type ConductorTone } from '../editor/conductor.ts';
 import { SymbolGlyph } from './SymbolGlyph.tsx';
@@ -348,7 +348,20 @@ export function Canvas(props: Props): JSX.Element {
     const wireHit = hitWire(world, 4 / view.k);
     const domHit = target.closest('[data-id]') as HTMLElement | null;
     const domId = domHit ? Number(domHit.dataset.id) : null;
-    const hitId = simulating && domId !== null ? domId : (wireHit ?? domId);
+    let hitId = simulating && domId !== null ? domId : (wireHit ?? domId);
+    // Excepción con evidencia: el cable que llega POR BORNE a la tinta pulsada
+    // no le roba el clic. En las terminales de alimentación (L/N, caja de 6×3)
+    // el cable pasa exactamente por la tinta del símbolo: sin esto, cualquier
+    // clic cerca de la letra agarra el cable y la terminal nunca se puede
+    // mover. Un cable que solo pasa cerca (sin extremo en la caja) sigue
+    // ganando, que era el defecto que este orden vino a arreglar.
+    if (!simulating && wireHit !== null && domId !== null) {
+      const inked = records.find((r) => r.id === domId);
+      const box = inked && inked.kind === 'component' ? boundsOf(inked) : null;
+      const seg = records.find((r) => r.id === wireHit);
+      const pts = seg ? wirePoints(seg) : null;
+      if (box && pts && segmentAttachedTo(pts, box)) hitId = domId;
+    }
     if (hitId !== null) {
       const id = hitId;
       const rec = records.find((r) => r.id === id);

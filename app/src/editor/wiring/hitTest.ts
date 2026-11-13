@@ -46,6 +46,22 @@ export interface HitOptions {
   endpoints?: boolean;
 }
 
+/**
+ * ¿El tramo llega por borne a esta caja? Un extremo dentro de la caja (borde
+ * incluido) significa que el cable conecta ahí: es el caso de las terminales
+ * de alimentación, cuya tinta vive pegada al cable que las alimenta. Un tramo
+ * que solo pasa cerca o cruza la caja sin meter un extremo adentro no cuenta:
+ * sigue ganando el cable, como siempre.
+ */
+export function segmentAttachedTo(
+  segment: { x1: number; y1: number; x2: number; y2: number },
+  bounds: { x: number; y: number; w: number; h: number },
+): boolean {
+  const inside = (x: number, y: number): boolean =>
+    x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
+  return inside(segment.x1, segment.y1) || inside(segment.x2, segment.y2);
+}
+
 export function hitTest(world: Point, ctx: HitContext, tolerance: number, options: HitOptions = {}): HitTarget {
   const tol2 = tolerance * tolerance;
   const wantEndpoints = options.endpoints ?? true;
