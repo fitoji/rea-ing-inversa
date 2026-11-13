@@ -83,21 +83,10 @@
   stroke: var(--lamp, var(--ink));
 }
 
-.body {
-  fill: var(--body-fill);
-  stroke: var(--body-stroke);
-  stroke-width: 0.26;
-}
-
-.body.live {
-  fill: color-mix(in oklab, var(--warn) 16%, var(--body-fill));
-  stroke: var(--warn);
-}
-
-.body.bad {
-  fill: color-mix(in oklab, var(--destructive) 14%, var(--body-fill));
-  stroke: var(--destructive);
-}
+/*
+ * Sin recuadro de componente: CADeSimu muestra sólo la tinta del símbolo.
+ * Las señales de estado viven en la tinta y los cables, no en un marco.
+ */
 
 .mark {
   fill: none;
@@ -112,10 +101,9 @@
   50% { opacity: 1; }
 }
 
-.body.sel {
-  fill: var(--body-sel-fill);
-  stroke: var(--select);
-  stroke-width: 0.34;
+/* Resaltado de búsqueda (antes lo llevaba el recuadro): tinta roja. */
+[data-bad] .sym path {
+  stroke: var(--destructive);
 }
 
 .pin {
@@ -297,7 +285,7 @@
   }
 }
 
-/* Estados de simulación: el color lo pone .body.live; acá va el movimiento. */
+/* Estados de simulación: acá va el movimiento; el color vive en la tinta y los cables. */
 [data-state='active'] .sym {
   filter: drop-shadow(0 0 1.1px var(--warn));
 }
@@ -314,9 +302,8 @@
   animation: state-timing 1.1s ease-in-out infinite;
 }
 
-[data-state='tripped'] .body {
-  fill: var(--destructive);
-  stroke: var(--destructive);
+[data-state='tripped'] .sym {
+  filter: drop-shadow(0 0 1.1px var(--destructive));
 }
 
 @keyframes state-blink {

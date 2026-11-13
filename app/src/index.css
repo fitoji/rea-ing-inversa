@@ -105,9 +105,6 @@
 
   --ink: #3d4a5c;
   --ink-soft: #6b7789;
-  --body-fill: #ffffff;
-  --body-stroke: #9aa8ba;
-  --body-sel-fill: #eaf1fb;
   --pin-fill: #ffffff;
   --pin-stroke: #7d8b9c;
   --pin-sel-fill: #dce9fa;
@@ -176,9 +173,6 @@
 
   --ink: #93a7c2;
   --ink-soft: #6e7f95;
-  --body-fill: #10151c;
-  --body-stroke: #303c4d;
-  --body-sel-fill: #13202f;
   --pin-fill: #0b0f15;
   --pin-stroke: #6a7f99;
   --pin-sel-fill: #16202c;
@@ -301,9 +295,6 @@
 
   --ink: #141414;
   --ink-soft: #3a3a3a;
-  --body-fill: #fdfdfb;
-  --body-stroke: #141414;
-  --body-sel-fill: #dce9ff;
   --pin-fill: #fdfdfb;
   --pin-stroke: #141414;
   --pin-sel-fill: #cfe0ff;
@@ -326,8 +317,4 @@
 
 [data-pack='cadesimu'] .wire {
   stroke-width: 0.17;
-}
-
-[data-pack='cadesimu'] .body {
-  stroke-width: 0.32;
 }

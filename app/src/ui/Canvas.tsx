@@ -599,25 +599,20 @@ function Component({
 
   // Un símbolo anclado al origen trae su geometría en unidades del archivo y se
   // dibuja en el origen del registro, como en CADeSimu: la caja declarada es la
-  // grilla de conexión, no el marco del dibujo. Su marco propio es el de la
-  // tinta, para que la caja no quede descolgada del dibujo.
+  // grilla de conexión, no el marco del dibujo. Sin marco visible: CADeSimu
+  // muestra sólo la tinta del símbolo; los estados viven en la tinta y los
+  // cables, no en un recuadro.
   const anchored = sym.anchor === 'origin';
+  // El designador va a la izquierda del dibujo: para los anclados el marco de
+  // referencia es la caja de la tinta; para el resto, la caja declarada.
   const ink = shapesBounds(sym.shapes(anchored ? box.width : iw, anchored ? box.height : ih));
-  const frame = anchored
+  const labelFrame = anchored
     ? { x: ink.minX, y: ink.minY, w: ink.maxX - ink.minX, h: ink.maxY - ink.minY }
     : { x: 0, y: 0, w: box.width, h: box.height };
 
   return (
-    <g data-id={rec.id} data-state={state} transform={`translate(${x} ${y})`} style={{ cursor: 'move' }}>
+    <g data-id={rec.id} data-state={state} data-bad={bad || undefined} transform={`translate(${x} ${y})`} style={{ cursor: 'move' }}>
       <rect className="hitbox" x={0} y={0} width={box.width} height={box.height} />
-      <rect
-        className={selected ? 'body sel' : bad ? 'body bad' : live ? 'body live' : 'body'}
-        x={frame.x}
-        y={frame.y}
-        width={Math.max(frame.w, 0.1)}
-        height={Math.max(frame.h, 0.1)}
-        rx={0.6}
-      />
       {anchored ? (
         <SymbolGlyph
           code={rec.code}
@@ -652,7 +647,7 @@ function Component({
       })}
 
       {label !== '' && (
-        <text className="designator left" x={designatorAt(frame).x} y={designatorAt(frame).y} dominantBaseline="middle">
+        <text className="designator left" x={designatorAt(labelFrame).x} y={designatorAt(labelFrame).y} dominantBaseline="middle">
           {label}
         </text>
       )}

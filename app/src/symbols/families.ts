@@ -34,7 +34,6 @@ import {
   poleColumns,
   rect,
   right,
-  round,
   spread,
   straightPoles,
   thermalHook,
