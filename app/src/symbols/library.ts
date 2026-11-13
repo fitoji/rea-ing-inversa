@@ -304,26 +304,52 @@ const coil: SymbolDef = {
   },
 };
 
-/** Contacto auxiliar NA (código 7000: bornes 13-14 en los archivos reales). */
+/**
+ * Contacto auxiliar NA (7000), anclado al origen.
+ * Medido sobre `docs/03/componentes01.png` (S=4, OX=-17, OY=-101), en (114,33).
+ */
 const auxContact: SymbolDef = {
   code: 7000,
   name: 'Contacto auxiliar NA',
   group: 'mando',
   pins: [left(0.5, '13'), right(0.5, '14')],
+  anchor: 'origin',
+  originPins: [
+    { name: '13', x: 0, y: 0 },
+    { name: '14', x: 0, y: 12 },
+  ],
   size: { w: 6, h: 15 },
-  shapes(w, h) {
-    return contact(w, h / 2, false);
+  shapes() {
+    return [
+      { d: line(0, 0, 0, 3) },
+      { d: line(0, 9, -3, 3), blade: { px: 0, py: 9, deg: PUSH_BLADE_DEG } },
+      { d: line(0, 9, 0, 12) },
+    ];
   },
 };
 
-/** Contacto auxiliar NC (código 7001: bornes 11-12). */
+/**
+ * Contacto auxiliar NC (7001), anclado al origen.
+ * Medido sobre `docs/03/componentes01.png` (S=4, OX=-17, OY=-101), en (114,54).
+ */
 const auxContactNC: SymbolDef = {
-  ...auxContact,
   code: 7001,
   name: 'Contacto auxiliar NC',
+  group: 'mando',
   pins: [left(0.5, '11'), right(0.5, '12')],
-  shapes(w, h) {
-    return contact(w, h / 2, true);
+  anchor: 'origin',
+  originPins: [
+    { name: '11', x: 0, y: 0 },
+    { name: '12', x: 0, y: 12 },
+  ],
+  size: { w: 6, h: 15 },
+  shapes() {
+    return [
+      { d: line(0, 0, 0, 3.5) },
+      { d: line(0, 3.5, 3.25, 3.5) },
+      { d: line(0, 9, 2.5, 3.75), blade: { px: 0, py: 9, deg: -PUSH_BLADE_DEG } },
+      { d: line(0, 9, 0, 12) },
+    ];
   },
 };
 
