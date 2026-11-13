@@ -4,7 +4,6 @@ import { BoxesIcon, ChevronDownIcon, StarIcon } from 'lucide-react';
 import { lineList, symbolList, type SymbolDef, type SymbolGroup } from '../symbols/library.ts';
 import { CATALOG } from '../symbols/catalog.ts';
 import { getScope, subscribeScope } from '../symbols/scope.ts';
-import { getPack, subscribePack } from '../symbols/pack.ts';
 import { SymbolGlyph } from './SymbolGlyph.tsx';
 import { PanelHead } from './PanelHead.tsx';
 import type { Sheet } from '../model/project.ts';
@@ -68,8 +67,7 @@ interface Props {
 
 export function Palette({ placing, onPick, sheets, activeSheet, onSheet }: Props): JSX.Element {
   const scope = useSyncExternalStore(subscribeScope, getScope, getScope);
-  const pack = useSyncExternalStore(subscribePack, getPack, getPack);
-  const horizontal = pack === 'cadesimu';
+  const horizontal = true;
   const available = [...symbolList(), ...lineList()].filter(
     (sym) => scope === 'all' || CATALOG[sym.code] !== undefined,
   );
