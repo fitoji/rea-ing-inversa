@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url';
 import { parse } from '../src/format/cade.ts';
 import { buildProject, serializeProject, LAMP_COLORS, componentsOf, type LampColor } from '../src/model/project.ts';
 import { templateForPlacement } from '../src/symbols/place.ts';
+import { createEditor, setLampColor } from '../src/editor/state.ts';
 
 const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
 
@@ -101,4 +102,45 @@ test('una lámpara insertada desde la paleta no inventa color', () => {
   assert.equal(lamp.lampColor, null);
   // Sin slot de color en la cabecera, los bornes quedan intactos.
   assert.equal(lamp.pins.length, 2);
+});
+
+// --- escritura del color (el menú "Indicador color" de CADe_SIMU) -----------
+
+test('setLampColor: cambia sólo el índice de color de la lámpara indicada', () => {
+  const text = readFileSync(join(LUCES, 'luz_verde.cad'), 'latin1');
+  let s = createEditor(text);
+  const [lamp] = componentsOf(buildProject(parse(s.text)));
+  assert.equal(lamp!.lampColor, 0);
+
+  s = setLampColor(s, lamp!.id, 1);
+
+  const [after] = componentsOf(buildProject(parse(s.text)));
+  assert.equal(after!.lampColor, 1, 'el índice guardado es el rojo');
+  assert.deepEqual(after!.pins, ['X1', 'X2'], 'el color no se mezcla con los bornes');
+  assert.equal(after!.designator, '-H');
+  assert.ok(serializeProject(buildProject(parse(s.text))) === s.text, 'el archivo sigue redondeando');
+  assert.equal(s.text.length, text.length, 'el token se reemplaza en su lugar, no se agrega');
+});
+
+test('setLampColor: un componente sin slot de color no cambia el archivo', () => {
+  const text = readFileSync(join(FIXTURES, 'arranque-paro-motor-3f.cad'), 'latin1');
+  let s = createEditor(text);
+  const motor = parse(text).records.find((r) => r.code === 1000)!;
+  s = setLampColor(s, motor.id, 2);
+  assert.equal(s.text, text, 'el motor no tiene slot de color y el archivo queda intacto');
+});
+
+test('setLampColor: una lámpara de la paleta gana su token sin tocar los bornes', () => {
+  const raw = templateForPlacement(9008);
+  assert.ok(raw);
+  let s = createEditor(raw.replace(/\*0\*9008#/, '*1*9008#'));
+  const [lamp] = componentsOf(buildProject(parse(s.text)));
+  assert.equal(lamp!.lampColor, null);
+
+  s = setLampColor(s, lamp!.id, 3);
+
+  const [after] = componentsOf(buildProject(parse(s.text)));
+  assert.equal(after!.lampColor, 3, 'el índice 3 es azul');
+  assert.deepEqual(after!.pins, ['97', '98'], 'los bornes de la paleta no cambian');
+  assert.ok(serializeProject(buildProject(parse(s.text))) === s.text, 'el archivo redondea');
 });

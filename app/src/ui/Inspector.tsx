@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import type { JSX, ReactNode } from 'react';
 import { InfoIcon, MousePointerClickIcon, RotateCwIcon, Trash2Icon, TriangleAlertIcon } from 'lucide-react';
-import { GEOMETRY, boxOf, wirePoints, type CadeRecordModel } from '../model/project.ts';
+import { GEOMETRY, boxOf, wirePoints, LAMP_COLORS, type CadeRecordModel, type LampColor } from '../model/project.ts';
+import { hasColorSlot } from '../model/component-spec.ts';
 import { resolveSymbol } from '../symbols/library.ts';
 import type { Rotation } from '../editor/state.ts';
 import { cableLength, cableNumberOf, cableSegments, type Finding, type Network } from '../editor/network.ts';
 import type { Point } from '../editor/pins.ts';
 import { PanelHead } from './PanelHead.tsx';
+import { cn } from '@/lib/utils';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,6 +27,7 @@ interface Props {
   network: Network;
   findings: Finding[];
   onDesignator: (id: number, value: string) => void;
+  onLampColor: (id: number, color: LampColor) => void;
   onRotate: () => void;
   onDelete: () => void;
   onCableNumber: (ids: number[], value: number) => void;
@@ -222,6 +225,7 @@ function Single({
   network,
   findings,
   onDesignator,
+  onLampColor,
   onRotate,
   onDelete,
   onCableNumber,
@@ -262,6 +266,36 @@ function Single({
               }}
             />
           </Field>
+
+          {hasColorSlot(rec.code) && (
+            <Field className="gap-1.5">
+              <FieldLabel className="text-[10px] tracking-[0.6px] text-muted-foreground uppercase">
+                Color
+              </FieldLabel>
+              {/* El menú "Indicador color" de CADe_SIMU: el índice se guarda en
+                  la cabecera del registro y tiñe el vidrio de la lámpara. */}
+              <div className="flex gap-1.5" role="group" aria-label="Color de la señalización óptica">
+                {LAMP_COLORS.map((name, i) => (
+                  <button
+                    key={name}
+                    type="button"
+                    title={name}
+                    aria-label={name}
+                    aria-pressed={rec.lampColor === i}
+                    disabled={readOnly}
+                    onClick={() => onLampColor(rec.id, i as LampColor)}
+                    className={cn(
+                      'size-6 rounded-full border-2 transition-[border-color,box-shadow] disabled:opacity-50',
+                      rec.lampColor === i
+                        ? 'border-foreground ring-1 ring-foreground/40'
+                        : 'border-transparent hover:border-muted-foreground/50',
+                    )}
+                    style={{ background: `var(--lamp-${name})` }}
+                  />
+                ))}
+              </div>
+            </Field>
+          )}
 
           <dl className={DL}>
             <Row label="Tipo" value={sym.name} />

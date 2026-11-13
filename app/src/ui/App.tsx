@@ -31,6 +31,7 @@ import {
   addComponent,
   rotateSelection,
   setDesignator,
+  setLampColor,
   setCableNumber,
   insertVertex,
   deleteVertex,
@@ -877,6 +878,7 @@ export function App(): JSX.Element {
             vertex={state.vertex}
             onDeleteVertex={() => setState((s) => (s && s.vertex ? deleteVertex(s, s.vertex) : s))}
             onDesignator={(id, value) => setState(setDesignator(state, id, value))}
+            onLampColor={(id, color) => setState(setLampColor(state, id, color))}
             onRotate={() => setState(rotateSelection(state))}
             onDelete={() => setState(deleteSelection(state))}
             onCableNumber={(ids, n) => setState(setCableNumber(state, ids, n))}

@@ -301,6 +301,37 @@ export function withGeometry(rec: CadeRecordModel, geometry: number[]): string {
   return fields.join('#');
 }
 
+/**
+ * Devuelve `raw` con el índice de color de la lámpara.
+ *
+ * El token vive al final de la cabecera (después de los bornes, antes de la
+ * geometría). Si la cabecera todavía no lo tiene —una lámpara insertada desde
+ * la paleta— se agrega en el primer hueco libre, sin tocar ningún otro campo.
+ */
+export function withLampColor(rec: CadeRecordModel, color: LampColor): string {
+  if (!hasColorSlot(rec.code)) return rec.raw;
+  const idx = geometryFieldIndex(rec.raw);
+  if (idx === -1) return rec.raw;
+  const fields = rec.raw.split('#');
+  // En el layout extendido el bloque de geometría viene pegado a un texto;
+  // las lámparas no lo usan y no hay forma segura de ubicar el token.
+  if (fields[idx]!.indexOf('*') > 0) return rec.raw;
+  let last = -1;
+  for (let i = 2; i < idx; i++) if (fields[i] !== '') last = i;
+  if (last === -1) return rec.raw;
+  // Sólo se reemplaza el token que el parser ya reconoció como color: un
+  // último token numérico fuera de rango es un borne (97/98 de la paleta).
+  if (rec.lampColor !== null && /^\d+$/.test(fields[last]!)) {
+    fields[last] = String(color);
+  } else {
+    let pos = last + 1;
+    while (pos < idx && fields[pos] !== '') pos++;
+    if (pos < idx) fields[pos] = String(color);
+    else fields.splice(idx, 0, String(color));
+  }
+  return fields.join('#');
+}
+
 /** Devuelve `raw` con el id reemplazado. */
 export function withId(rec: CadeRecordModel, id: number): string {
   const m = /^\*(\d+)\*/.exec(rec.raw);

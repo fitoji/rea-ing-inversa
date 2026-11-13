@@ -23,15 +23,18 @@ import {
   serializeWith,
   withGeometry,
   withId,
+  withLampColor,
   withPosition,
   withWirePoints,
   wirePoints,
+  type LampColor,
   type WirePoints,
   boundsOf,
   GEOMETRY,
   type CadeRecordModel,
   type Project,
 } from '../model/project.ts';
+import { hasColorSlot } from '../model/component-spec.ts';
 import { CABLE_NUMBER_INDEX, buildNetwork, cableNumberOf, cableSegments, netKey, nodeXY } from './network.ts';
 import type { Point } from './pins.ts';
 
@@ -362,6 +365,21 @@ export function setDesignator(state: EditorState, id: number, designator: string
   if (fields.length < 2) return state;
   fields[1] = designator;
   const edits = new Map([[entry.index, fields.join('#')]]);
+  return commit(state, serializeWith(project, edits));
+}
+
+/**
+ * Cambia el color de la señalización óptica (el menú "Indicador color" de
+ * CADe_SIMU). Sólo aplica a los códigos con slot de color; el resto de las
+ * lámparas no escribe nada.
+ */
+export function setLampColor(state: EditorState, id: number, color: LampColor): EditorState {
+  const project = projectOf(state);
+  const entry = indexed(project).find(({ rec }) => rec.id === id);
+  if (!entry || entry.rec.kind !== 'component' || !hasColorSlot(entry.rec.code)) return state;
+  const raw = withLampColor(entry.rec, color);
+  if (raw === entry.rec.raw) return state;
+  const edits = new Map([[entry.index, raw]]);
   return commit(state, serializeWith(project, edits));
 }
 
