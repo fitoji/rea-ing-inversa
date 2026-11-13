@@ -92,7 +92,7 @@ const defPoles = (
  * sintetizado tiene que conservarlos en ese orden para que cada borne siga
  * cayendo en el mismo sitio del dibujo.
  */
-function polesInCadeOrder(n: number, size: { w: number; h: number }): SymbolPin[] {
+export function polesInCadeOrder(n: number, size: { w: number; h: number }): SymbolPin[] {
   const all = poles(n, size);
   const parity = (odd: boolean): SymbolPin[] =>
     all.filter((pin) => (odd ? Number(pin.name) % 2 === 1 : Number(pin.name) % 2 === 0));
@@ -153,18 +153,6 @@ const resistor = (code: number, count: number): SymbolDef => {
 const polesDevice = (code: number, n: number, group: SymbolGroup, letter?: string): SymbolDef => {
   const size = { w: n === 1 ? 12 : n * 6, h: 15 };
   return defPoles(code, group, n, (w, h) => verticalPoles(w, h, n), size, letter ? motorLabel(letter) : undefined);
-};
-
-/**
- * Polos de potencia del contactor (2001 «III», 2002 «IIII»).
- *
- * El `.cade` real los mide con caja `n·6 × 15` y bornes en el orden del
- * registro (`1 3 5 2 4 6`, `arranque-paro-motor-3f.cad`); la geometría vieja
- * de `library.ts` era horizontal y no declaraba caja.
- */
-const contactorPoles = (code: number, n: number): SymbolDef => {
-  const size = { w: n * 6, h: 15 };
-  return def(code, 'potencia', polesInCadeOrder(n, size), (w, h) => verticalPoles(w, h, n), size);
 };
 
 /**
@@ -478,7 +466,8 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
   polesDevice(2004, 3, 'potencia'),
   polesDevice(2006, 1, 'potencia'),
   polesDevice(2007, 1, 'potencia'),
-  contactorPoles(2001, 3),
+  // 2001 («Contactor III») vive en `library.ts` calibrado contra la captura
+  // PR1, anclado al origen: la def anclada manda sobre la vieja proporcional.
   // 2002 («Contactor IIII») se queda en la geometría de `library.ts`: cuatro
   // polos serían 8 bornes y el registro guarda 7 como máximo, así que ningún
   // `.cade` real lo escribe así y no hay muestra que verifique el redibujo.

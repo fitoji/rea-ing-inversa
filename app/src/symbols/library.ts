@@ -39,7 +39,7 @@ import {
   right,
   threePole,
 } from './draw.ts';
-import { FAMILY_SYMBOLS, LINE_SYMBOLS } from './families.ts';
+import { FAMILY_SYMBOLS, LINE_SYMBOLS, polesInCadeOrder } from './families.ts';
 import { QET_SYMBOLS } from './qet.ts';
 import { withQetGeometry } from './qet-adapter.ts';
 
@@ -175,16 +175,37 @@ const powerContact: SymbolDef = {
   code: 2001,
   name: 'Contactor III',
   group: 'potencia',
-  pins: [
-    left(0.18, '1'),
-    left(0.5, '3'),
-    left(0.82, '5'),
-    right(0.18, '2'),
-    right(0.5, '4'),
-    right(0.82, '6'),
+  pins: polesInCadeOrder(3, { w: 18, h: 15 }),
+  anchor: 'origin',
+  // Registro 31 del fixture PR1 (`*183*132*...*-12*-3*18*15*`): bornes 1-3-5
+  // en la fila superior y 2-4-6 en la inferior, columnas 0/6/12.
+  originPins: [
+    { name: '1', x: 0, y: 0 },
+    { name: '3', x: 6, y: 0 },
+    { name: '5', x: 12, y: 0 },
+    { name: '2', x: 0, y: 12 },
+    { name: '4', x: 6, y: 12 },
+    { name: '6', x: 12, y: 12 },
   ],
-  shapes(w, h) {
-    return threePole(w, h, false);
+  size: { w: 18, h: 15 },
+  // Medido sobre la captura PR1 a 4 px por unidad: stub superior (p,−6)→(p,−3)
+  // —1 px negro alineado sobre el borde de la caja, donde el cable (gris de
+  // CADe) se apoya—, hoja (p−3,−3)→(p,+3) con pivote en (p,+3) y montante
+  // (p,+3)→(p,+6): de +6 a la fila inferior +12 el tramo lo dibuja el
+  // ruteador (queda bajo el relleno de la caja). El guion mecánico
+  // discontinuo en y=0 arranca en el cruce de la hoja 1 (−1,5) y termina en
+  // el de la hoja 3 (+10,5).
+  shapes() {
+    return [
+      ...[0, 6, 12].flatMap((p) => [
+        { d: line(p, -6, p, -3) },
+        { d: line(p - 3, -3, p, 3) },
+        { d: line(p, 3, p, 6) },
+      ]),
+      { d: line(-1.5, 0, 0.5, 0), thin: true },
+      { d: line(3.5, 0, 5.5, 0), thin: true },
+      { d: line(8.5, 0, 10.5, 0), thin: true },
+    ];
   },
 };
 

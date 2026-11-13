@@ -191,6 +191,41 @@ test('el motor (1000) va anclado al origen, con los bornes sobre el registro y e
   assert.equal(shapes.some((s) => s.fill), false, 'sin rellenos');
 });
 
+test('el contactor de potencia (2001) va anclado al origen con la fila de bornes del registro', () => {
+  const sym = resolveSymbol(2001, ['1', '3', '5', '2', '4', '6']);
+  assert.equal(sym.anchor, 'origin', 'el 2001 migró a anclaje al origen');
+  assert.deepEqual(sym.originPins, [
+    { name: '1', x: 0, y: 0 },
+    { name: '3', x: 6, y: 0 },
+    { name: '5', x: 12, y: 0 },
+    { name: '2', x: 0, y: 12 },
+    { name: '4', x: 6, y: 12 },
+    { name: '6', x: 12, y: 12 },
+  ]);
+
+  // Medido sobre docs/cadesimu-svg/reference/PR1_Rodolfo_Giusti_03.png
+  // (4 px por unidad), K1M en (624,390), caja del registro 18x15. Por polo
+  // (columnas 0/6/12): stub superior (p,−6)→(p,−3) — 1 px negro alineado sobre
+  // el borde de la caja, donde el cable (gris de CADe) se apoya —, hoja
+  // (p−3,−3)→(p,+3) con pivote en (p,+3) y montante (p,+3)→(p,+6): de +6 a la
+  // fila inferior +12 el tramo lo dibuja el ruteador (en la captura queda bajo
+  // el relleno de la caja). El guion mecánico discontinuo en y=0 arranca en el
+  // cruce de la hoja 1 (−1,5) y termina en el de la hoja 3 (+10,5): tramos de
+  // 2u con paso 5u. Entre el stub y el borne la captura no muestra tinta.
+  const shapes = sym.shapes(18, 15);
+  const ink = shapesBounds(shapes);
+  assert.ok(near(ink.minX, -3) && near(ink.maxX, 12), `el contactor mide ${ink.minX}..${ink.maxX} de ancho`);
+  assert.ok(near(ink.minY, -6) && near(ink.maxY, 6), `el contactor mide ${ink.minY}..${ink.maxY} de alto`);
+  for (const p of [0, 6, 12]) {
+    assert.ok(shapes.some((s) => s.d === `M${p} -6L${p} -3`), `falta el stub del polo ${p}`);
+    assert.ok(shapes.some((s) => s.d === `M${p - 3} -3L${p} 3`), `falta la hoja del polo ${p}`);
+    assert.ok(shapes.some((s) => s.d === `M${p} 3L${p} 6`), `falta el montante del polo ${p}`);
+  }
+  assert.ok(shapes.some((s) => s.d === 'M-1.5 0L0.5 0' && s.thin), 'falta el primer tramo del guion');
+  assert.ok(shapes.some((s) => s.d === 'M3.5 0L5.5 0' && s.thin), 'falta el segundo tramo del guion');
+  assert.ok(shapes.some((s) => s.d === 'M8.5 0L10.5 0' && s.thin), 'falta el tercer tramo del guion');
+});
+
 test('los bornes de los símbolos anclados caen donde el archivo los conecta', () => {
   // El criterio real del anclaje: el símbolo tiene que estar sobre sus cables.
   for (const rec of project.records) {
@@ -216,7 +251,8 @@ test('el rótulo del borne va a su derecha y el designador a la izquierda del s�
 
 test('los símbolos que no se migraron siguen dibujándose en su caja', () => {
   // El anclaje al origen es opt-in: el resto del catálogo no se mueve.
-  for (const code of [2001, 6007]) {
+  // El 2001 ya migró (test de arriba); el 6007 sigue sin registro que lo ancle.
+  for (const code of [6007]) {
     const sym = resolveSymbol(code, []);
     assert.notEqual(sym.anchor, 'origin', `${code} no debería estar anclado todavía`);
   }

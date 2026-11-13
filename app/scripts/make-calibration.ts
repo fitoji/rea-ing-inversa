@@ -35,7 +35,7 @@ const CADE = process.argv[3] ?? join(REF, 'PR1_Rodolfo_Giusti_03.cad');
 const OUT = join(HERE, '..', '..', 'docs', 'cadesimu-svg', 'calibration.html');
 
 /** Códigos del prototipo piloto: los mismos que el informe propone calibrar. */
-const PILOT = [8000, 8001, 9000, 9008, 1000];
+const PILOT = [8000, 8001, 9000, 9008, 1000, 2001];
 
 /**
  * Mapeo `.cad` -> px de la captura, medido contra ESTA referencia:
