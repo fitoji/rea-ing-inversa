@@ -64,3 +64,10 @@ Branch: `main`. Test runner: `pnpm test` desde `app/`.
   sobre `componentes01.png`. Gate raster: ref=149 overlap=140 stray=0
   (componentes01.png, 9009 en 135,36, S=4 OX=-17 OY=-101). Test de anclaje
   GREEN; tsc limpio. Quitado `lampDevice(9009,...)` de `families.ts`.
+
+- L5 (siguiente lote, en curso): medidos en px 7000 (114,33), 7001 (114,54),
+  8017 (126,108), 8018 (144,90) sobre `componentes01.png`; se probaron defs
+  ancladas para 7000/7001 pero quedaron con strays/no cerradas, así que no se
+  commitearon. Quedan pendientes de calibración con gate stray=0: 7000,7001,
+  7002,7003,8017,8018,3002-3005,3011,2000,2006,5000-5004,6000,6002,6003,6005,
+  6006,6008,6009,6010,8014,8015,9001,9002,1050,1051 y mapeo de componentes02.
