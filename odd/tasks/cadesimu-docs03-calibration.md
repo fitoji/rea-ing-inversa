@@ -39,11 +39,18 @@ Branch: `main`. Test runner: `pnpm test` desde `app/`.
 
 ## Tasks
 
-- T1 (S2,S5): medir S/OX/OY de `componentes01.png` y `componentes02.png` desde
-  anclajes conocidos; documentar en Log. Route: inline.
-- T2 (S4,S5,S6): calibrar lote 1 (a definir tras T1, prioridad alta) con tests,
-  gate raster y differential. Route: inline.
-- T3+: lotes siguientes según avance y evidencia. Route: inline.
+- [x] T1 (S2,S5): medir S/OX/OY de `componentes01.png` y `componentes02.png`.
+  - comp01: `S=4, OX=-17, OY=-101` (`px=cad*4+(-17,-101)`), verificado stray=0 en 3000/3001.
+  - comp02: `S=4, OX=-2, OY=-60` verificado stray=0 en 3000; 6001/2001 no cierran con defs actuales (requiere revisión).
+- [x] T2 lote 1 (S4,S5,S6): 9009 anclada (commit `504cc58`, stray=0).
+- [~] T3 lote 2 contactos auxiliares: 7000,7001 anclados (commit `ede08c3`, stray=0). 7002,7003,8015,8017,8018 pendientes de calibración.
+- [ ] T4 alimentaciones 3002-3005,3011.
+- [ ] T5 bobinas 9001,9002; resistencias 1050,1051.
+- [ ] T6 contactores 2000,2006.
+- [ ] T7 fusibles 5000-5004.
+- [ ] T8 protección 6000,6002,6003,6005,6006,6008,6009,6010.
+- [ ] T9 conmutadores/finales 8014,8015,8017,8018,7002,7003 (restantes).
+- [ ] T10 verificación comp02, diferencial, suite, tsc, push.
 
 ## Log
 
@@ -65,9 +72,6 @@ Branch: `main`. Test runner: `pnpm test` desde `app/`.
   (componentes01.png, 9009 en 135,36, S=4 OX=-17 OY=-101). Test de anclaje
   GREEN; tsc limpio. Quitado `lampDevice(9009,...)` de `families.ts`.
 
-- L5 (siguiente lote, en curso): medidos en px 7000 (114,33), 7001 (114,54),
-  8017 (126,108), 8018 (144,90) sobre `componentes01.png`; se probaron defs
-  ancladas para 7000/7001 pero quedaron con strays/no cerradas, así que no se
-  commitearon. Quedan pendientes de calibración con gate stray=0: 7000,7001,
-  7002,7003,8017,8018,3002-3005,3011,2000,2006,5000-5004,6000,6002,6003,6005,
-  6006,6008,6009,6010,8014,8015,9001,9002,1050,1051 y mapeo de componentes02.
+- L5: 7000/7001 anclados y cerrados con gate stray=0 sobre componentes01 (commit `ede08c3`). 7000: ref=50 overlap=48 refOnly=2 stray=0 (114,33). 7001: ref=70 overlap=62 refOnly=8 stray=0 (114,54).
+- L6 (mapeo comp02): `componentes02.png` mapeo `S=4, OX=-2, OY=-60` verificado con 3000 (stray=0, 15,36). 6001/2001 no cierran con ese mapeo usando defs actuales; requiere verificación por símbolo.
+- L7 (estado): pendientes 30 códigos: 7002,7003,8014,8015,8017,8018,3002-3005,3011,1050,1051,2000,2006,5000-5004,6000,6002,6003,6005,6006,6008,6009,6010,9001,9002. Comp02-exclusivos: 2006,5001,5003,6000,6002,6003,6009,8014. TSC limpio en último chequeo. Push pendiente.
