@@ -124,6 +124,81 @@ test('el pulsador NC (8001) abre girando al contrario que el NA', () => {
   assert.ok(stub, 'el tramo superior del NC baja hasta la barra');
 });
 
+test('el pulsador NA-NC (8002) va anclado con un contacto en cada columna', () => {
+  const sym = resolveSymbol(8002, ['11', '13', '12', '14']);
+  assert.equal(sym.anchor, 'origin', 'el 8002 migró a anclaje al origen');
+  assert.deepEqual(sym.originPins, [
+    { name: '11', x: 0, y: 0 },
+    { name: '13', x: 9, y: 0 },
+    { name: '12', x: 0, y: 12 },
+    { name: '14', x: 9, y: 12 },
+  ]);
+
+  // Medido sobre docs/02/pulsadores.png (9 px por unidad), NA-NC en (528,198):
+  // NC en la columna 0 (barra a −2,5 y paleta de +3 a −3) y NO en la columna 9
+  // (paleta de +3 a −3 abriendo hacia la izquierda), con el enlace mecánico
+  // discontinuo en y=0 de −3 a 7,5.
+  const shapes = sym.shapes(15, 15);
+  const ink = shapesBounds(shapes);
+  assert.ok(near(ink.minX, -6) && near(ink.maxX, 9), `el NA-NC mide ${ink.minX}..${ink.maxX} de ancho`);
+  assert.ok(near(ink.minY, -6) && near(ink.maxY, 5.75), `el NA-NC mide ${ink.minY}..${ink.maxY} de alto`);
+  assert.ok(shapes.some((s) => s.d === 'M0 -2.5L3.5 -2.5'), 'falta la barra del contacto NC');
+  assert.ok(shapes.some((s) => s.d === 'M0 3L3 -3'), 'falta la paleta NC');
+  assert.ok(shapes.some((s) => s.d === 'M9 -6L9 -3'), 'falta el tramo superior del NO');
+  assert.ok(shapes.some((s) => s.d === 'M9 3L6 -3'), 'falta la paleta NO');
+  for (const d of ['M-3 0L-1 0', 'M0 0L2 0', 'M3 0L5 0', 'M6 0L7.5 0']) {
+    assert.ok(shapes.some((s) => s.d === d && s.thin), `falta el tramo ${d} del enlace mecánico`);
+  }
+});
+
+test('el pulsador conmutado (8003) lleva el común arriba y los dos tiros abajo', () => {
+  const sym = resolveSymbol(8003, ['11', '12', '14']);
+  assert.equal(sym.anchor, 'origin', 'el 8003 migró a anclaje al origen');
+  assert.deepEqual(sym.originPins, [
+    { name: '11', x: 3, y: 0 },
+    { name: '12', x: 0, y: 12 },
+    { name: '14', x: 6, y: 12 },
+  ]);
+
+  // Medido sobre la misma captura, conmutado en (798,198): común arriba en
+  // x=3, cuchilla hasta (0,5;3) apoyada en el NC, y los dos tiros abajo en
+  // x=0 y x=6 con sus barras cortas apuntando hacia la cuchilla.
+  const shapes = sym.shapes(12, 15);
+  const ink = shapesBounds(shapes);
+  assert.ok(near(ink.minX, -6) && near(ink.maxX, 6), `el conmutado mide ${ink.minX}..${ink.maxX} de ancho`);
+  assert.ok(near(ink.minY, -6) && near(ink.maxY, 5.75), `el conmutado mide ${ink.minY}..${ink.maxY} de alto`);
+  assert.ok(shapes.some((s) => s.d === 'M3 -6L3 -3'), 'falta el tramo del común');
+  assert.ok(shapes.some((s) => s.d === 'M3 -3L0.5 3'), 'falta la cuchilla del conmutado');
+  assert.ok(shapes.some((s) => s.d === 'M0 2.33L1.2 2.33'), 'falta la barra del tiro NC');
+  assert.ok(shapes.some((s) => s.d === 'M4.78 2.33L6 2.33'), 'falta la barra del tiro NO');
+});
+
+test('la seta (8004/8005) se dibuja como cúpula con vástago, no con tapa recta', () => {
+  for (const [code, names] of [
+    [8004, ['13', '14']],
+    [8005, ['11', '12']],
+  ] as const) {
+    const sym = resolveSymbol(code, [...names]);
+    assert.equal(sym.anchor, 'origin', `el ${code} migró a anclaje al origen`);
+    assert.deepEqual(sym.originPins, [
+      { name: names[0], x: 0, y: 0 },
+      { name: names[1], x: 0, y: 12 },
+    ]);
+
+    // Medido sobre la misma captura, seta en (1041,90) y (1041,279): cúpula de
+    // radio 2 con el lado plano en x=−6 y vástago hasta −4,1. El 8005 suma la
+    // barra del apoyo NC hasta +3,25.
+    const shapes = sym.shapes(6, 15);
+    const ink = shapesBounds(shapes);
+    const maxX = code === 8005 ? 3.25 : 0;
+    assert.ok(near(ink.minX, -8) && near(ink.maxX, maxX), `la seta ${code} mide ${ink.minX}..${ink.maxX} de ancho`);
+    assert.ok(near(ink.minY, -6) && near(ink.maxY, 5.75), `la seta ${code} mide ${ink.minY}..${ink.maxY} de alto`);
+    assert.ok(shapes.some((s) => s.d.startsWith('M-6 -1.9') && s.d.includes('L-8 0')), `falta la cúpula de la seta ${code}`);
+    assert.ok(shapes.some((s) => s.d === 'M-6 -2L-6 2'), `falta el lado plano de la seta ${code}`);
+    assert.ok(shapes.some((s) => s.d === 'M-6 0L-4.1 0'), `falta el vástago de la seta ${code}`);
+  }
+});
+
 test('la bobina (9000) va anclada al origen, con el cuerpo centrado en el conductor', () => {
   const sym = resolveSymbol(9000, ['A1', 'A2']);
   assert.equal(sym.anchor, 'origin', 'el 9000 migró a anclaje al origen');

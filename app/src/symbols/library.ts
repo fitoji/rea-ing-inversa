@@ -741,29 +741,135 @@ const pushNANC: SymbolDef = {
   code: 8002,
   name: 'Contacto pulsador NA-NC',
   group: 'senalizacion',
-  pins: [left(0.3, '13'), left(0.7, '11'), right(0.3, '14'), right(0.7, '12')],
-  size: { w: 6, h: 15 },
-  shapes(w, h) {
-    return [...contact(w, h * 0.3, false), ...contact(w, h * 0.7, true)];
+  pins: [left(0, '11'), left(0.6, '13'), right(0, '12'), right(0.6, '14')],
+  anchor: 'origin',
+  // Medido sobre docs/02/pulsadores.png (9 px/u), NA-NC en (528,198): el NC
+  // ocupa la columna 0 y el NO la 9, con el enlace mecánico discontinuo en
+  // y=0. Los bornes caen en las filas 0 y 12 del registro.
+  originPins: [
+    { name: '11', x: 0, y: 0 },
+    { name: '13', x: 9, y: 0 },
+    { name: '12', x: 0, y: 12 },
+    { name: '14', x: 9, y: 12 },
+  ],
+  size: { w: 15, h: 15 },
+  shapes() {
+    return [
+      // Corchete del operador, igual al del NA.
+      { d: line(-6, -1.5, -5, -1.5), thin: true },
+      { d: line(-6, 1.25, -5, 1.25), thin: true },
+      { d: line(-6, -1.5, -6, 1.25), thin: true },
+      { d: line(-6, 0, -4.25, 0), thin: true },
+      // Contacto NC (11-12): tramo, barra fija y paleta apoyada.
+      { d: line(0, -6, 0, -2.5) },
+      { d: line(0, -2.5, 3.5, -2.5) },
+      { d: line(0, 3, 3, -3), blade: { px: 0, py: 3, deg: -PUSH_BLADE_DEG } },
+      { d: line(0, 3, 0, 5.75) },
+      // Contacto NO (13-14): paleta abierta hacia la izquierda.
+      { d: line(9, -6, 9, -3) },
+      { d: line(9, 3, 6, -3), blade: { px: 9, py: 3, deg: PUSH_BLADE_DEG } },
+      { d: line(9, 3, 9, 5.75) },
+      // Enlace mecánico discontinuo que une los dos contactos.
+      { d: line(-3, 0, -1, 0), thin: true },
+      { d: line(0, 0, 2, 0), thin: true },
+      { d: line(3, 0, 5, 0), thin: true },
+      { d: line(6, 0, 7.5, 0), thin: true },
+    ];
   },
 };
 
-/** Pulsador tipo seta: contacto normal más la tapa de hongo. */
+/**
+ * Pulsador conmutado (8003): común arriba y dos tiros abajo.
+ *
+ * Medido sobre `docs/02/pulsadores.png` (9 px/u), en (798,198): el común sube
+ * en x=3, la cuchilla en reposo apoya en el tiro NC (x=0) y el tiro NO (x=6)
+ * queda con su barra corta apuntando hacia la cuchilla.
+ */
+const pushChangeover: SymbolDef = {
+  code: 8003,
+  name: 'Contacto pulsador conmutado',
+  group: 'senalizacion',
+  pins: [left(0.25, '11'), right(0, '12'), right(0.5, '14')],
+  anchor: 'origin',
+  originPins: [
+    { name: '11', x: 3, y: 0 },
+    { name: '12', x: 0, y: 12 },
+    { name: '14', x: 6, y: 12 },
+  ],
+  size: { w: 12, h: 15 },
+  shapes() {
+    return [
+      { d: line(-6, -1.5, -5, -1.5), thin: true },
+      { d: line(-6, 1.25, -5, 1.25), thin: true },
+      { d: line(-6, -1.5, -6, 1.25), thin: true },
+      { d: line(-6, 0, -4.25, 0), thin: true },
+      // Común y cuchilla apoyada en el tiro NC.
+      { d: line(3, -6, 3, -3) },
+      { d: line(3, -3, 0.5, 3) },
+      // Tiro NC.
+      { d: line(0, 2.33, 0, 5.75) },
+      { d: line(0, 2.33, 1.2, 2.33) },
+      // Tiro NO.
+      { d: line(6, 2.33, 6, 5.75) },
+      { d: line(4.78, 2.33, 6, 2.33) },
+      // Guiones del enlace mecánico hasta la cuchilla.
+      { d: line(-3, 0, -1, 0), thin: true },
+      { d: line(0, 0, 2, 0), thin: true },
+    ];
+  },
+};
+
+/**
+ * Pulsador tipo seta: el actuador es una cúpula (semicírculo) con vástago,
+ * como lo dibuja CADe_SIMU en `docs/02/pulsadores.png` (9 px/u): radio 2 con
+ * el lado plano en x=-6 y el vástago hasta -4,1. El contacto es el del NA
+ * (8004) o el del NC (8005), medido en la misma captura.
+ */
 const mushroom = (code: number, name: string, nc: boolean): SymbolDef => ({
   code,
   name,
   group: 'senalizacion',
   pins: nc ? [left(0.5, '11'), right(0.5, '12')] : [left(0.5, '13'), right(0.5, '14')],
-  size: { w: 9, h: 15 },
-  shapes(w, h) {
-    const cy = h / 2;
-    const mx = w / 2;
-    const gap = Math.min(w * 0.18, 3.5);
-    const cap = `M${mx - gap} ${cy - h * 0.34}H${mx + gap}V${cy - h * 0.26}H${mx - gap}Z`;
+  anchor: 'origin',
+  originPins: nc
+    ? [
+        { name: '11', x: 0, y: 0 },
+        { name: '12', x: 0, y: 12 },
+      ]
+    : [
+        { name: '13', x: 0, y: 0 },
+        { name: '14', x: 0, y: 12 },
+      ],
+  size: { w: 6, h: 15 },
+  shapes() {
+    // Cúpula de la seta: CADe la dibuja con una curva que no es un círculo
+    // (se aplana cerca del lado plano y llega a −8 en el medio). La polilínea
+    // sigue los píxeles medidos, así el raster calza dentro de 2 px.
+    const dome =
+      'M-6 -1.9L-6.35 -1.7L-6.7 -1.5L-7 -1.3L-7.3 -1.1L-7.55 -0.9L-7.8 -0.6L-7.95 -0.3' +
+      'L-8 0L-7.95 0.3L-7.8 0.6L-7.55 0.9L-7.3 1.1L-7 1.3L-6.7 1.5L-6.35 1.7L-6 1.9';
+    const chord = line(-6, -2, -6, 2);
+    if (nc) {
+      return [
+        { d: dome },
+        { d: chord },
+        { d: line(-6, 0, -4.1, 0) },
+        { d: line(0, -6, 0, -2.5) },
+        { d: line(0, -2.5, 3.25, -2.5) },
+        { d: line(0, 3, 3, -3), blade: { px: 0, py: 3, deg: -PUSH_BLADE_DEG } },
+        { d: line(0, 3, 0, 5.75) },
+        { d: line(0, 0, 1.5, 0), thin: true },
+        { d: line(-3, 0, -1.25, 0), thin: true },
+      ];
+    }
     return [
-      ...contact(w, cy, nc),
-      { d: line(mx, cy, mx, cy - h * 0.26), thin: true },
-      { d: cap, fill: true },
+      { d: dome },
+      { d: chord },
+      { d: line(-6, 0, -4.1, 0) },
+      { d: line(0, -6, 0, -3.25) },
+      { d: line(0, 3, -3, -3), blade: { px: 0, py: 3, deg: PUSH_BLADE_DEG } },
+      { d: line(0, 3, 0, 5.75) },
+      { d: line(-3, 0, -1.5, 0), thin: true },
     ];
   },
 });
@@ -839,6 +945,7 @@ const ALL: SymbolDef[] = [
   timerOn,
   buzzer,
   pushNANC,
+  pushChangeover,
   mushroomNA,
   mushroomNC,
   switchNO,

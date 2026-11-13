@@ -549,7 +549,8 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
   contactDevice(7021, 'NA', 'mando', true),
 
   // señalización y pulsadores
-  contactDevice(8003, 'CO', 'senalizacion'),
+  // 8003 («Contacto pulsador conmutado») vive en `library.ts` calibrado contra
+  // la captura de pulsadores de CADe_SIMU, anclado al origen.
   contactDevice(8006, 'NANC', 'senalizacion', false, { w: 6, h: 18 }),
   contactDevice(8007, 'CO', 'senalizacion'),
   contactDevice(8009, 'NC', 'senalizacion'),
