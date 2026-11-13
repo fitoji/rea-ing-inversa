@@ -90,6 +90,23 @@ function commit(state: EditorState, text: string, selection = state.selection): 
   return { ...state, text, past, future: [], selection, dirty: true };
 }
 
+/**
+ * Encadena pasos de edición en UNA entrada de historial (transacción de
+ * gesto). Cada paso corre sobre un borrador con el historial limpio; si algún
+ * paso no cambia el documento, el gesto entero queda sin efecto. Con esto un
+ * gesto confirmado genera un solo paso de deshacer sin limpiar
+ * `past`/`future` a mano en cada llamada.
+ */
+function runSteps(state: EditorState, steps: Array<(s: EditorState) => EditorState>): EditorState {
+  let draft: EditorState = { ...state, past: [], future: [] };
+  for (const run of steps) {
+    const next = run(draft);
+    if (next.text === draft.text) return state;
+    draft = next;
+  }
+  return commit(state, draft.text);
+}
+
 // --- historial ---------------------------------------------------------------
 
 export function undo(state: EditorState): EditorState {
@@ -805,12 +822,15 @@ export function addJunction(state: EditorState, x: number, y: number, templateRa
  * cualquier punto y el cable se dobla ahí. Sin esto, arrastrar el cable no hacía
  * nada y parecía que la app estaba rota.
  */
+/**
+ * Doblaza el cable: inserta un vértice en `at` y lo mueve a `to`. La
+ * transacción formal deja un solo paso de deshacer para todo el gesto.
+ */
 export function bendCable(state: EditorState, id: number, at: Point, to: Point, sheet = 0): EditorState {
-  const inserted = insertVertex({ ...state, past: [], future: [] }, id, at.x, at.y);
-  if (inserted.text === state.text) return state;
-  const moved = moveVertex({ ...inserted, past: [], future: [] }, at, to, sheet);
-  if (moved.text === state.text) return state;
-  return commit(state, moved.text);
+  return runSteps(state, [
+    (s) => insertVertex(s, id, at.x, at.y),
+    (s) => moveVertex(s, at, to, sheet),
+  ]);
 }
 
 export type DragOp =
