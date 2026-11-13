@@ -264,6 +264,13 @@
   fill: var(--warn);
 }
 
+/* Objetivo magnético del snap (borne, junction o derivación en T). */
+.snap-mark {
+  fill: none;
+  stroke: var(--select);
+  stroke-width: 0.4;
+}
+
 /* Motor energizado: la flecha de giro, como en CADe_SIMU. */
 .motor-arrow {
   fill: none;

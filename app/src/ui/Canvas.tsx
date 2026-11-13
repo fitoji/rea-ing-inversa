@@ -7,6 +7,9 @@ import { designatorAt, pinLabelAt } from './labels.ts';
 import type { DragOp, Rotation } from '../editor/state.ts';
 import { attachPoints, type Point } from '../editor/pins.ts';
 import { buildNetwork, cableSegments } from '../editor/network.ts';
+import { snapContext, snapTarget, type SnapTarget } from '../editor/wiring/snap.ts';
+import { hitContext, hitTest } from '../editor/wiring/hitTest.ts';
+import { WIRE_TEMPLATES } from '../symbols/templates.ts';
 import { conductorToneOf, type ConductorTone } from '../editor/conductor.ts';
 import { SymbolGlyph } from './SymbolGlyph.tsx';
 import type { VisualState } from '../sim/visual.ts';
@@ -66,7 +69,7 @@ const PIN_SNAP_PX = 11;
 
 type DragState =
   | { kind: 'move'; sx: number; sy: number; moved: boolean }
-  | { kind: 'vertex'; from: Point; sx: number; sy: number; moved: boolean }
+  | { kind: 'vertex'; from: Point; sx: number; sy: number; moved: boolean; exclude: number[] }
   | { kind: 'bend'; id: number; at: Point; sx: number; sy: number; moved: boolean };
 
 export function Canvas(props: Props): JSX.Element {
@@ -200,8 +203,20 @@ export function Canvas(props: Props): JSX.Element {
   // Hoja que se está dibujando: los registros llegan recortados a esta página.
   const sheet = records[0]?.sheet ?? 0;
   const pinList = useMemo(() => [...pins.values()].flat(), [pins]);
+  // Contexto de cableado de la hoja: alimenta el snap priorizado y el hit-test.
+  const wiring = useMemo(() => snapContext(network, records, sheet), [network, records, sheet]);
+  const hitCtx = useMemo(() => hitContext(network, records, sheet), [network, records, sheet]);
+  const [snapMark, setSnapMark] = useState<Point | null>(null);
 
-  /** Snap magnético: primero al borne más cercano, después a la grilla. */
+  /** Snap priorizado del cableado: borne → junction → derivación en T → grilla. */
+  const snapOf = useCallback(
+    (world: Point, exclude: number[] = []): SnapTarget =>
+      snapTarget(world, wiring, PIN_SNAP_PX / view.k, step, exclude),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [wiring, snap, view.k],
+  );
+
+  /** Snap magnético simple (borne o grilla): el que usa la colocación de componentes. */
   const snapPoint = useCallback(
     (world: Point): Point => {
       let best: Point | null = null;
@@ -226,29 +241,15 @@ export function Canvas(props: Props): JSX.Element {
    * Las cajas de los componentes se pintan encima de los cables (un cable pasa
    * por detrás del símbolo al llegar a un borne), así que confiar en el orden
    * del DOM hacía que un clic sobre el cable seleccionara el componente.
+   * El escaneo es el del módulo puro con los endpoints apagados: golpear la
+   * punta del tramo sigue devolviendo el segmento.
    */
   const hitWire = useCallback(
     (world: Point, tolerance: number): number | null => {
-      let best: number | null = null;
-      let bestDist = tolerance;
-      for (const rec of records) {
-        const pts = wirePoints(rec);
-        if (!pts || (pts.x1 === pts.x2 && pts.y1 === pts.y2)) continue;
-        const dx = pts.x2 - pts.x1;
-        const dy = pts.y2 - pts.y1;
-        const len2 = dx * dx + dy * dy;
-        const t = len2 === 0 ? 0 : Math.max(0, Math.min(1, ((world.x - pts.x1) * dx + (world.y - pts.y1) * dy) / len2));
-        const px = pts.x1 + t * dx;
-        const py = pts.y1 + t * dy;
-        const d = Math.hypot(world.x - px, world.y - py);
-        if (d < bestDist) {
-          bestDist = d;
-          best = rec.id;
-        }
-      }
-      return best;
+      const out = hitTest(world, hitCtx, tolerance, { endpoints: false });
+      return out.kind === 'segment' ? out.segmentId : null;
     },
-    [records],
+    [hitCtx],
   );
 
   const onPointerDown = (e: React.PointerEvent): void => {
@@ -264,7 +265,13 @@ export function Canvas(props: Props): JSX.Element {
 
     if (placing !== null) {
       // Durante la simulación no se insertan componentes.
-      if (!simulating) onPlace(snapPoint(world).x, snapPoint(world).y);
+      if (!simulating) {
+        // Dibujar cable: snap priorizado (arrancar sobre un borne, una junction
+        // o el interior de otro tramo). Colocar componente: snap simple.
+        const wirePlacing = WIRE_TEMPLATES[placing] !== undefined;
+        const s = wirePlacing || wireStart !== null ? snapOf(world).point : snapPoint(world);
+        onPlace(s.x, s.y);
+      }
       return;
     }
 
@@ -283,7 +290,17 @@ export function Canvas(props: Props): JSX.Element {
       const at = end === 0 ? { x: pts.x1, y: pts.y1 } : { x: pts.x2, y: pts.y2 };
       // Enfocar el vértice permite borrarlo con Suprimir sin borrar el cable.
       onVertexSelect(at);
-      setDrag({ kind: 'vertex', from: at, sx: world.x, sy: world.y, moved: false });
+      // Los tramos que comparten el punto arrastrado no derivan sobre sí mismos.
+      const exclude = records
+        .filter((r) => {
+          const rp = wirePoints(r);
+          if (!rp) return false;
+          const atA = Math.abs(rp.x1 - at.x) < 0.01 && Math.abs(rp.y1 - at.y) < 0.01;
+          const atB = Math.abs(rp.x2 - at.x) < 0.01 && Math.abs(rp.y2 - at.y) < 0.01;
+          return atA || atB;
+        })
+        .map((r) => r.id);
+      setDrag({ kind: 'vertex', from: at, sx: world.x, sy: world.y, moved: false, exclude });
       svgRef.current!.setPointerCapture(e.pointerId);
       return;
     }
@@ -331,7 +348,11 @@ export function Canvas(props: Props): JSX.Element {
       return;
     }
     const world = toWorld(e.clientX, e.clientY);
-    if (wireStart) setHover(snapPoint(world));
+    if (wireStart) {
+      const t = snapOf(world);
+      setHover(t.point);
+      setSnapMark(t.kind === 'grid' ? null : t.point);
+    }
 
     if (drag?.kind === 'move') {
       const dx = snapValue(world.x - drag.sx);
@@ -342,15 +363,17 @@ export function Canvas(props: Props): JSX.Element {
     }
     if (drag?.kind === 'vertex') {
       if (Math.hypot(world.x - drag.sx, world.y - drag.sy) > 0.5) setDrag({ ...drag, moved: true });
-      const p = snapPoint(world);
-      onDragPreview({ kind: 'vertex', from: drag.from, to: p, sheet });
+      const t = snapOf(world, drag.exclude);
+      onDragPreview({ kind: 'vertex', from: drag.from, to: t.point, sheet });
+      setSnapMark(t.kind === 'grid' ? null : t.point);
       return;
     }
     if (drag?.kind === 'bend') {
       if (!drag.moved && Math.hypot(world.x - drag.sx, world.y - drag.sy) < 0.8) return;
       if (!drag.moved) setDrag({ ...drag, moved: true });
-      const p = snapPoint(world);
-      onDragPreview({ kind: 'bend', id: drag.id, at: drag.at, to: p, sheet });
+      const t = snapOf(world, [drag.id]);
+      onDragPreview({ kind: 'bend', id: drag.id, at: drag.at, to: t.point, sheet });
+      setSnapMark(t.kind === 'grid' ? null : t.point);
       return;
     }
     if (marquee) {
@@ -375,23 +398,27 @@ export function Canvas(props: Props): JSX.Element {
     if (drag?.kind === 'vertex') {
       const world = toWorld(e.clientX, e.clientY);
       const moved = Math.hypot(world.x - drag.sx, world.y - drag.sy) > 0.5;
-      const p = snapPoint(world);
+      const t = snapOf(world, drag.exclude);
       setDrag(null);
-      if (moved) onDragCommit({ kind: 'vertex', from: drag.from, to: p, sheet });
+      setSnapMark(null);
+      if (moved) onDragCommit({ kind: 'vertex', from: drag.from, to: t.point, sheet });
       else onDragPreview(null);
       return;
     }
     if (drag?.kind === 'bend') {
       const world = toWorld(e.clientX, e.clientY);
       setDrag(null);
+      setSnapMark(null);
       if (Math.hypot(world.x - drag.sx, world.y - drag.sy) < 0.8) {
         onDragPreview(null);
         return;
       }
-      onDragCommit({ kind: 'bend', id: drag.id, at: drag.at, to: snapPoint(world), sheet });
+      const t = snapOf(world, [drag.id]);
+      onDragCommit({ kind: 'bend', id: drag.id, at: drag.at, to: t.point, sheet });
       return;
     }
     if (marquee) {
+      setSnapMark(null);
       const mx1 = Math.min(marquee.x1, marquee.x2);
       const mx2 = Math.max(marquee.x1, marquee.x2);
       const my1 = Math.min(marquee.y1, marquee.y2);
@@ -495,6 +522,8 @@ export function Canvas(props: Props): JSX.Element {
             .map((n) => (
               <circle key={`j-${n.key}`} className="junction" cx={n.x} cy={n.y} r={1.15} />
             ))}
+
+          {snapMark && <circle className="snap-mark" cx={snapMark.x} cy={snapMark.y} r={2.4} />}
 
           {selectedWires.map((rec) => {
             const pts = wirePoints(rec);
