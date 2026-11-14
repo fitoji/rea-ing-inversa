@@ -398,3 +398,13 @@ test('el fusible II (5002) va anclado al origen', () => {
     { name: '4', x: 6, y: 12 },
   ]);
 });
+
+
+test('el contacto del térmico (8017) va anclado al origen', () => {
+  const sym = resolveSymbol(8017, ['95', '96']);
+  assert.equal(sym.anchor, 'origin');
+  assert.deepEqual(sym.originPins, [
+    { name: '95', x: 0, y: 0 },
+    { name: '96', x: 0, y: 12 },
+  ]);
+});

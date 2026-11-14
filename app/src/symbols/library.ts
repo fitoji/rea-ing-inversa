@@ -479,14 +479,28 @@ const lamp: SymbolDef = {
   },
 };
 
+/**
+ * Contacto del térmico (8017), anclado al origen.
+ * Medido sobre `docs/03/componentes01.png` (S=4, OX=-17, OY=-101), en (126,108).
+ */
 const thermalContact: SymbolDef = {
   code: 8017,
   name: 'Contacto del térmico',
   group: 'mando',
   pins: [left(0.5, '95'), right(0.5, '96')],
-  shapes(w, h) {
-    const cy = h / 2;
-    return [...contact(w, cy, true), { d: line(w * 0.5, cy - 2, w * 0.5, cy - h * 0.28), thin: true }];
+  anchor: 'origin',
+  originPins: [
+    { name: '95', x: 0, y: 0 },
+    { name: '96', x: 0, y: 12 },
+  ],
+  size: { w: 6, h: 15 },
+  shapes() {
+    return [
+      { d: line(0, 0, 0, 3) },
+      { d: line(0, 3.5, 3.25, 3.5) },
+      { d: line(0, 9, 2.5, 3.75), blade: { px: 0, py: 9, deg: -PUSH_BLADE_DEG } },
+      { d: line(0, 9, 0, 12) },
+    ];
   },
 };
 

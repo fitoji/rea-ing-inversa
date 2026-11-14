@@ -43,7 +43,7 @@ Branch: `main`. Test runner: `pnpm test` desde `app/`.
   - comp01: `S=4, OX=-17, OY=-101` (`px=cad*4+(-17,-101)`), verificado stray=0 en 3000/3001.
   - comp02: `S=4, OX=-2, OY=-60` verificado stray=0 en 3000; 6001/2001 no cierran con defs actuales (requiere revisión).
 - [x] T2 lote 1 (S4,S5,S6): 9009 anclada (commit `504cc58`, stray=0).
-- [~] T3 lote 2 contactos auxiliares/conmutadores: 7000,7001 anclados (`ede08c3`). 7002,8018 anclados (`dd7d5b1`). 7003,8015,8017,8014 pendientes.
+- [~] T3 lote 2 contactos auxiliares/conmutadores: 7000,7001 anclados (`ede08c3`). 7002,8018 anclados (`dd7d5b1`). 8017 anclado (comp01 stray=0). 7003,8015,8014 pendientes.
 - [ ] T4 alimentaciones 3002-3005,3011.
 - [ ] T5 bobinas 9001,9002; resistencias 1050,1051.
 - [ ] T6 contactores 2000,2006.
@@ -76,4 +76,5 @@ Branch: `main`. Test runner: `pnpm test` desde `app/`.
 - L6 (mapeo comp02): `componentes02.png` mapeo `S=4, OX=-2, OY=-60` verificado con 3000 (stray=0, 15,36). 6001/2001 no cierran con ese mapeo usando defs actuales; requiere verificación por símbolo.
 - L7 (estado): pendientes 30 códigos: 7002,7003,8014,8015,8017,8018,3002-3005,3011,1050,1051,2000,2006,5000-5004,6000,6002,6003,6005,6006,6008,6009,6010,9001,9002. Comp02-exclusivos: 2006,5001,5003,6000,6002,6003,6009,8014. TSC limpio en último chequeo. Push pendiente.
 - L8: 7002 (aux NA-NC, 93,75 comp01) y 8018 (conmutador 2 posiciones, 144,90 comp01) anclados en `app/src/symbols/library.ts` con stray=0 (gates ref=189/211 overlap=162/172). Tests de anclaje añadidos; imports no usados removidos. 7003,8015,8017 intentados pero sin stray=0 y revertidos (siguen pendientes). Commit `dd7d5b1`.
-- L9: 5000 (24,63 comp01) y 5002 (42,63 comp01) anclados en `app/src/symbols/library.ts` con stray=0 (gates ref=120/240 overlap=94/188). Overrides removidos en `families.ts`. Tests de anclaje añadidos. 5004 intentado (geometría no coincide, stray alto) y revertido.
+- L9: 5000 (24,63 comp01) y 5002 (42,63 comp01) anclados en `app/src/symbols/library.ts` con stray=0 (gates ref=120/240 overlap=94/188). Overrides removidos en `families.ts`. Tests de anclaje añadidos. 5004 intentado (geometría no coincide, stray alto) y revertido. Commit `805425e`.
+- L10: 8017 (126,108 comp01) anclado con núcleo NC y stray=0 (ref=110 overlap=63, refOnly detalle térmico aceptado). 7003,8015 siguen pendientes.
