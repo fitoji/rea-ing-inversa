@@ -520,6 +520,56 @@ const flashingLamp: SymbolDef = {
 };
 
 /**
+ * Fusible monofásico (5000), anclado al origen.
+ * Medido sobre `docs/03/componentes01.png` (S=4, OX=-17, OY=-101), en (24,63).
+ */
+const fuse1: SymbolDef = {
+  code: 5000,
+  name: 'Fusible monofásico',
+  group: 'proteccion',
+  pins: [left(0.5, '1'), right(0.5, '2')],
+  anchor: 'origin',
+  originPins: [
+    { name: '1', x: 0, y: 0 },
+    { name: '2', x: 0, y: 12 },
+  ],
+  size: { w: 6, h: 15 },
+  shapes() {
+    return [
+      { d: line(0, 0, 0, 3) },
+      { d: rect(-1.25, 3, 2.5, 6) },
+      { d: line(0, 9, 0, 12) },
+    ];
+  },
+};
+
+/**
+ * Fusible II (5002), anclado al origen.
+ * Medido sobre `docs/03/componentes01.png` (S=4, OX=-17, OY=-101), en (42,63).
+ */
+const fuse2: SymbolDef = {
+  code: 5002,
+  name: 'Fusible II',
+  group: 'proteccion',
+  pins: [left(0.3, '1'), left(0.7, '3'), right(0.3, '2'), right(0.7, '4')],
+  anchor: 'origin',
+  originPins: [
+    { name: '1', x: 0, y: 0 },
+    { name: '3', x: 6, y: 0 },
+    { name: '2', x: 0, y: 12 },
+    { name: '4', x: 6, y: 12 },
+  ],
+  size: { w: 12, h: 15 },
+  shapes() {
+    return [0, 6].flatMap((x) => [
+      { d: line(x, 0, x, 3) },
+      { d: rect(x - 1.25, 3, 2.5, 6) },
+      { d: line(x, 9, x, 12) },
+    ]);
+  },
+};
+
+/**
  * Conmutador de dos posiciones (8018), anclado al origen.
  * Medido sobre `docs/03/componentes01.png` (S=4, OX=-17, OY=-101), en (144,90).
  */
@@ -1006,6 +1056,8 @@ const ALL: SymbolDef[] = [
   feedPos,
   feedDC,
   fuse,
+  fuse1,
+  fuse2,
   breaker,
   thermalRelay,
   breaker4,

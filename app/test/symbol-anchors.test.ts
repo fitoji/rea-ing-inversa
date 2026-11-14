@@ -377,3 +377,24 @@ test('el conmutador de dos posiciones (8018) va anclado al origen con sus cuatro
     { name: '98', x: 9, y: 12 },
   ]);
 });
+
+
+test('el fusible monofásico (5000) va anclado al origen', () => {
+  const sym = resolveSymbol(5000, ['1', '2']);
+  assert.equal(sym.anchor, 'origin');
+  assert.deepEqual(sym.originPins, [
+    { name: '1', x: 0, y: 0 },
+    { name: '2', x: 0, y: 12 },
+  ]);
+});
+
+test('el fusible II (5002) va anclado al origen', () => {
+  const sym = resolveSymbol(5002, ['1', '3', '2', '4']);
+  assert.equal(sym.anchor, 'origin');
+  assert.deepEqual(sym.originPins, [
+    { name: '1', x: 0, y: 0 },
+    { name: '3', x: 6, y: 0 },
+    { name: '2', x: 0, y: 12 },
+    { name: '4', x: 6, y: 12 },
+  ]);
+});

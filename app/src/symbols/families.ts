@@ -491,9 +491,9 @@ export const FAMILY_SYMBOLS: SymbolDef[] = [
   ], { w: 18, h: 15 }, motorLabel('V')),
 
   // protección
-  defPoles(5000, 'proteccion', 1, (w, h) => fuseBody(w, h, 1), { w: 12, h: 15 }),
+  // 5000 calibrado y anclado en library.ts (docs/03, comp01).
   defPoles(5001, 'proteccion', 2, (w, h) => fuseBody(w, h, 2), { w: 12, h: 15 }),
-  defPoles(5002, 'proteccion', 2, (w, h) => fuseBody(w, h, 2), { w: 12, h: 15 }),
+  // 5002 calibrado y anclado en library.ts (docs/03, comp01).
   defPoles(5003, 'proteccion', 3, (w, h) => fuseBody(w, h, 3), { w: 18, h: 15 }),
   defPoles(5005, 'proteccion', 1, (w, h) => verticalPoles(w, h, 1), { w: 12, h: 15 }),
   defPoles(5006, 'proteccion', 2, (w, h) => verticalPoles(w, h, 2), { w: 12, h: 15 }),
