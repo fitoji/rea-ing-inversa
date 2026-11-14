@@ -28,12 +28,10 @@ export type SymbolGroup =
 
 import {
   cadesimuLamp,
-  changeoverPole,
   circle,
   contact,
   left,
   line,
-  mechanicalLink,
   pinsBoth,
   rect,
   right,
@@ -522,17 +520,8 @@ const flashingLamp: SymbolDef = {
 };
 
 /**
- * Conmutador de dos posiciones (el 8018).
- *
- * En CADeSimu el 8018 son **dos contactos verticales** (95-96 y 97-98) con
- * acoplamiento mecánico: la línea punteada que los une y el corchete de la
- * derecha. La captura del PR1
- * (`app/test_simu/PR1_Rodolfo_Giusti_03_simu_play_02.png`) lo muestra con la
- * lambda de las dos cuchillas abiertas; en `..._play_04.png` la de 95-96 está
- * apoyada y la de 97-98 abierta.
- *
- * Las dos cuchillas se dibujan abiertas y en direcciones opuestas: la lambda.
- * Al mover el conmutador, una se apoya y la otra se abre —nunca las dos.
+ * Conmutador de dos posiciones (8018), anclado al origen.
+ * Medido sobre `docs/03/componentes01.png` (S=4, OX=-17, OY=-101), en (144,90).
  */
 const changeover: SymbolDef = {
   code: 8018,
@@ -544,12 +533,32 @@ const changeover: SymbolDef = {
     { name: '96', nx: 0, ny: 12 / 15, side: 'bottom' },
     { name: '98', nx: 0.6, ny: 12 / 15, side: 'bottom' },
   ],
+  anchor: 'origin',
+  originPins: [
+    { name: '95', x: 0, y: 0 },
+    { name: '97', x: 9, y: 0 },
+    { name: '96', x: 0, y: 12 },
+    { name: '98', x: 9, y: 12 },
+  ],
   size: { w: 15, h: 15 },
-  shapes(w, h) {
+  shapes() {
     return [
-      ...changeoverPole(0, h, -1),
-      ...changeoverPole(w * 0.6, h, 1),
-      ...mechanicalLink(w, h),
+      // NC (95-96), columna 0.
+      { d: line(0, 0, 0, 3) },
+      { d: line(0, 3.5, 3.25, 3.5) },
+      { d: line(0, 9, 2.5, 3.75), blade: { px: 0, py: 9, deg: -PUSH_BLADE_DEG } },
+      { d: line(0, 9, 0, 12) },
+      // NA (97-98), columna 9.
+      { d: line(9, 0, 9, 3) },
+      { d: line(9, 9, 6, 3), blade: { px: 9, py: 9, deg: PUSH_BLADE_DEG } },
+      { d: line(9, 9, 9, 12) },
+      // Enlace mecánico.
+      { d: 'M-6 6H-4.25 M-3 6H-1.25 M0 6H1.75 M3 6H4.75 M6 6H7.5', thin: true },
+      { d: line(-6, 6.25, -6, 7.75), thin: true },
+      { d: line(-4.75, 6.25, -4.75, 7.75), thin: true },
+      // Operador derecho.
+      { d: line(12.75, 4, 12.75, 5), thin: true },
+      { d: line(12.75, 7, 12.75, 7.75), thin: true },
     ];
   },
 };
@@ -735,14 +744,38 @@ const disyuntor2: SymbolDef = {
   },
 };
 
+/**
+ * Contacto auxiliar NA-NC (7002), anclado al origen.
+ * Medido sobre `docs/03/componentes01.png` (S=4, OX=-17, OY=-101), en (93,75).
+ * NC en columna 0 (11-12) y NA en columna 9 (13-14).
+ */
 const auxNANC: SymbolDef = {
   code: 7002,
   name: 'Contacto auxiliar NA-NC',
   group: 'mando',
   pins: [left(0.3, '13'), left(0.7, '11'), right(0.3, '14'), right(0.7, '12')],
-  size: { w: 6, h: 15 },
-  shapes(w, h) {
-    return [...contact(w, h * 0.3, false), ...contact(w, h * 0.7, true)];
+  anchor: 'origin',
+  originPins: [
+    { name: '11', x: 0, y: 0 },
+    { name: '13', x: 9, y: 0 },
+    { name: '12', x: 0, y: 12 },
+    { name: '14', x: 9, y: 12 },
+  ],
+  size: { w: 15, h: 15 },
+  shapes() {
+    return [
+      // NC (11-12), columna 0.
+      { d: line(0, 0, 0, 3) },
+      { d: line(0, 3.5, 3.25, 3.5) },
+      { d: line(0, 9, 2.5, 3.75), blade: { px: 0, py: 9, deg: -PUSH_BLADE_DEG } },
+      { d: line(0, 9, 0, 12) },
+      // NA (13-14), columna 9.
+      { d: line(9, 0, 9, 3) },
+      { d: line(9, 9, 6, 3), blade: { px: 9, py: 9, deg: PUSH_BLADE_DEG } },
+      { d: line(9, 9, 9, 12) },
+      // Actuador.
+      { d: line(-12, -12, -12, -0.25), thin: true },
+    ];
   },
 };
 

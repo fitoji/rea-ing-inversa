@@ -354,3 +354,26 @@ test('los símbolos que no se migraron siguen dibujándose en su caja', () => {
     assert.notEqual(sym.anchor, 'origin', `${code} no debería estar anclado todavía`);
   }
 });
+
+
+test('el contacto auxiliar NA-NC (7002) va anclado al origen con sus cuatro bornes', () => {
+  const sym = resolveSymbol(7002, ['11', '13', '12', '14']);
+  assert.equal(sym.anchor, 'origin', 'el 7002 migra a anclaje al origen');
+  assert.deepEqual(sym.originPins, [
+    { name: '11', x: 0, y: 0 },
+    { name: '13', x: 9, y: 0 },
+    { name: '12', x: 0, y: 12 },
+    { name: '14', x: 9, y: 12 },
+  ]);
+});
+
+test('el conmutador de dos posiciones (8018) va anclado al origen con sus cuatro bornes', () => {
+  const sym = resolveSymbol(8018, ['95', '97', '96', '98']);
+  assert.equal(sym.anchor, 'origin', 'el 8018 migra a anclaje al origen');
+  assert.deepEqual(sym.originPins, [
+    { name: '95', x: 0, y: 0 },
+    { name: '97', x: 9, y: 0 },
+    { name: '96', x: 0, y: 12 },
+    { name: '98', x: 9, y: 12 },
+  ]);
+});
